@@ -24,6 +24,15 @@ const PORT = process.env.PORT || 3001;
 // Override with HOST=127.0.0.1 to restrict to loopback only.
 const HOST = process.env.HOST || '0.0.0.0';
 
+// Trust proxies ONLY from loopback (e.g. a local cloudflared/cpolar tunnel).
+// This lets rate limiting key off the REAL client IP via X-Forwarded-For when
+// the app is reached through a tunnel — otherwise every tunneled request looks
+// like 127.0.0.1 and the whole tunnel shares one auth-ip bucket. 'loopback'
+// means a remote client can NOT spoof XFF to bypass the limiter (their
+// connection arrives from a non-loopback source and is never trusted), and
+// direct LAN access keeps using the actual peer IP.
+app.set('trust proxy', 'loopback');
+
 // CORS whitelist: default local dev origins; override via CORS_ORIGINS env (comma-separated).
 const defaultOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173'];
 const allowedOrigins = new Set(
