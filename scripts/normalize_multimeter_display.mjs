@@ -5,7 +5,8 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-const COURSES_DIR = path.resolve('D:/dlg_project/backend/data/courses');
+const __ROOT__ = path.resolve(__dirname, '..');
+const COURSES_DIR = path.resolve(path.join(__ROOT__, 'backend', 'data', 'courses'));
 const changed = [];
 let renamed = 0;
 

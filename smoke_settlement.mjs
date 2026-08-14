@@ -10,7 +10,8 @@ const require = createRequire(import.meta.url);
 const DB_PATH = path.join(mkdtempSync(path.join(tmpdir(), 'dlg-settle-')), 'test.db');
 process.env.DLG_DB_PATH = DB_PATH;
 
-const db = require('D:/dlg_project/backend/models/database.js');
+const __ROOT__ = __dirname;
+const db = require(path.join(__ROOT__, 'backend', 'models', 'database.js'));
 db.initializeDatabase();
 
 let passed = 0, failed = 0;

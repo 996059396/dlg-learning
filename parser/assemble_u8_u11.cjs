@@ -2,8 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const EXT_DIR = 'D:/dlg_project/parser/extracted';
-const COURSE_DIR = 'D:/dlg_project/backend/data/courses/electrician_basics';
+const __ROOT__ = path.resolve(__dirname, '..');
+const EXT_DIR = path.join(__ROOT__, 'parser', 'extracted');
+const COURSE_DIR = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics');
 
 // Helper: collect nodes from a list of file prefixes
 function collect(prefixes) {
@@ -92,7 +93,7 @@ const UNITS = [
   },
 ];
 
-const indexFile = 'D:/dlg_project/backend/data/courses/index.json';
+const indexFile = path.join(__ROOT__, 'backend', 'data', 'courses', 'index.json');
 const idx = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
 const course = idx.find(c => c.id === 'electrician_basics');
 

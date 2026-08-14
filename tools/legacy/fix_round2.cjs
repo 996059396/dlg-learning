@@ -2,7 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const dir = 'D:/dlg_project/backend/data/courses/electrician_basics';
+const __ROOT__ = path.resolve(__dirname, '..', '..');
+const dir = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics');
 const files = ['u1_meter_basics.json','u2_circuit_basics.json','u3_tools.json','u4_relays.json','u5_multimeter_advanced.json'];
 
 let fixCount = 0;

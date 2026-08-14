@@ -1,6 +1,8 @@
 // Fill missing match pairs in u3_tools.json
 const fs = require('fs');
-const fp = 'D:/dlg_project/backend/data/courses/electrician_basics/u3_tools.json';
+const path = require('path');
+const __ROOT__ = path.resolve(__dirname, '..', '..');
+const fp = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics', 'u3_tools.json');
 const data = JSON.parse(fs.readFileSync(fp, 'utf8'));
 
 const fills = {

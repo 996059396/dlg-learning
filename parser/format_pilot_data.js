@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+const path = require('path');
 const data1 = [
   {
     "type": "info",
@@ -98,5 +99,6 @@ const formattedNodes = [];
   }
 });
 
-fs.writeFileSync('D:/dlg_project/parser/pilot_nodes.json', JSON.stringify(formattedNodes, null, 2));
+const __ROOT__ = path.resolve(__dirname, '..');
+fs.writeFileSync(path.join(__ROOT__, 'parser', 'pilot_nodes.json'), JSON.stringify(formattedNodes, null, 2));
 console.log("Pilot nodes have been formatted successfully.");

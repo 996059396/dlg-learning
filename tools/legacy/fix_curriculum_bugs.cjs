@@ -2,7 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const dir = 'D:/dlg_project/backend/data/courses/electrician_basics';
+const __ROOT__ = path.resolve(__dirname, '..', '..');
+const dir = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics');
 
 // === Fix mapping: u5's bad IDs → component's correct IDs ===
 const dialMap = {
