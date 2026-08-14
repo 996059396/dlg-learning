@@ -229,9 +229,16 @@ async function run() {
 
   const l1 = unitLessons.find(l => l.id === 'l1_intro');
   const l2 = unitLessons.find(l => l.id === 'l2_battery');
-  await test('GET lesson: l1_intro returns question nodes', async () => {
-    const { data } = await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro');
-    if (!Array.isArray(data.nodes) || data.nodes.length === 0) throw new Error('no nodes');
+  await test('GET lesson: l1_intro returns question nodes (auth-gated)', async () => {
+    const { status, data } = await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro', null, auth());
+    if (status !== 200 || !Array.isArray(data.nodes) || data.nodes.length === 0)
+      throw new Error(`status=${status}, no nodes`);
+  });
+
+  // Lesson payloads carry answer keys → now auth-gated (60-agent round 2).
+  await test('GET lesson without token → 401 (no anonymous answer-key leak)', async () => {
+    const { status } = await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro');
+    if (status !== 401) throw new Error(`expected 401, got ${status}`);
   });
 
   // ─── Game Mechanics ───
@@ -305,18 +312,20 @@ async function run() {
       '/courses/electrician_basics/units/%2e%2e/lessons/x',
     ];
     for (const url of attempts) {
+      // 401 (auth-gated now) and 404 (whitelist) are both rejections — the
+      // security property is "never file content", not a specific status.
       const { status } = await jreq('GET', url);
-      if (status !== 404) throw new Error(`${url} → ${status}, expected 404`);
+      if (status !== 404 && status !== 401) throw new Error(`${url} → ${status}, expected 401/404`);
     }
-    // Unknown-but-shaped ids also 404 (whitelist enforced).
+    // Unknown-but-shaped ids also reject (whitelist enforced / auth-gated).
     const { status } = await jreq('GET', '/courses/electrician_basics/units/not_a_unit/lessons/x');
-    if (status !== 404) throw new Error(`unknown unit → ${status}, expected 404`);
+    if (status !== 404 && status !== 401) throw new Error(`unknown unit → ${status}, expected 401/404`);
   });
 
   // ─── Lesson Completion (server-side grading) ───
   console.log('\n📋 Lesson Completion');
   await test('complete l1_intro all-correct → accuracy 100, xp +15, coins +5', async () => {
-    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro')).data;
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro', null, auth())).data;
     const { status, data } = await jreq(
       'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro/complete',
       { answers: buildAnswers(lesson) }, auth()
@@ -328,7 +337,7 @@ async function run() {
   });
 
   await test('complete l1_intro again (repeat) → review bonus, no coins', async () => {
-    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro')).data;
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro', null, auth())).data;
     const { data } = await jreq(
       'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro/complete',
       { answers: buildAnswers(lesson) }, auth()
@@ -340,7 +349,7 @@ async function run() {
   });
 
   await test('complete l2_battery with one wrong → mistakes recorded, accuracy < 100', async () => {
-    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery')).data;
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery', null, auth())).data;
     const { status, data } = await jreq(
       'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
       { answers: buildAnswers(lesson, 0) }, auth()
@@ -348,6 +357,20 @@ async function run() {
     if (status !== 200) throw new Error(`complete failed: ${JSON.stringify(data)}`);
     if (data.accuracy >= 100) throw new Error(`accuracy=${data.accuracy}, expected < 100`);
     if (!data.mistakesCount || data.mistakesCount < 1) throw new Error('no mistakes recorded');
+  });
+
+  await test('empty-answer submission → 0 XP, lesson stays uncompleted', async () => {
+    const { data: fresh } = await jreq('POST', '/auth/register', { username: `空答案${Date.now() % 100000}`, password: 'pw123456' });
+    const fAuth = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${fresh.token}` });
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery', null, fAuth())).data;
+    const { status, data } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: [] }, fAuth()
+    );
+    if (status !== 200) throw new Error(`complete failed ${status}`);
+    if (data.rewards?.xpEarned !== 0) throw new Error(`empty answers should earn 0 XP, got ${data.rewards?.xpEarned}`);
+    if (data.rewards?.passed) throw new Error('empty answers must not pass');
+    if (data.progress?.completed === 1) throw new Error('empty answers must not mark lesson completed');
   });
 
   await test('mistakes now appear in review queue', async () => {
@@ -469,6 +492,7 @@ async function run() {
       const { status, data } = await jreq('POST', '/exam/submit', { sessionId: start.sessionId, answers }, examAuthHeaders);
       if (status !== 200) throw new Error(`submit expected 200, got ${status}`);
       if (data.score >= 80 || data.passed) throw new Error(`expected fail, got score=${data.score} passed=${data.passed}`);
+      if (data.xpEarned !== 0) throw new Error(`all-wrong exam should earn 0 XP, got ${data.xpEarned}`);
       const m = await jreq('GET', '/game/mistakes/due-count', null, examAuthHeaders);
       if (!(m.data.dueCount > 0)) throw new Error(`expected mistakes ingested, got ${m.data.dueCount}`);
     });

@@ -2,8 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const __ROOT__ = path.resolve(__dirname, '..', '..');
-const dir = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics');
+const dir = path.join(__dirname, 'backend', 'data', 'courses', 'electrician_basics');
 
 // === Fix mapping: u5's bad IDs → component's correct IDs ===
 const dialMap = {

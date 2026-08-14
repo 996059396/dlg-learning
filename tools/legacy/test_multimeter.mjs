@@ -1,5 +1,5 @@
 // E2E test: 万用表 (Multimeter) Challenge component
-// Usage: node test_multimeter.mjs   (run from D:\dlg_project; dev server must already be running on :5173)
+// Usage: node test_multimeter.mjs   (run from the repo root; dev server must already be running on :5173)
 
 import puppeteer from 'puppeteer';
 import fs from 'fs';
@@ -10,7 +10,7 @@ import path from 'path';
 // ────────────────────────────────────────────────────────────────────────────
 const BASE_URL = 'http://localhost:5173';
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const SHOT_DIR = 'D:\\dlg_project\\screenshots\\multimeter';
+const SHOT_DIR = path.join(process.cwd(), 'screenshots', 'multimeter');
 
 const COURSE_ID = 'electrician_basics';
 const UNIT_ID = 'u5_multimeter_advanced';

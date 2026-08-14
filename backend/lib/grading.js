@@ -20,7 +20,15 @@ const _matchCanon = (s) => _normalize(s).replace(/\s*([=,])\s*/g, '$1');
 // go through the same transform, so stripping is strictly leniency — it can only
 // accept, never reject, a correct answer the audit's 490/919 misgrade wrongly
 // failed.
-const _normalize = (s) => _halfWidth(String(s || '').trim().toLowerCase().replace(/\s+/g, ''));
+// Ω (ohm, U+03A9) and ω (angular frequency, U+03C9) are DIFFERENT units that
+// toLowerCase() fuses into one — an answer "2Ω" would otherwise accept "2ω".
+// Shield Ω with a private-use sentinel before lowercasing, then restore it, so
+// the two stay distinct through normalization.
+const _normalize = (s) => {
+  const half = _halfWidth(String(s || '').trim());
+  const shielded = half.replace(/Ω/g, '');
+  return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
+};
 function extractAnswer(node) {
   if (!node) return '';
   switch (node.type) {

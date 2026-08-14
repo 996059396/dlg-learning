@@ -38,8 +38,9 @@ async function freshUser(tag) {
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
 
 // Build all-correct answer entries for a lesson (server-side graded types).
-async function correctAnswers(lid) {
-  const lr = await req('GET', `/courses/electrician_basics/units/u1_meter_basics/lessons/${lid}`);
+// Lesson payloads are auth-gated now, so the caller's token is threaded in.
+async function correctAnswers(lid, token) {
+  const lr = await req('GET', `/courses/electrician_basics/units/u1_meter_basics/lessons/${lid}`, null, auth(token));
   const lesson = lr.data;
   const answers = [];
   (lesson.nodes || []).forEach((n) => {
@@ -84,7 +85,7 @@ async function correctAnswers(lid) {
 
 async function completeLesson(token, lid) {
   return req('POST', `/courses/electrician_basics/units/u1_meter_basics/lessons/${lid}/complete`,
-    { answers: await correctAnswers(lid) }, auth(token));
+    { answers: await correctAnswers(lid, token) }, auth(token));
 }
 
 const server = spawn('node', ['server.js'], {

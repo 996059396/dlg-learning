@@ -10,8 +10,8 @@ const require = createRequire(import.meta.url);
 const DB_PATH = path.join(mkdtempSync(path.join(tmpdir(), 'dlg-settle-')), 'test.db');
 process.env.DLG_DB_PATH = DB_PATH;
 
-const __ROOT__ = __dirname;
-const db = require(path.join(__ROOT__, 'backend', 'models', 'database.js'));
+// Repo-relative require (portable — runs from any cwd, not just D:\dlg_project).
+const db = require(path.join(import.meta.dirname, 'backend', 'models', 'database.js'));
 db.initializeDatabase();
 
 let passed = 0, failed = 0;

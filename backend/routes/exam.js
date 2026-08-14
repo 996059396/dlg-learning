@@ -105,6 +105,16 @@ router.post('/start', requireAuth, (req, res) => {
     ...shuffle(mcs).slice(0, COUNTS.multiple_choice),
     ...shuffle(mss).slice(0, COUNTS.multi_select),
   ];
+  // Anti-cheat (60-agent round 2): the multi-select pool's correct answers all
+  // sit at A/B, so a blind "check first two boxes" scores 10/10 on that section.
+  // The client shuffles display order too, but the SERVER now shuffles option
+  // order (ids stay stable, so id-based grading is unaffected) — a hand-rolled
+  // or modified client can no longer win by position.
+  for (const q of questions) {
+    if (q.type === 'multi_select' && Array.isArray(q.options)) {
+      q.options = shuffle(q.options);
+    }
+  }
   if (questions.length < 100) {
     return res.status(500).json({ error: `题库不足: 仅 ${questions.length}/100 题` });
   }
@@ -203,8 +213,10 @@ router.post('/submit', requireAuth, (req, res) => {
     ).get(req.userId, today).c === 0;
 
     // A passing (and on-time) attempt earns XP + coins on the FIRST pass of the
-    // day; any attempt earns a small effort XP, all daily-capped server-side.
-    xpEarned = passed ? 30 : 2;
+    // day; a genuine attempt earns a small effort XP, all daily-capped server-side.
+    // A blank/all-wrong submission earns ZERO (mirrors the lesson-path gate: no
+    // free +2 XP per empty payload).
+    xpEarned = passed ? 30 : (correctCount > 0 ? 2 : 0);
     db.addLessonXP(req.userId, xpEarned);
     if (passed && firstPassToday) {
       coinEarned = 30;

@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const __ROOT__ = path.resolve(__dirname, '..', '..');
-const fp = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics', 'u2_circuit_basics.json');
+const fp = path.join(__dirname, 'backend', 'data', 'courses', 'electrician_basics', 'u2_circuit_basics.json');
 
 let txt = fs.readFileSync(fp, 'utf8');
 const lines = txt.split('\n');

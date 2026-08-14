@@ -77,4 +77,4 @@ files.forEach(f => {
 md += `\n**总计: ${files.length} 个单元, ${totalLessons} 节课, ${totalNodes} 个知识/测试节点。**\n`;
 
 fs.writeFileSync('课程题库导出.md', md);
-console.log('✅ Exported to 课程题库导出.md (repo root)');
+console.log(`✅ Exported to ${path.resolve('课程题库导出.md')}`);

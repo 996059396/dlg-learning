@@ -77,8 +77,13 @@ router.get('/:courseId/units/:unitId', (req, res) => {
   res.json({ ...unit, lessons: lessonsMeta });
 });
 
-// GET /api/courses/:courseId/units/:unitId/lessons/:lessonId - full lesson
-router.get('/:courseId/units/:unitId/lessons/:lessonId', (req, res) => {
+// GET /api/courses/:courseId/units/:unitId/lessons/:lessonId - full lesson.
+// Auth-gated (60-agent round 2): the payload carries answer keys (correct_answer,
+// acceptable_answers, is_correct) that the lesson player needs for instant
+// inline feedback — that content must not be scrapable without a session. The
+// rewards path is independently server-graded, so seeing an answer never mints
+// coins; this only closes the anonymous-answer-key hole.
+router.get('/:courseId/units/:unitId/lessons/:lessonId', requireAuth, (req, res) => {
   const { courseId, unitId, lessonId } = req.params;
   const lesson = loadLesson(courseId, unitId, lessonId);
   if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
@@ -151,9 +156,16 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
       const existing = db.db.prepare(
         'SELECT id, completed FROM progress WHERE user_id = ? AND lesson_id = ?'
       ).get(userId, lessonIdFull);
+      // C2 regression (60-agent round 2): `completed: passed` once downgraded a
+      // previously-passed lesson back to 0 on a sub-80 retry, so the learner could
+      // alternate pass/fail and re-claim the first-completion reward (coins) every
+      // other attempt — unlimited minting. completed is now MONOTONIC: once a
+      // lesson has ever been passed it stays passed, and first-completion is
+      // judged by that ever-passed bit, not the current row's value.
+      const wasCompleted = existing?.completed === 1;
 
       db.saveProgress(userId, lessonIdFull, {
-        completed: passed, // sub-80 attempts stay "incomplete" so a retry can still earn first-completion rewards
+        completed: wasCompleted || passed, // never downgrade a passed lesson
         score: correctCount,
         maxScore: total,
         accuracy,
@@ -178,9 +190,12 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
       // can retry and still claim the full first-completion reward later. This
       // kills the "submit empty answers → free 10 XP + 5 coins" farm (the server
       // previously rewarded ANY first completion regardless of accuracy).
-      const isRepeat = existing?.completed === 1;
+      const isRepeat = wasCompleted;
       const xpBase = 10;
-      let xpEarned = 2; // effort/review bonus (sub-80 first attempts & repeats)
+      // Effort bonus ONLY for a genuine attempt (≥1 correct answer): a blank or
+      // all-wrong submission earns ZERO XP — the "+2 per empty payload" farm that
+      // survived the pass-gate is now dead too.
+      let xpEarned = correctCount > 0 ? 2 : 0;
       if (!isRepeat && passed) {
         xpEarned = accuracy >= 100 ? Math.round(xpBase * 1.5) : Math.round(xpBase * 1.2);
       }

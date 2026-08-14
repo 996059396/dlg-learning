@@ -264,6 +264,16 @@ export default function MistakeReview() {
                     setIsCorrect(correct);
                     setSubmitted(true);
                     setPhase('result');
+                    // SM-2 scheduling was MISSING here (60-agent round 2): the
+                    // multimeter card never recorded its recall outcome, so it
+                    // stayed perpetually due and the review queue could never
+                    // drain. Mirror handleSubmitAnswer — the server re-grades the
+                    // serialized setup; the boolean is informational only.
+                    if (user?.id && user.id !== 'demo' && current?.id) {
+                      api.reviewMistake(current.id, correct, setupStr || '已操作')
+                        .then(res => { if (res?.mistake) setLastSchedule(res.mistake); })
+                        .catch(() => {});
+                    }
                   }
                 }}
               />

@@ -1,5 +1,5 @@
 // E2E test: 完整跑通 u5_multimeter_advanced/l1_real_panel 第一个 multimeter_challenge
-// Run from D:\dlg_project (vite dev server on :5173, backend on :3001)
+// Run from the repo root (vite dev server on :5173, backend on :3001)
 
 import puppeteer from 'puppeteer';
 import fs from 'fs';
@@ -12,7 +12,7 @@ import http from 'http';
 const FRONT = 'http://localhost:5173';
 const BACK  = 'http://localhost:3001';
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const SHOT_DIR = 'D:\\dlg_project\\screenshots\\e2e';
+const SHOT_DIR = path.join(process.cwd(), 'screenshots', 'e2e');
 
 const COURSE_ID = 'electrician_basics';
 const UNIT_ID   = 'u5_multimeter_advanced';
@@ -66,9 +66,10 @@ async function shoot(page, n, name) {
 // ────────────────────────────────────────────────────────────────────────────
 // Fetch backend lesson JSON via Node's http module (curl is sandbox-blocked)
 // ────────────────────────────────────────────────────────────────────────────
-function httpGetJSON(url) {
+function httpGetJSON(url, token) {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
+    const headers = token ? { Authorization: 'Bearer ' + token } : {};
+    http.get(url, { headers }, (res) => {
       let body = '';
       res.on('data', d => body += d);
       res.on('end', () => {
@@ -76,6 +77,28 @@ function httpGetJSON(url) {
         catch (e) { reject(new Error('bad json from ' + url + ': ' + e.message)); }
       });
     }).on('error', reject);
+  });
+}
+
+function httpPostJSON(url, body, token) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify(body);
+    const headers = {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(data),
+      ...(token ? { Authorization: 'Bearer ' + token } : {}),
+    };
+    const req = http.request(url, { method: 'POST', headers }, (res) => {
+      let b = '';
+      res.on('data', d => b += d);
+      res.on('end', () => {
+        try { resolve(JSON.parse(b)); }
+        catch (e) { reject(new Error('bad json from ' + url + ': ' + e.message)); }
+      });
+    });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
   });
 }
 
@@ -234,11 +257,20 @@ async function advanceUntilChallenge(page, lessonNodes) {
   console.log('🧪 u5_multimeter_advanced / l1_real_panel — E2E 真实交互');
   console.log('═══════════════════════════════════════════════════════');
 
-  // 1. Pull lesson JSON straight from backend (Node fetch, not curl)
+  // 1. Pull lesson JSON straight from backend (Node fetch, not curl).
+  //    Lesson payloads are auth-gated now — register a throwaway user first.
   let lesson;
+  let token = null;
+  try {
+    const reg = await httpPostJSON(`${BACK}/api/auth/register`, { username: `mm_e2e_${Date.now()}`, password: 'mm_e2e_pass123' });
+    token = reg.token;
+  } catch (e) {
+    fail('注册临时用户失败: ' + e.message);
+    process.exit(2);
+  }
   step('从 backend 拉取 lesson JSON');
   try {
-    lesson = await httpGetJSON(`${BACK}/api/courses/${COURSE_ID}/units/${UNIT_ID}/lessons/${LESSON_ID}`);
+    lesson = await httpGetJSON(`${BACK}/api/courses/${COURSE_ID}/units/${UNIT_ID}/lessons/${LESSON_ID}`, token);
     if (lesson && lesson.lesson) lesson = lesson.lesson; // some APIs wrap
     pass(`拿到 lesson "${lesson.title}" with ${lesson.nodes?.length} nodes`);
   } catch (e) {

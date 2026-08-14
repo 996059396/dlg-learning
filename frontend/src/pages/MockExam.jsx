@@ -73,10 +73,18 @@ export default function MockExam() {
     setAnswers(prev => { const c = [...prev]; c[idx] = value; return c; });
   };
   const toggleMs = (idx, opt) => {
+    // Keep answers an ARRAY at all times. Spreading {...prev} over an array
+    // turns it into a plain object ({0:…, 1:…, length:…}), which then throws
+    // `TypeError: answers.filter is not a function` in answeredCount → the whole
+    // exam white-screens the moment a multi-select option is toggled (critical,
+    // every answer made so far is lost). Copy the array, mutate one slot, return
+    // the same array type.
     setAnswers(prev => {
-      const cur = prev[idx] ? JSON.parse(prev[idx]) : [];
+      const arr = [...prev];
+      const cur = arr[idx] ? JSON.parse(arr[idx]) : [];
       const next = cur.includes(opt) ? cur.filter(x => x !== opt) : [...cur, opt];
-      return { ...prev, [idx]: next.length ? JSON.stringify(next) : null };
+      arr[idx] = next.length ? JSON.stringify(next) : null;
+      return arr;
     });
   };
 
