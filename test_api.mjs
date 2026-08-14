@@ -373,6 +373,26 @@ async function run() {
     if (data.progress?.completed === 1) throw new Error('empty answers must not mark lesson completed');
   });
 
+  await test('malformed answers → clean 400 (no 500 / no SQL leak)', async () => {
+    const { status: s1, data: d1 } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: [{ nodeId: { $evil: 'obj' }, nodeIndex: 0, userAnswer: 'x' }] }, auth()
+    );
+    if (s1 !== 400) throw new Error(`object nodeId should be 400, got ${s1}`);
+    if (String(d1?.error).toLowerCase().includes('no such table') || /sql/i.test(String(d1?.error)))
+      throw new Error(`error leaks internals: ${JSON.stringify(d1)}`);
+    const { status: s2, data: d2 } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: [{ nodeId: 'n1', nodeIndex: '0', userAnswer: 'x' }] }, auth()
+    );
+    if (s2 !== 400) throw new Error(`string nodeIndex should be 400, got ${s2}`);
+    const { status: s3 } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: ['not-an-object'] }, auth()
+    );
+    if (s3 !== 400) throw new Error(`non-object entry should be 400, got ${s3}`);
+  });
+
   await test('mistakes now appear in review queue', async () => {
     const { data } = await jreq('GET', '/game/mistakes', null, auth());
     if (!Array.isArray(data.mistakes) || data.mistakes.length < 1) throw new Error('expected >= 1 mistake');

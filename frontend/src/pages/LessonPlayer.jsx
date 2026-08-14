@@ -224,6 +224,19 @@ function TrueFalse({ node, onAnswer }) {
   );
 }
 
+// Mirrors backend/lib/grading.js _normalize so local (demo-mode) grading agrees
+// with server truth: full-width → half-width (５Ｖ == 5V), Ω shielded through
+// toLowerCase so it stays distinct from ω, then ALL whitespace stripped
+// (full-width space from a Chinese IME included). Keeps "本地判对=服务端判对".
+const _halfWidth = (s) => String(s)
+  .replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+  .replace(/　/g, ' ');
+const _fbNormalize = (s) => {
+  const half = _halfWidth(String(s || '').trim());
+  const shielded = half.replace(/Ω/g, '');
+  return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
+};
+
 function FillBlank({ node, onAnswer }) {
   const [value, setValue] = useState('');
   const [answered, setAnswered] = useState(false);
@@ -233,7 +246,7 @@ function FillBlank({ node, onAnswer }) {
   const handleSubmit = () => {
     if (answered || !value.trim()) return;
     const correct = (node.acceptable_answers || []).some(
-      a => a.toLowerCase() === value.trim().toLowerCase()
+      a => _fbNormalize(a) === _fbNormalize(value)
     );
     setIsCorrect(correct);
     setAnswered(true);

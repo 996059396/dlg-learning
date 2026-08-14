@@ -105,6 +105,18 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
   if (!Array.isArray(answers)) {
     return res.status(400).json({ error: 'answers array required (server-side grading)' });
   }
+  // Malformed input guard (D4): better-sqlite3 throws on non-scalar bindings
+  // (object/array ids) — surface a clean 400 instead of a 500, and reject
+  // entries that aren't plain objects before they reach any prepared statement.
+  const isScalar = (v) => v === null || ['string', 'number', 'boolean'].includes(typeof v);
+  for (const a of answers) {
+    if (!a || typeof a !== 'object' || Array.isArray(a)) {
+      return res.status(400).json({ error: 'answers entries must be objects' });
+    }
+    if ('nodeId' in a && typeof a.nodeId !== 'string') return res.status(400).json({ error: 'nodeId must be a string' });
+    if ('nodeIndex' in a && typeof a.nodeIndex !== 'number') return res.status(400).json({ error: 'nodeIndex must be a number' });
+    if ('userAnswer' in a && !isScalar(a.userAnswer)) return res.status(400).json({ error: 'userAnswer must be a scalar value' });
+  }
   const userId = req.userId;
   const lessonIdFull = `${courseId}/${unitId}/${lessonId}`;
 
@@ -239,7 +251,9 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
     });
     tx();
   } catch (e) {
-    return res.status(500).json({ error: `提交失败: ${e.message}` });
+    // Never echo e.message back — it can leak SQL table/column names (D3).
+    console.error('[complete] transaction failed:', e);
+    return res.status(500).json({ error: '提交失败，请重试' });
   }
 
   const progress = db.db.prepare(

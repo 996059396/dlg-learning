@@ -4,10 +4,19 @@ import { api } from '../utils/api';
 import { useGame } from '../context/GameContext';
 import MultimeterChallenge from '../components/multimeter/MultimeterChallenge';
 
-// ── Helper: fuzzy case-insensitive answer check ──
+// ── Helper: case-insensitive answer check, normalized to match server grading ──
+// Mirrors backend/lib/grading.js _normalize: full-width → half-width, Ω shielded
+// through toLowerCase (stays distinct from ω), ALL whitespace stripped.
 function answersMatch(userAnswer, correctAnswer) {
   if (!userAnswer || !correctAnswer) return false;
-  const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+  const half = (s) => String(s)
+    .replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+    .replace(/　/g, ' ');
+  const normalize = (s) => {
+    const h = half(String(s || '').trim());
+    const shielded = h.replace(/Ω/g, '');
+    return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
+  };
   return normalize(userAnswer) === normalize(correctAnswer);
 }
 
