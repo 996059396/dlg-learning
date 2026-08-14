@@ -115,6 +115,14 @@ router.post('/start', requireAuth, (req, res) => {
   db.db.prepare(
     `UPDATE exam_sessions SET status='expired' WHERE user_id = ? AND status = 'active'`
   ).run(req.userId);
+  // DB hygiene (60-agent 性能审查): each session stores ~32KB questions_json,
+  // and completed/expired rows were never purged — the table became the largest
+  // in the DB. Drop finished sessions older than 30 days; live/active rows and
+  // the last month of history stay.
+  db.db.prepare(
+    `DELETE FROM exam_sessions WHERE status IN ('completed','expired')
+     AND created_at < datetime('now', '-30 days')`
+  ).run();
   db.db.prepare(
     `INSERT INTO exam_sessions (id, user_id, started_at, expires_at, status, questions_json)
      VALUES (?, ?, ?, ?, 'active', ?)`
