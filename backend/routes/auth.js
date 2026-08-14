@@ -93,4 +93,24 @@ router.post('/logout', (req, res) => {
   res.json({ success: true });
 });
 
+// POST /api/auth/logout-all — revoke EVERY session for the user (60-agent 安全
+// 审查 "会话无撤销"): stolen tokens in localStorage on any device die at once.
+router.post('/logout-all', requireAuth, (req, res) => {
+  db.deleteAllSessions(req.userId);
+  res.json({ success: true });
+});
+
+// POST /api/auth/change-password — verify current password, set new one, then
+// revoke all sessions so old tokens (including the one in this request) expire.
+router.post('/change-password', ipAuthLimit, requireAuth, (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  if (typeof newPassword !== 'string' || newPassword.length < 6) {
+    return res.status(400).json({ error: '新密码至少 6 位' });
+  }
+  if (!db.changePassword(req.userId, String(oldPassword || ''), newPassword)) {
+    return res.status(401).json({ error: '原密码错误' });
+  }
+  res.json({ success: true });
+});
+
 module.exports = router;

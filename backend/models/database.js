@@ -439,6 +439,23 @@ function deleteSession(token) {
   db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(_hashToken(token));
 }
 
+// Revoke EVERY session for a user (60-agent 安全审查 "会话无撤销"): used by
+// logout-all and by change-password (a rotated password must kill the old
+// tokens still floating in localStorage on other devices).
+function deleteAllSessions(userId) {
+  db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
+}
+
+// Change password: verifies the CURRENT password, then sets the new one and
+// revokes all sessions so stolen/old tokens die with the old secret.
+function changePassword(userId, oldPassword, newPassword) {
+  if (!verifyPassword(userId, oldPassword)) return false;
+  if (typeof newPassword !== 'string' || newPassword.length < 6) return false;
+  setUserPassword(userId, newPassword);
+  deleteAllSessions(userId);
+  return true;
+}
+
 function _hashPassword(password, salt) {
   return crypto.scryptSync(String(password), salt, 64).toString('hex');
 }
@@ -1013,6 +1030,8 @@ module.exports = {
   createSession,
   getUserByToken,
   deleteSession,
+  deleteAllSessions,
+  changePassword,
   setUserPassword,
   verifyPassword,
   getProgress,
