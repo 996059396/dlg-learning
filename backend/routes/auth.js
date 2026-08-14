@@ -21,15 +21,18 @@ const normalizeUsername = (raw) =>
 // Per-IP + per-account throttles (C5): scryptSync blocks the event loop ~34ms
 // per failed attempt and there was no lockout at all — infinite online brute
 // force + CPU DoS. IP bucket is coarse (20/15min) to survive NAT'd LANs; the
-// per-username bucket locks a specific account after 5 failed logins regardless
-// of source. A successful login resets the account bucket so a legit user isn't
+// per-(IP, account) bucket locks after 5 failed logins for that source AND
+// account. Keying by IP+account (not account alone) is deliberate (60-agent #10):
+// username-only keying let ANY remote client lock ANY account with 5 bad
+// attempts (account-level DoS + username enumeration via distinct 401 bodies).
+// A successful login clears the (IP, account) bucket so a legit user isn't
 // stuck behind their own earlier mistakes.
 const ipAuthLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, scope: 'auth-ip' });
 const usernameLoginLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   scope: 'login-user',
-  key: (req) => normalizeUsername(req.body?.username).toLowerCase() || '?',
+  key: (req) => `${req.ip}|${normalizeUsername(req.body?.username).toLowerCase()}`,
 });
 
 // GET /api/auth/me — returns the AUTHENTICATED user (no more "first user").
@@ -75,11 +78,16 @@ router.post('/login', ipAuthLimit, usernameLoginLimit, (req, res) => {
   const { username, password } = req.body;
   const uname = normalizeUsername(username);
   const user = db.db.prepare('SELECT * FROM users WHERE username = ?').get(uname);
-  if (!user) return res.status(401).json({ error: '用户不存在' });
-  if (!db.verifyPassword(user.id, password)) {
-    return res.status(401).json({ error: '密码错误' });
+  // Unified 401 body for "no such user" AND "wrong password" — an attacker must
+  // not be able to distinguish registered usernames by the error message (user
+  // enumeration, 60-agent #10). Timing still differs slightly, but the (IP,account)
+  // + per-IP buckets cap the oracle.
+  if (!user || !db.verifyPassword(user.id, password)) {
+    return res.status(401).json({ error: '用户名或密码错误' });
   }
-  clearBucket(`login-user:${uname.toLowerCase() || '?'}`);
+  // Success: reset this (IP, account) bucket so prior failed attempts from the
+  // same source don't linger against the legit login.
+  clearBucket(`login-user:${req.ip}|${uname.toLowerCase()}`);
   const token = db.createSession(user.id);
   db.db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
   const full = db.getUser(user.id);

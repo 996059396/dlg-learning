@@ -183,6 +183,35 @@ async function run() {
     if (after.status !== 401) throw new Error('token still valid after logout');
   });
 
+  // 60-agent round-2 #10: login must not leak username existence (unified 401
+  // body) and lockout must be per-(IP,account), not account-wide (remote
+  // lockout DoS).
+  await test('login error is unified — no username enumeration', async () => {
+    const noUser = await jreq('POST', '/auth/login', { username: `不存在_${Date.now() % 100000}`, password: 'whatever123' });
+    if (noUser.status !== 401) throw new Error(`expected 401 for unknown user, got ${noUser.status}`);
+    const wrongPw = await jreq('POST', '/auth/login', { username, password: 'wrongpass999' });
+    if (wrongPw.status !== 401) throw new Error(`expected 401 for wrong pw, got ${wrongPw.status}`);
+    if (noUser.data?.error !== '用户名或密码错误') throw new Error(`enumeration leak: ${JSON.stringify(noUser.data)}`);
+    if (noUser.data?.error !== wrongPw.data?.error) throw new Error('different bodies leak username existence');
+  });
+
+  await test('5 failed logins throttle the source; another account is unaffected', async () => {
+    const reg = await jreq('POST', '/auth/register', { username: `锁_${Date.now() % 100000}`, password: 'lock123456' });
+    if (reg.status !== 200) throw new Error('register failed');
+    const lockedName = reg.data.user.username;
+    let last;
+    for (let i = 0; i < 5; i++) {
+      last = await jreq('POST', '/auth/login', { username: lockedName, password: `bad${i}` });
+    }
+    if (last.status !== 401) throw new Error(`5th wrong login should be 401, got ${last.status}`);
+    const sixth = await jreq('POST', '/auth/login', { username: lockedName, password: 'lock123456' });
+    if (sixth.status !== 429) throw new Error(`6th login (correct pw) should 429, got ${sixth.status}`);
+    // A DIFFERENT account from the same IP must be unaffected — lockout is
+    // per-(IP,account), not account-wide (would-be remote DoS regression).
+    const other = await jreq('POST', '/auth/login', { username, password: 'test123456' });
+    if (other.status !== 200) throw new Error(`different account blocked (account-wide lockout regression): ${other.status}`);
+  });
+
   // Register a second user for the remaining authed tests (session revoked above).
   await test('re-register (fresh session) for subsequent tests', async () => {
     const { data } = await jreq('POST', '/auth/register', { username: `学员${Date.now() % 100000}`, password: 'pw123456' });

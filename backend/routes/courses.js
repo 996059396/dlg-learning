@@ -5,25 +5,40 @@ const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth } = require('../middleware/auth');
 const { gradeNode, extractAnswer } = require('../lib/grading');
-const { readJSON } = require('../lib/content_cache');
+const { readJSON, changeKey } = require('../lib/content_cache');
 
 // Load course index
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
+const INDEX_PATH = path.join(COURSES_DIR, 'index.json');
 
 function loadCourseIndex() {
-  const indexPath = path.join(COURSES_DIR, 'index.json');
-  if (!fs.existsSync(indexPath)) return [];
-  return readJSON(indexPath);
+  if (!fs.existsSync(INDEX_PATH)) return [];
+  return readJSON(INDEX_PATH);
 }
 
-// Whitelist of real course ids → their unit ids, built from the authoritative
-// course index at module load. loadUnit/loadLesson join against it so a crafted
-// courseId/unitId (e.g. "..", absolute paths) can never read files outside the
-// course data directories, even though Express already normalizes dot-segments.
-const COURSE_IDS = new Set(loadCourseIndex().map(c => c.id));
-const UNIT_IDS = new Map(loadCourseIndex().map(c => [c.id, new Set((c.units || []).map(u => u.id))]));
+// Whitelist of real course ids → their unit ids, from the authoritative course
+// index. loadUnit/loadLesson join against it so a crafted courseId/unitId
+// (e.g. "..", absolute paths) can never read files outside the course data
+// directories, even though Express already normalizes dot-segments.
+// Refreshed lazily when index.json changes (changeKey), so an editor adding a
+// new course/unit at runtime is picked up without a restart — previously the
+// Sets were frozen at module load and hot-added units 404'd forever.
+let _idxKey = null;
+let COURSE_IDS = new Set();
+let UNIT_IDS = new Map();
+
+function refreshWhitelistIfChanged() {
+  if (!fs.existsSync(INDEX_PATH)) return;
+  const key = changeKey(INDEX_PATH);
+  if (key === _idxKey) return;
+  _idxKey = key;
+  const index = loadCourseIndex();
+  COURSE_IDS = new Set(index.map(c => c.id));
+  UNIT_IDS = new Map(index.map(c => [c.id, new Set((c.units || []).map(u => u.id))]));
+}
 
 function loadUnit(courseId, unitId) {
+  refreshWhitelistIfChanged();
   if (!COURSE_IDS.has(courseId)) return null;
   if (!UNIT_IDS.get(courseId)?.has(unitId)) return null;
   const unitPath = path.join(COURSES_DIR, courseId, `${unitId}.json`);

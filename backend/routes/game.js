@@ -7,19 +7,31 @@ const { requireAuth, optionalAuth, requireAdmin } = require('../middleware/auth'
 const { rateLimit } = require('../middleware/rate_limit');
 const { ITEM_CATALOG, applyItemEffect } = require('../lib/shop');
 const { gradeNode } = require('../lib/grading');
-const { readJSON } = require('../lib/content_cache');
+const { readJSON, changeKey } = require('../lib/content_cache');
 
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
+const INDEX_PATH = path.join(COURSES_DIR, 'index.json');
 
 // Whitelist of real course ids → unit ids from the course index (same guard as
 // courses.js: crafted lesson_id parts can't escape the course data dirs).
-const _index = fs.existsSync(path.join(COURSES_DIR, 'index.json'))
-  ? JSON.parse(fs.readFileSync(path.join(COURSES_DIR, 'index.json'), 'utf-8'))
-  : [];
-const COURSE_IDS = new Set(_index.map(c => c.id));
-const UNIT_IDS = new Map(_index.map(c => [c.id, new Set((c.units || []).map(u => u.id))]));
+// Refreshed lazily when index.json changes so runtime-added courses/units are
+// picked up without a restart (was frozen at module load — hot-add 404'd).
+let _idxKey = null;
+let COURSE_IDS = new Set();
+let UNIT_IDS = new Map();
+
+function refreshWhitelistIfChanged() {
+  if (!fs.existsSync(INDEX_PATH)) return;
+  const key = changeKey(INDEX_PATH);
+  if (key === _idxKey) return;
+  _idxKey = key;
+  const index = readJSON(INDEX_PATH);
+  COURSE_IDS = new Set(index.map(c => c.id));
+  UNIT_IDS = new Map(index.map(c => [c.id, new Set((c.units || []).map(u => u.id))]));
+}
 
 function loadLesson(courseId, unitId, lessonId) {
+  refreshWhitelistIfChanged();
   if (!COURSE_IDS.has(courseId)) return null;
   if (!UNIT_IDS.get(courseId)?.has(unitId)) return null;
   const unitPath = path.join(COURSES_DIR, courseId, `${unitId}.json`);
