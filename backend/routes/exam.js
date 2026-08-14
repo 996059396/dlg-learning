@@ -176,23 +176,33 @@ router.post('/submit', requireAuth, (req, res) => {
   const score = Math.round((correctCount / total) * 100);
   const passed = score >= EXAM_PASS_SCORE && !expired;
 
-  // Rewards: a passing (and on-time) attempt earns XP + coins on the FIRST pass
-  // of the day; any attempt earns a small effort XP, all daily-capped server-side.
-  const today = db.todayShanghai();
-  const firstPassToday = db.db.prepare(
-    `SELECT COUNT(*) c FROM exam_sessions
-     WHERE user_id = ? AND status = 'completed' AND passed = 1 AND date(started_at) = ?`
-  ).get(req.userId, today).c === 0;
-  const xpEarned = passed ? 30 : 2;
-  db.addLessonXP(req.userId, xpEarned);
+  // Rewards + persistence in ONE transaction. XP/coins, mistakes, telemetry and
+  // the status='completed' flip are atomic: if anything throws, everything rolls
+  // back and the session stays 'active', so a client retry re-submits cleanly
+  // instead of double-minting rewards (the 409 idempotency guard only helps once
+  // the status flip has actually committed — previously XP/coins were written
+  // before the flip and could be granted repeatedly on partial failures).
   let coinEarned = 0;
-  if (passed && firstPassToday) {
-    coinEarned = 30;
-    const state = db.getGameState(req.userId);
-    db.updateGameState(req.userId, { coins: state.coins + 30 });
-  }
-
+  let xpEarned = 0;
   const tx = db.db.transaction(() => {
+    // firstPassToday must be computed BEFORE this pass commits, or this session
+    // would count itself as an existing completed pass.
+    const today = db.todayShanghai();
+    const firstPassToday = db.db.prepare(
+      `SELECT COUNT(*) c FROM exam_sessions
+       WHERE user_id = ? AND status = 'completed' AND passed = 1 AND date(started_at, '+8 hours') = ?`
+    ).get(req.userId, today).c === 0;
+
+    // A passing (and on-time) attempt earns XP + coins on the FIRST pass of the
+    // day; any attempt earns a small effort XP, all daily-capped server-side.
+    xpEarned = passed ? 30 : 2;
+    db.addLessonXP(req.userId, xpEarned);
+    if (passed && firstPassToday) {
+      coinEarned = 30;
+      const state = db.getGameState(req.userId);
+      db.updateGameState(req.userId, { coins: state.coins + 30 });
+    }
+
     mistakes.forEach(m => {
       // node_index is irrelevant here (SM-2 looks up by node_id); use 0 as a
       // safe placeholder for the legacy fallback path.
@@ -203,13 +213,13 @@ router.post('/submit', requireAuth, (req, res) => {
       // aggregate across all exam attempts, not per-session fragments.
       db.addNodeResult(req.userId, r.node._lessonId, r.node, r.isCorrect, r.userAnswer, score);
     });
+
+    db.db.prepare(
+      `UPDATE exam_sessions SET status = 'completed', score = ?, total = ?, passed = ?, answers_json = ?
+       WHERE id = ?`
+    ).run(score, total, passed ? 1 : 0, JSON.stringify(answers), sessionId);
   });
   tx();
-
-  db.db.prepare(
-    `UPDATE exam_sessions SET status = 'completed', score = ?, total = ?, passed = ?, answers_json = ?
-     WHERE id = ?`
-  ).run(score, total, passed ? 1 : 0, JSON.stringify(answers), sessionId);
 
   res.json({
     sessionId,

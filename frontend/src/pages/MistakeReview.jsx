@@ -23,6 +23,7 @@ export default function MistakeReview() {
   // Two-phase: 'answer' => user re-answers, 'result' => shows correct/incorrect
   const [phase, setPhase] = useState('answer');
   const [userReanswer, setUserReanswer] = useState('');
+  const [msSelected, setMsSelected] = useState([]); // multi-select card: selected option ids
   const [isCorrect, setIsCorrect] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [lastSchedule, setLastSchedule] = useState(null);
@@ -58,17 +59,34 @@ export default function MistakeReview() {
   useEffect(() => {
     setPhase('answer');
     setUserReanswer('');
+    setMsSelected([]);
     setIsCorrect(null);
     setSubmitted(false);
     setLastSchedule(null);
   }, [currentIndex]);
 
   const handleSubmitAnswer = useCallback(async () => {
-    if (submitted || !userReanswer.trim()) return;
+    const current = mistakes[currentIndex];
+    const isMs = current?.original_node?.type === 'multi_select';
+    if (submitted || (isMs ? msSelected.length === 0 : !userReanswer.trim())) return;
     setSubmitted(true);
 
-    const current = mistakes[currentIndex];
-    const correct = answersMatch(userReanswer, current?.correct_answer || '');
+    // multi_select: submit the JSON array of option ids the server grades by
+    // (gradeNode requires a JSON array string, not joined texts). Local feedback
+    // compares the selected option TEXTS against the joined correct_answer; the
+    // server verdict remains authoritative for SM-2 scheduling.
+    const answerStr = isMs ? JSON.stringify(msSelected) : userReanswer;
+    let correct = false;
+    if (isMs) {
+      const correctTexts = String(current?.correct_answer || '').split('、').map(s => s.trim()).filter(Boolean);
+      const selectedTexts = msSelected
+        .map(id => current.original_node.options.find(o => o.id === id)?.text)
+        .filter(Boolean);
+      correct = correctTexts.length > 0 && correctTexts.length === selectedTexts.length &&
+        correctTexts.every(t => selectedTexts.includes(t));
+    } else {
+      correct = answersMatch(userReanswer, current?.correct_answer || '');
+    }
     setIsCorrect(correct);
     setPhase('result');
 
@@ -78,13 +96,13 @@ export default function MistakeReview() {
     // ever earns practice-heal credit.
     if (user?.id && user.id !== 'demo' && current?.id) {
       try {
-        const res = await api.reviewMistake(current.id, correct, userReanswer);
+        const res = await api.reviewMistake(current.id, correct, answerStr);
         if (res?.mistake) setLastSchedule(res.mistake);
       } catch {
         // continue even if backend call fails
       }
     }
-  }, [submitted, userReanswer, mistakes, currentIndex, user]);
+  }, [submitted, userReanswer, msSelected, mistakes, currentIndex, user]);
 
   const handleNext = useCallback(async () => {
     const current = mistakes[currentIndex];
@@ -249,6 +267,34 @@ export default function MistakeReview() {
                   }
                 }}
               />
+            </div>
+          ) : current?.original_node?.type === 'multi_select' ? (
+            <div className="options-list">
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>多选题：点击选项可多选</div>
+              {current.original_node.options.map(opt => {
+                const sel = msSelected.includes(opt.id);
+                const isCorrectOpt = phase === 'result' &&
+                  String(current.correct_answer || '').split('、').map(s => s.trim()).includes(opt.text);
+                return (
+                  <button
+                    key={opt.id}
+                    className={`option-btn ${sel ? 'selected' : ''} ${phase === 'result' && isCorrectOpt ? 'correct' : ''}`}
+                    style={{
+                      backgroundColor: phase === 'answer' && sel ? '#F0F8FF' : undefined,
+                      borderColor: phase === 'answer' && sel ? 'var(--blue)' : undefined,
+                    }}
+                    onClick={() => {
+                      if (phase === 'answer') {
+                        setMsSelected(prev => prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]);
+                      }
+                    }}
+                    disabled={phase === 'result'}
+                  >
+                    <span className="option-letter">{sel ? '☑' : '☐'}</span>
+                    <span>{opt.text}</span>
+                  </button>
+                );
+              })}
             </div>
           ) : current?.original_node?.options ? (
             <div className="options-list">
@@ -436,8 +482,8 @@ export default function MistakeReview() {
         <button
           className="btn btn-primary btn-block btn-lg"
           onClick={handleSubmitAnswer}
-          disabled={!userReanswer.trim()}
-          style={{ opacity: userReanswer.trim() ? 1 : 0.5 }}
+          disabled={current?.original_node?.type === 'multi_select' ? msSelected.length === 0 : !userReanswer.trim()}
+          style={{ opacity: current?.original_node?.type === 'multi_select' ? (msSelected.length ? 1 : 0.5) : (userReanswer.trim() ? 1 : 0.5) }}
         >
           确认新答案
         </button>

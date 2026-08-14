@@ -31,6 +31,14 @@ function loadLessons() {
       }
     }
   }
+  // The multi-select exam pool is a legitimate mistake source (lesson_id
+  // 'exam/ms_pool') even though 'exam' is not a real course — pool mistakes
+  // are resolved by game.js loadMistakeNode. Validate their node_ids against it.
+  const poolPath = path.join(__dirname, '..', 'backend', 'data', 'exam', 'multi_select.json');
+  if (fs.existsSync(poolPath)) {
+    const pool = JSON.parse(fs.readFileSync(poolPath, 'utf-8'));
+    map.set('exam/ms_pool', new Set(pool.filter(n => n && n.id).map(n => n.id)));
+  }
   return map;
 }
 

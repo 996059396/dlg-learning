@@ -24,6 +24,8 @@ export default function MockExam() {
   const [history, setHistory] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const timerRef = useRef(null);
+  const submitRef = useRef(null);
+  const [msOptions, setMsOptions] = useState({}); // { [questionIndex]: shuffled options }
 
   useEffect(() => {
     api.examHistory().then(h => setHistory(h?.sessions || [])).catch(() => setHistory([]));
@@ -37,6 +39,21 @@ export default function MockExam() {
       setAnswers(new Array(s.total).fill(null));
       setPhase('active');
       setRemaining(Math.max(1, Math.round((new Date(s.expiresAt) - Date.now()) / 1000)));
+      // Shuffle multi-select option DISPLAY order once per session (option ids
+      // stay stable so server grading by id is unaffected). The pool's correct
+      // answers all sit at A/B, so without this an examiner can blindly check
+      // the first two boxes and score 10/10 on the multi-select section.
+      const shuffle = (arr) => {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      };
+      const map = {};
+      (s.questions || []).forEach(q => { if (q.type === 'multi_select') map[q.index] = shuffle(q.options); });
+      setMsOptions(map);
     } catch (e) { setError(e.message); }
   };
 
@@ -45,7 +62,7 @@ export default function MockExam() {
     timerRef.current = setInterval(() => {
       setRemaining(prev => {
         const next = prev - 1;
-        if (next <= 0) { clearInterval(timerRef.current); submit(true); return 0; }
+        if (next <= 0) { clearInterval(timerRef.current); submitRef.current(true); return 0; }
         return next;
       });
     }, 1000);
@@ -75,6 +92,12 @@ export default function MockExam() {
       setPhase('result');
     } catch (e) { setError(e.message); setSubmitting(false); }
   };
+
+  // Keep the countdown interval's auto-submit pinned to the LATEST submit
+  // closure. Without this, the interval captures the render where the exam
+  // became 'active' (answers all null) and auto-submits an empty payload on
+  // timeout, discarding every answered question.
+  submitRef.current = submit;
 
   const answeredCount = answers.filter(a => a != null).length;
 
@@ -203,6 +226,7 @@ export default function MockExam() {
         {session.questions.map((q) => {
           const isMs = q.type === 'multi_select';
           const msVal = answers[q.index] ? JSON.parse(answers[q.index]) : [];
+          const opts = isMs ? (msOptions[q.index] || q.options) : q.options;
           return (
             <div key={q.index} id={`q${q.index}`} style={{ background: 'var(--bg-secondary)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>
@@ -218,7 +242,7 @@ export default function MockExam() {
                     </label>
                   ))
                 ) : (
-                  q.options.map(o => (
+                  opts.map(o => (
                     <label key={o.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '8px 10px', borderRadius: 'var(--radius-xs)', background: isMs ? (msVal.includes(o.id) ? 'var(--primary)' : 'transparent') : (answers[q.index] === o.text ? 'var(--primary)' : 'transparent'), color: isMs ? (msVal.includes(o.id) ? '#fff' : 'var(--text)') : (answers[q.index] === o.text ? '#fff' : 'var(--text)'), cursor: 'pointer', border: isMs ? (msVal.includes(o.id) ? 'none' : '1px solid var(--border)') : (answers[q.index] === o.text ? 'none' : '1px solid var(--border)') }}>
                       <input type={isMs ? 'checkbox' : 'radio'} name={`q${q.index}`} checked={isMs ? msVal.includes(o.id) : answers[q.index] === o.text} onChange={() => isMs ? toggleMs(q.index, o.id) : setAnswer(q.index, o.text)} style={{ display: 'none' }} />
                       <span style={{ fontWeight: 700, minWidth: 18 }}>{o.id}.</span>

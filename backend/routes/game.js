@@ -27,6 +27,32 @@ function loadLesson(courseId, unitId, lessonId) {
   return unit.lessons.find(l => l.id === lessonId) || null;
 }
 
+// Resolve the node a mistake card points at, handling BOTH normal course lessons
+// and the standalone multi-select exam pool. Exam pool questions are stored with
+// lesson_id 'exam/ms_pool' ('exam' is not a real course, so loadLesson returns
+// null and the card used to be auto-dismissed as an orphan — never graded, never
+// reviewable). Pool node ids are unique (exam_ms_*), so look up by node_id.
+const MS_POOL_PATH = path.join(__dirname, '..', 'data', 'exam', 'multi_select.json');
+function loadMistakeNode(mistake) {
+  const parts = (mistake.lesson_id || '').split('/');
+  if (parts.length === 3) {
+    const lesson = loadLesson(parts[0], parts[1], parts[2]);
+    if (lesson && lesson.nodes) {
+      return mistake.node_id
+        ? lesson.nodes.find(n => n.id === mistake.node_id) || null
+        : lesson.nodes[mistake.node_index] || null;
+    }
+  } else if (mistake.lesson_id === 'exam/ms_pool') {
+    try {
+      const pool = JSON.parse(fs.readFileSync(MS_POOL_PATH, 'utf-8'));
+      return mistake.node_id
+        ? pool.find(n => n.id === mistake.node_id) || null
+        : null;
+    } catch (e) { return null; }
+  }
+  return null;
+}
+
 // GET /api/game/state — current user's game state (userId from token).
 router.get('/state', requireAuth, (req, res) => {
   const state = db.getGameState(req.userId);
@@ -93,19 +119,12 @@ router.get('/mistakes', requireAuth, (req, res) => {
 
   // Attach original node data if available. Address by the stable node.id
   // (globally unique, survives lesson reordering); legacy node_index fallback
-  // covers rows created before node_id existed.
+  // covers rows created before node_id existed. loadMistakeNode also resolves
+  // multi-select exam pool questions (lesson_id 'exam/ms_pool').
   const enrichedMistakes = mistakes.map(mistake => {
     try {
-      const parts = mistake.lesson_id.split('/');
-      if (parts.length === 3) {
-        const lesson = loadLesson(parts[0], parts[1], parts[2]);
-        if (lesson && lesson.nodes) {
-          const node = mistake.node_id
-            ? lesson.nodes.find(n => n.id === mistake.node_id)
-            : lesson.nodes[mistake.node_index];
-          if (node) mistake.original_node = node;
-        }
-      }
+      const node = loadMistakeNode(mistake);
+      if (node) mistake.original_node = node;
     } catch(e) {}
     return mistake;
   });
@@ -137,23 +156,16 @@ router.post('/mistakes/review', requireAuth, (req, res) => {
   const mistake = db.getMistake(mistakeId, req.userId);
   if (!mistake) return res.status(404).json({ error: '错题不存在或无权操作' });
 
-  // Re-grade against the stored node when it can still be loaded.
+  // Re-grade against the stored node when it can still be loaded (regular
+  // lessons AND the multi-select exam pool — loadMistakeNode handles both).
   let correct = null;   // null ⇒ unverifiable
   let nodeFound = false;
   try {
-    const parts = mistake.lesson_id.split('/');
-    if (parts.length === 3) {
-      const lesson = loadLesson(parts[0], parts[1], parts[2]);
-      if (lesson && lesson.nodes) {
-        const node = mistake.node_id
-          ? lesson.nodes.find(n => n.id === mistake.node_id)
-          : lesson.nodes[mistake.node_index];
-        if (node) {
-          nodeFound = true;
-          const verdict = gradeNode(node, userAnswer);
-          correct = verdict.gradeable ? verdict.correct : null;
-        }
-      }
+    const node = loadMistakeNode(mistake);
+    if (node) {
+      nodeFound = true;
+      const verdict = gradeNode(node, userAnswer);
+      correct = verdict.gradeable ? verdict.correct : null;
     }
   } catch (e) {
     correct = null;

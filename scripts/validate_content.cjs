@@ -105,7 +105,15 @@ for (const file of files) {
     err(`[${dir}] ${file}: JSON 解析失败 - ${e.message}`);
     continue;
   }
-  const unit = Array.isArray(data) ? data[0] : (data.units || [data])[0];
+  // 运行时(backend/routes/game.js loadLesson / courses.js / exam.js loadExamPool)
+  // 只认顶层 lessons 数组的单单元文件。数组 / {units:[...]} 结构此前会静默只
+  // 校验 [0] 单元(其余漏检)或干脆被当作可用结构放行——而应用根本加载不了它
+  // (审计 B1/B2)。直接拒绝，保证门禁通过的结构就是运行时能消费的结构。
+  if (Array.isArray(data) || (data && Array.isArray(data.units))) {
+    err(`[${dir}] ${file}: 不支持的结构(数组 / {units})——运行时只认顶层 lessons 的单单元文件`);
+    continue;
+  }
+  const unit = data;
   if (!unit || !Array.isArray(unit.lessons)) {
     err(`[${dir}] ${file}: 缺少 lessons 数组`);
     continue;

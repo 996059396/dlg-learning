@@ -6,6 +6,18 @@ const cron = require('node-cron');
 const compression = require('compression');
 const { initializeDatabase, settleWeek, catchUpSettlements, getWeekStart } = require('./models/database');
 
+// Process-level safety net (D4): a startup failure (corrupt DB, unreadable
+// index.json) used to exit 1 with a stack only in the terminal — invisible under
+// nohup. Log a clear line, then fail fast so a process manager (pm2/nssm/
+// systemd) can restart. Unhandled rejections are logged but non-fatal.
+process.on('uncaughtException', (err) => {
+  console.error('[fatal] uncaughtException — restart required:', err);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[warn] unhandledRejection:', reason);
+});
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 // Bind address: default 0.0.0.0 (LAN/mobile testing on the same network).
@@ -38,7 +50,15 @@ app.use(express.json());
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
 const hasDist = fs.existsSync(path.join(frontendDist, 'index.html'));
 if (hasDist) {
-  app.use(express.static(frontendDist, { maxAge: '1h', etag: true }));
+  // Hash-named assets (index-<hash>.js/css) are immutable → cache a year.
+  // index.html is served separately with no-cache (D2): Vite empties dist on
+  // rebuild, so a stale index.html pointing at a deleted hash asset caused a
+  // 1-hour white screen for repeat visitors after every deploy.
+  app.use(express.static(frontendDist, { maxAge: '1y', immutable: true, index: false }));
+  app.get('/', (req, res) => {
+    res.set('Cache-Control', 'no-cache');
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
   console.log('[static] Serving frontend from', frontendDist);
 }
 
@@ -81,13 +101,35 @@ console.log(`[cron] Weekly settlement scheduled (Mondays 00:00 Asia/Shanghai). C
 
 // SPA fallback: any non-API GET goes to index.html so client-side routes
 // (/course/..., /profile) survive a hard refresh. API 404s still fall through
-// to Express's default handler.
+// to Express's default handler. Missing ASSET files (old hash JS/CSS) get a real
+// 404, never a 200 text/html — that white-screen trap is what stale-cache
+// clients hit when dist is rebuilt.
 if (hasDist) {
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
+    const ext = path.extname(req.path);
+    if (ext && ext !== '.html') return res.status(404).end('Not Found');
+    res.set('Cache-Control', 'no-cache');
     res.sendFile(path.join(frontendDist, 'index.html'));
   });
 }
+
+// JSON API 404 (D3): unmatched /api/* routes used to return Express's default
+// HTML "<pre>Cannot GET ...</pre>" body.
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: '接口不存在' });
+});
+
+// JSON error handler (D3): Express's default handler returns HTML and — in dev
+// mode — full stack traces with absolute paths, which the frontend collapses to
+// a generic 'Network error'. Return JSON with no internals; log the detail here.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[error]', req.method, req.path, err.status || err.code || '', err.message);
+  if (res.headersSent) return next(err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ error: status >= 500 ? '服务器内部错误' : '请求格式不正确' });
+});
 
 app.listen(PORT, HOST, () => {
   console.log(`🎓 DLG Learning Server running on http://${HOST}:${PORT}`);
