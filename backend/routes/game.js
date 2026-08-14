@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth, optionalAuth, requireAdmin } = require('../middleware/auth');
+const { rateLimit } = require('../middleware/rate_limit');
 const { ITEM_CATALOG, applyItemEffect } = require('../lib/shop');
 const { gradeNode } = require('../lib/grading');
 
@@ -284,8 +285,13 @@ router.get('/league/history', requireAuth, (req, res) => {
   res.json(rows);
 });
 
-// POST /api/game/league/_admin/settle — ADMIN ONLY. Prevents unauthorized week force-settlement.
-router.post('/league/_admin/settle', requireAdmin, (req, res) => {
+// POST /api/game/league/_admin/settle — ADMIN ONLY. Prevents unauthorized week
+// force-settlement. Rate-limited per IP (C5): with force:true this rewrites
+// every user's rank/league, so an online-brute-forced weak ADMIN_TOKEN must not
+// get unlimited tries.
+router.post('/league/_admin/settle',
+  rateLimit({ windowMs: 15 * 60 * 1000, max: 30, scope: 'admin' }),
+  requireAdmin, (req, res) => {
   try {
     const result = db.settleWeek(req.body?.weekStart || null, req.body?.force === true);
     res.json(result);
