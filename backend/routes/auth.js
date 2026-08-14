@@ -5,6 +5,19 @@ const { requireAuth } = require('../middleware/auth');
 const { rateLimit, clearBucket } = require('../middleware/rate_limit');
 const { v4: uuidv4 } = require('uuid');
 
+// Username canonical form (60-agent 安全审查): register/login matched raw bytes,
+// so a full-width ａｌｉｃｅ or an invisible ZWSP variant slipped past the UNIQUE
+// index and visually impersonated a real account. NFKC folds full-width → ASCII;
+// control + zero-width chars are stripped so two "identical-looking" names are
+// one. Applied everywhere a username enters the system (register, login, and the
+// per-account rate-limit key).
+const normalizeUsername = (raw) =>
+  String(raw || '')
+    .normalize('NFKC')
+    .replace(/[\u200B-\u200D\u2060\uFEFF\u0000-\u001F\u007F]/g, '')
+    .trim()
+    .slice(0, 24);
+
 // Per-IP + per-account throttles (C5): scryptSync blocks the event loop ~34ms
 // per failed attempt and there was no lockout at all — infinite online brute
 // force + CPU DoS. IP bucket is coarse (20/15min) to survive NAT'd LANs; the
@@ -16,7 +29,7 @@ const usernameLoginLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   scope: 'login-user',
-  key: (req) => String(req.body?.username || '').trim().toLowerCase() || '?',
+  key: (req) => normalizeUsername(req.body?.username).toLowerCase() || '?',
 });
 
 // GET /api/auth/me — returns the AUTHENTICATED user (no more "first user").
@@ -31,7 +44,7 @@ router.get('/me', requireAuth, (req, res) => {
 // re-created this way. Rate-limited per IP (C5).
 router.post('/register', ipAuthLimit, (req, res) => {
   const { username, password } = req.body;
-  const name = String(username || '').trim().slice(0, 24) || '新学员';
+  const name = normalizeUsername(username) || '新学员';
   if (typeof password !== 'string' || password.length < 6) {
     return res.status(400).json({ error: '密码至少 6 位' });
   }
@@ -60,12 +73,13 @@ router.post('/register', ipAuthLimit, (req, res) => {
 // that account for 15 min; success clears the account's counter (C5).
 router.post('/login', ipAuthLimit, usernameLoginLimit, (req, res) => {
   const { username, password } = req.body;
-  const user = db.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+  const uname = normalizeUsername(username);
+  const user = db.db.prepare('SELECT * FROM users WHERE username = ?').get(uname);
   if (!user) return res.status(401).json({ error: '用户不存在' });
   if (!db.verifyPassword(user.id, password)) {
     return res.status(401).json({ error: '密码错误' });
   }
-  clearBucket(`login-user:${String(username || '').trim().toLowerCase() || '?'}`);
+  clearBucket(`login-user:${uname.toLowerCase() || '?'}`);
   const token = db.createSession(user.id);
   db.db.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
   const full = db.getUser(user.id);
