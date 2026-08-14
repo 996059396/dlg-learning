@@ -19,6 +19,14 @@ const buckets = new Map(); // `${scope}:${key}` -> { count, resetAt }
  *   per-account lockout on top of the IP bucket.
  */
 function rateLimit({ windowMs, max, scope, key = (req) => req.ip }) {
+  // Scope-prefixed env override (DLG_RATE_MAX_<scope>): the self-contained API
+  // suite boots this server on an isolated DB and registers/logs in dozens of
+  // throwaway accounts in one run — a shared per-IP 'auth-ip' bucket of 20 would
+  // 429 mid-suite. Prod never sets these vars → unchanged behavior. The
+  // per-account 'login-user' and 'admin' buckets are left at their prod limits
+  // so their lockout tests stay meaningful.
+  const envMax = process.env[`DLG_RATE_MAX_${scope}`];
+  const effMax = envMax ? Number(envMax) : max;
   return (req, res, next) => {
     const k = `${scope}:${key(req)}`;
     const now = Date.now();
@@ -28,7 +36,7 @@ function rateLimit({ windowMs, max, scope, key = (req) => req.ip }) {
       return next();
     }
     b.count++;
-    if (b.count <= max) return next();
+    if (b.count <= effMax) return next();
     const retryAfterMs = b.resetAt - now;
     res.set('Retry-After', String(Math.ceil(retryAfterMs / 1000)));
     res.status(429).json({ error: '请求过于频繁，请稍后再试', retryAfterMs });

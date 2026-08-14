@@ -123,7 +123,14 @@ function buildAnswers(lesson, wrongQ = -1) {
 
 const server = spawn('node', ['server.js'], {
   cwd: path.join(import.meta.dirname, 'backend'),
-  env: { ...process.env, PORT: String(PORT), DLG_DB_PATH: DB_PATH },
+  env: {
+    ...process.env,
+    PORT: String(PORT),
+    DLG_DB_PATH: DB_PATH,
+    // Test-suite runs register/login dozens of throwaway accounts in one run;
+    // scale up the shared per-IP auth bucket (prod never sets this → unchanged).
+    'DLG_RATE_MAX_auth-ip': '1000',
+  },
   stdio: 'pipe',
 });
 server.stderr.on('data', d => { if (String(d).includes('Error')) console.error('[server]', String(d)); });
@@ -217,6 +224,69 @@ async function run() {
     const { data } = await jreq('POST', '/auth/register', { username: `学员${Date.now() % 100000}`, password: 'pw123456' });
     token = data.token;
     userId = data.user.id;
+  });
+
+  // ─── 60-agent #7: username normalization + session revocation ───
+  // NFKC folds full-width ａｌｉｃｅ → ascii alice; zero-width/control chars are
+  // stripped, so an invisible-variant registration must be impossible. This is
+  // the regression that keeps visually-impersonating accounts from slipping
+  // past the UNIQUE index.
+  await test('NFKC: full-width username registers as ascii; both forms log in', async () => {
+    const fw = `ｆｕｌｌ${Date.now() % 100000}`; // full-width latin, folds to ascii
+    const reg = await jreq('POST', '/auth/register', { username: fw, password: 'nfkc123456' });
+    if (reg.status !== 200) throw new Error(`full-width register failed: ${reg.status} ${JSON.stringify(reg.data)}`);
+    const stored = reg.data.user.username;
+    if (stored !== fw.normalize('NFKC')) throw new Error(`username not NFKC-normalized: "${stored}"`);
+    const asciiLogin = await jreq('POST', '/auth/login', { username: stored, password: 'nfkc123456' });
+    if (asciiLogin.status !== 200) throw new Error(`ascii-form login failed: ${asciiLogin.status}`);
+    const fwLogin = await jreq('POST', '/auth/login', { username: fw, password: 'nfkc123456' });
+    if (fwLogin.status !== 200) throw new Error(`full-width-form login failed: ${fwLogin.status}`);
+  });
+
+  await test('zero-width impostor of an existing username is rejected (409)', async () => {
+    const ts = Date.now() % 100000; // one suffix so both forms normalize identically
+    const base = `alice${ts}`;
+    const first = await jreq('POST', '/auth/register', { username: base, password: 'alice123456' });
+    if (first.status !== 200) throw new Error('base register failed');
+    // Insert an invisible ZWSP inside the same visual name — normalization must
+    // strip it, making this a duplicate → 409 (no visually-identical clone).
+    const zwsp = `a${'​'}lice${ts}`;
+    const imp = await jreq('POST', '/auth/register', { username: zwsp, password: 'evil123456' });
+    if (imp.status !== 409) throw new Error(`ZWSP variant not rejected: ${imp.status} ${JSON.stringify(imp.data)}`);
+  });
+
+  await test('logout-all revokes EVERY session for the user', async () => {
+    const reg = await jreq('POST', '/auth/register', { username: `多会话${Date.now() % 100000}`, password: 'multi123456' });
+    if (reg.status !== 200) throw new Error('register failed');
+    const t1 = reg.data.token;
+    const l2 = await jreq('POST', '/auth/login', { username: reg.data.user.username, password: 'multi123456' });
+    const t3 = await jreq('POST', '/auth/login', { username: reg.data.user.username, password: 'multi123456' });
+    if (l2.status !== 200 || t3.status !== 200) throw new Error('second sessions failed');
+    const close = await jreq('POST', '/auth/logout-all', null, { 'Content-Type': 'application/json', Authorization: `Bearer ${t1}` });
+    if (close.status !== 200) throw new Error(`logout-all failed: ${close.status}`);
+    for (const [name, tok] of [['t1', t1], ['t2', l2.data.token], ['t3', t3.data.token]]) {
+      const me = await jreq('GET', '/auth/me', null, { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` });
+      if (me.status !== 401) throw new Error(`${name} still valid after logout-all: ${me.status}`);
+    }
+  });
+
+  await test('change-password revokes all sessions; new pw works, old pw dies', async () => {
+    const reg = await jreq('POST', '/auth/register', { username: `改密${Date.now() % 100000}`, password: 'old123456' });
+    if (reg.status !== 200) throw new Error('register failed');
+    const oldTok = reg.data.token;
+    const s2 = await jreq('POST', '/auth/login', { username: reg.data.user.username, password: 'old123456' });
+    if (s2.status !== 200) throw new Error('second session failed');
+    const chg = await jreq('POST', '/auth/change-password', { oldPassword: 'old123456', newPassword: 'new123456' },
+      { 'Content-Type': 'application/json', Authorization: `Bearer ${oldTok}` });
+    if (chg.status !== 200) throw new Error(`change-password failed: ${chg.status} ${JSON.stringify(chg.data)}`);
+    for (const [name, tok] of [['primary', oldTok], ['second', s2.data.token]]) {
+      const me = await jreq('GET', '/auth/me', null, { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` });
+      if (me.status !== 401) throw new Error(`${name} token still valid after password change: ${me.status}`);
+    }
+    const newLogin = await jreq('POST', '/auth/login', { username: reg.data.user.username, password: 'new123456' });
+    if (newLogin.status !== 200) throw new Error(`new password login failed: ${newLogin.status}`);
+    const oldLogin = await jreq('POST', '/auth/login', { username: reg.data.user.username, password: 'old123456' });
+    if (oldLogin.status !== 401) throw new Error(`old password still accepted: ${oldLogin.status}`);
   });
 
   // Sliding renewal: an active session that is about to expire must be extended
