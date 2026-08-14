@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import Multimeter from './Multimeter';
+import { DEFAULT_DIAL_POSITIONS } from './MultimeterDial';
 import './multimeter.css';
 
 /**
@@ -48,6 +49,51 @@ export default function MultimeterChallenge({ node, onAnswer }) {
     }
     return raw;
   }, [target.hotspots]);
+
+  // Authoring space for hotspot x/y. Percent positioning keeps the buttons
+  // anchored to the target when the area reflows narrower on small screens
+  // (audit #13 E2) — same treatment as SimulationProbe's 400×300 reference.
+  const REF_W = 300, REF_H = 180;
+  const pct = (v, ref) => `${(v / ref) * 100}%`;
+
+  // Candidate dial positions: the correct dial + ~4 well-spread distractors.
+  // Rendering all 33 ranges on a compact dial squeezes every label into an
+  // un-tappable sliver (audit #13 E3). Same-category siblings sit only 10°
+  // apart on a real dial face, so keeping all of them still crowds the dial;
+  // instead pick distractors that are both plausible AND ≥28° apart (≈49px of
+  // arc at the label radius — comfortably above the 44px tap-target floor).
+  const dialCandidates = useMemo(() => {
+    const correctId = correct.dial;
+    if (!correctId) return undefined;
+    const byId = Object.fromEntries(DEFAULT_DIAL_POSITIONS.map(p => [p.id, p]));
+    const correctPos = byId[correctId];
+    if (!correctPos) return undefined;
+    const picked = [correctId];
+    const pickedSet = new Set(picked);
+    const minAngle = 28;
+    const farEnough = (pos) =>
+      picked.every(id => {
+        const a = Math.abs(byId[id].angle - pos.angle);
+        return Math.min(a, 360 - a) >= minAngle;
+      });
+    // 1) same-category siblings (dial order) that stay far enough apart
+    const siblings = DEFAULT_DIAL_POSITIONS.filter(p => p.category === correctPos.category && p.id !== correctId);
+    for (const p of siblings) {
+      if (picked.length >= 5) break;
+      if (farEnough(p)) { picked.push(p.id); pickedSet.add(p.id); }
+    }
+    // 2) top up with the nearest other-category positions to reach 5 total
+    const rest = DEFAULT_DIAL_POSITIONS
+      .filter(p => !pickedSet.has(p.id))
+      .sort((a, b) => Math.abs(a.angle - correctPos.angle) - Math.abs(b.angle - correctPos.angle));
+    for (const p of rest) {
+      if (picked.length >= 5) break;
+      if (farEnough(p)) { picked.push(p.id); pickedSet.add(p.id); }
+    }
+    return DEFAULT_DIAL_POSITIONS
+      .filter(p => pickedSet.has(p.id) || p.id === 'OFF')
+      .sort((a, b) => a.angle - b.angle);
+  }, [correct.dial]);
 
   const [dialPos, setDialPos] = useState('OFF');
   const [redPort, setRedPort] = useState('VOhm');
@@ -211,18 +257,24 @@ export default function MultimeterChallenge({ node, onAnswer }) {
           {Object.entries(hotspots).map(([key, hs], hsIdx, arr) => {
             const hasRed = redTouch === key;
             const hasBlack = blackTouch === key;
-            // Auto-position if x/y missing: spread horizontally
+            // Auto-position if x/y missing: spread horizontally across the design space
             const total = arr.length;
             const autoX = total > 1 ? 30 + (260 / (total - 1)) * hsIdx : 150;
             const autoY = 80;
+            const hx = typeof hs.x === 'number' ? hs.x : autoX;
+            const hy = typeof hs.y === 'number' ? hs.y : autoY;
             return (
               <button
                 key={key}
                 type="button"
                 className={`mm-hotspot ${hasRed ? 'has-red' : ''} ${hasBlack ? 'has-black' : ''}`}
                 style={{
-                  left: typeof hs.x === 'number' ? `${hs.x}px` : (hs.x || `${autoX}px`),
-                  top: typeof hs.y === 'number' ? `${hs.y}px` : (hs.y || `${autoY}px`),
+                  left: pct(hx, REF_W),
+                  top: pct(hy, REF_H),
+                  // Center the button on its anchor point. Separate `translate`
+                  // property composes with the :hover transform: scale, so the
+                  // hover grow still works.
+                  translate: '-50% -50%',
                 }}
                 onClick={() => handleHotspotClick(key)}
                 disabled={submitted}
@@ -275,6 +327,7 @@ export default function MultimeterChallenge({ node, onAnswer }) {
             disabled={submitted}
             warnPort={warnPort}
             compact
+            availablePositions={dialCandidates}
           />
         </div>
 

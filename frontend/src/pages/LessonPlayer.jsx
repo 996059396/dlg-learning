@@ -470,6 +470,14 @@ function SimulationProbe({ node, onAnswer }) {
   const [answered, setAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(null);
 
+  // Hotspot coordinates are authored in a 400×300 design space (matches the
+  // .sim-image-area's fixed 300px height and max x≈320 across the corpus).
+  // Absolute px placed on a 320px phone overflowed (wire_end_b x=320 → button
+  // 285–355px, clipped to 3px). Percentage positioning scales the scene to any
+  // viewport, keeping hotspots inside the container.
+  const REF_W = 400, REF_H = 300;
+  const pct = (v, ref) => `${(v / ref) * 100}%`;
+
   const hotspots = node.hotspots || {};
   const hsEntries = Object.entries(hotspots);
 
@@ -526,10 +534,11 @@ function SimulationProbe({ node, onAnswer }) {
             key={key}
             className={`sim-hotspot ${redPlaced === key || blackPlaced === key ? 'active' : ''}`}
             style={{
-              left: hs.x - 35,
-              top: hs.y - 35,
+              left: pct(hs.x, REF_W),
+              top: pct(hs.y, REF_H),
               width: 70,
               height: 70,
+              transform: 'translate(-50%, -50%)',
               opacity: answered ? 0.6 : 1,
             }}
             onClick={() => handleHotspotClick(key)}
@@ -542,8 +551,9 @@ function SimulationProbe({ node, onAnswer }) {
         {redPlaced && (
           <div style={{
             position: 'absolute',
-            left: hotspots[redPlaced]?.x - 14,
-            top: hotspots[redPlaced]?.y - 45,
+            left: pct(hotspots[redPlaced]?.x, REF_W),
+            top: pct(hotspots[redPlaced]?.y, REF_H),
+            transform: 'translate(-50%, -110%)',
             fontSize: 24,
             pointerEvents: 'none',
             zIndex: 5,
@@ -554,8 +564,9 @@ function SimulationProbe({ node, onAnswer }) {
         {blackPlaced && (
           <div style={{
             position: 'absolute',
-            left: hotspots[blackPlaced]?.x - 14,
-            top: hotspots[blackPlaced]?.y - 45,
+            left: pct(hotspots[blackPlaced]?.x, REF_W),
+            top: pct(hotspots[blackPlaced]?.y, REF_H),
+            transform: 'translate(-50%, -110%)',
             fontSize: 24,
             pointerEvents: 'none',
             zIndex: 5,

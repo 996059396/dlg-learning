@@ -220,7 +220,7 @@ export default function MockExam() {
             {submitting ? '判卷中…' : '交卷'}
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 30px)', gap: 4, marginTop: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 30px)', gap: 4, marginTop: 8, maxHeight: 88, overflowY: 'auto', scrollbarWidth: 'thin' }}>
           {session.questions.map((q) => (
             <button key={q.index} onClick={() => document.getElementById(`q${q.index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               style={{ height: 28, borderRadius: 6, border: '1px solid var(--border)', background: answers[q.index] != null ? 'var(--primary)' : 'transparent', color: answers[q.index] != null ? '#fff' : 'var(--text-secondary)', fontSize: 12, cursor: 'pointer' }}>
@@ -245,14 +245,14 @@ export default function MockExam() {
                 {q.type === 'true_false' ? (
                   ['正确', '错误'].map(v => (
                     <label key={v} style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 10px', borderRadius: 'var(--radius-xs)', background: answers[q.index] === v ? 'var(--primary)' : 'transparent', color: answers[q.index] === v ? '#fff' : 'var(--text)', cursor: 'pointer', border: answers[q.index] === v ? 'none' : '1px solid var(--border)' }}>
-                      <input type="radio" name={`q${q.index}`} checked={answers[q.index] === v} onChange={() => setAnswer(q.index, v)} style={{ display: 'none' }} />
+                      <input type="radio" name={`q${q.index}`} checked={answers[q.index] === v} onChange={() => setAnswer(q.index, v)} className="sr-only" />
                       {v}
                     </label>
                   ))
                 ) : (
                   opts.map(o => (
                     <label key={o.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '8px 10px', borderRadius: 'var(--radius-xs)', background: isMs ? (msVal.includes(o.id) ? 'var(--primary)' : 'transparent') : (answers[q.index] === o.text ? 'var(--primary)' : 'transparent'), color: isMs ? (msVal.includes(o.id) ? '#fff' : 'var(--text)') : (answers[q.index] === o.text ? '#fff' : 'var(--text)'), cursor: 'pointer', border: isMs ? (msVal.includes(o.id) ? 'none' : '1px solid var(--border)') : (answers[q.index] === o.text ? 'none' : '1px solid var(--border)') }}>
-                      <input type={isMs ? 'checkbox' : 'radio'} name={`q${q.index}`} checked={isMs ? msVal.includes(o.id) : answers[q.index] === o.text} onChange={() => isMs ? toggleMs(q.index, o.id) : setAnswer(q.index, o.text)} style={{ display: 'none' }} />
+                      <input type={isMs ? 'checkbox' : 'radio'} name={`q${q.index}`} checked={isMs ? msVal.includes(o.id) : answers[q.index] === o.text} onChange={() => isMs ? toggleMs(q.index, o.id) : setAnswer(q.index, o.text)} className="sr-only" />
                       <span style={{ fontWeight: 700, minWidth: 18 }}>{o.id}.</span>
                       <span>{o.text}</span>
                     </label>

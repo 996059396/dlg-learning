@@ -162,8 +162,10 @@
 }
 
 .mm-body.compact .mm-dial-wrap {
-  width: 200px;
-  height: 200px;
+  /* Slightly larger than the 200px baseline: with only the candidate dial
+     positions rendered (~5–6 labels) each gets a ≥44px tap target. */
+  width: 230px;
+  height: 230px;
   margin: 10px auto 4px;
 }
 
@@ -255,8 +257,8 @@
 }
 
 .mm-body.compact .mm-dial-label {
-  font-size: 7px;
-  padding: 1px 3px;
+  font-size: 9px;
+  padding: 2px 4px;
 }
 
 .mm-dial-label:hover {
