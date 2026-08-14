@@ -37,6 +37,11 @@ export const api = {
     body: JSON.stringify({ username, password }),
   }),
   logout: () => request('/auth/logout', { method: 'POST', body: JSON.stringify({}) }),
+  logoutAll: () => request('/auth/logout-all', { method: 'POST', body: JSON.stringify({}) }),
+  changePassword: (oldPassword, newPassword) => request('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ oldPassword, newPassword }),
+  }),
 
   // Courses
   getCourses: () => request('/courses'),

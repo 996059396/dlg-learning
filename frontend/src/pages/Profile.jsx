@@ -1,9 +1,52 @@
+import { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../utils/api';
 
 export default function Profile() {
-  const { user, gameState, logout } = useGame();
+  const { user, gameState, logout, showToast } = useGame();
   const navigate = useNavigate();
+
+  // Settings (session management): change password / logout all devices.
+  const [showSettings, setShowSettings] = useState(false);
+  const [pwOld, setPwOld] = useState('');
+  const [pwNew, setPwNew] = useState('');
+  const [pwConfirm, setPwConfirm] = useState('');
+  const [pwError, setPwError] = useState('');
+  const [pwBusy, setPwBusy] = useState(false);
+  const [logoutAllBusy, setLogoutAllBusy] = useState(false);
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwError('');
+    if (pwNew.length < 6) { setPwError('新密码至少 6 位'); return; }
+    if (pwNew !== pwConfirm) { setPwError('两次输入的新密码不一致'); return; }
+    setPwBusy(true);
+    try {
+      await api.changePassword(pwOld, pwNew);
+      // Server revoked EVERY session (including this one) — force re-login.
+      showToast('密码已修改，请重新登录', 'success');
+      logout();
+    } catch (err) {
+      setPwError(err.message || '修改失败，请重试');
+    } finally {
+      setPwBusy(false);
+    }
+  };
+
+  const handleLogoutAll = async () => {
+    if (!window.confirm('退出所有设备？当前设备也会被登出，需要重新登录。')) return;
+    setLogoutAllBusy(true);
+    try {
+      await api.logoutAll();
+      showToast('已在所有设备退出登录', 'success');
+      logout();
+    } catch (err) {
+      showToast(err.message || '操作失败', 'error');
+    } finally {
+      setLogoutAllBusy(false);
+    }
+  };
 
   return (
     <div>
@@ -72,8 +115,11 @@ export default function Profile() {
         <button className="btn btn-outline btn-block">
           📊 学习统计
         </button>
-        <button className="btn btn-outline btn-block">
-          ⚙️ 设置
+        <button
+          className="btn btn-outline btn-block"
+          onClick={() => setShowSettings(s => !s)}
+        >
+          ⚙️ 设置 {showSettings ? '▲' : '▼'}
         </button>
         <button
           className="btn btn-outline btn-block"
@@ -87,6 +133,71 @@ export default function Profile() {
           🚪 退出登录
         </button>
       </div>
+
+      {/* Settings: session management (修改密码 / 退出所有设备) */}
+      {showSettings && (
+        <div style={{
+          marginTop: 20,
+          background: 'white',
+          borderRadius: 'var(--radius-sm)',
+          padding: 16,
+          boxShadow: 'var(--shadow)',
+        }}>
+          <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 12 }}>🔐 账号安全</div>
+
+          {/* Change password */}
+          <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>修改密码</div>
+            <input
+              type="password"
+              placeholder="当前密码"
+              value={pwOld}
+              onChange={(e) => setPwOld(e.target.value)}
+              style={{ padding: '10px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border, #ddd)', fontSize: 14 }}
+            />
+            <input
+              type="password"
+              placeholder="新密码（至少 6 位）"
+              value={pwNew}
+              onChange={(e) => setPwNew(e.target.value)}
+              style={{ padding: '10px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border, #ddd)', fontSize: 14 }}
+            />
+            <input
+              type="password"
+              placeholder="确认新密码"
+              value={pwConfirm}
+              onChange={(e) => setPwConfirm(e.target.value)}
+              style={{ padding: '10px 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border, #ddd)', fontSize: 14 }}
+            />
+            {pwError && (
+              <div style={{ color: 'var(--danger)', fontSize: 13 }}>{pwError}</div>
+            )}
+            <button
+              type="submit"
+              className="btn btn-primary btn-block"
+              disabled={pwBusy}
+            >
+              {pwBusy ? '提交中…' : '确认修改'}
+            </button>
+          </form>
+
+          {/* Logout all devices */}
+          <div style={{ borderTop: '1px solid var(--border, #eee)', marginTop: 16, paddingTop: 16 }}>
+            <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>退出所有设备</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 10 }}>
+              清除本账号在所有设备上的登录状态（包括当前设备）。
+            </div>
+            <button
+              className="btn btn-outline btn-block"
+              style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+              onClick={handleLogoutAll}
+              disabled={logoutAllBusy}
+            >
+              {logoutAllBusy ? '处理中…' : '退出所有设备'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
