@@ -1,0 +1,545 @@
+/* ═══════════════════════════════════════════
+   Realistic Multimeter UI — based on DT9205Pro
+   ═══════════════════════════════════════════ */
+
+/* === Container === */
+.mm-body {
+  position: relative;
+  width: 320px;
+  background: linear-gradient(160deg, #f5c526 0%, #e6a812 50%, #c98a08 100%);
+  border-radius: 18px;
+  padding: 14px 14px 18px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.25);
+  border: 2px solid #8a5e08;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+.mm-body.compact {
+  width: 240px;
+  padding: 10px 10px 14px;
+  border-radius: 14px;
+}
+
+.mm-body.disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Center black plastic panel */
+.mm-panel {
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 12px;
+  padding: 10px 8px 14px;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid #000;
+}
+
+/* Brand label */
+.mm-brand {
+  text-align: center;
+  color: #fff8d0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 2px 0 6px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+.mm-brand small {
+  font-size: 9px;
+  color: #e3a82a;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* === Display === */
+.mm-display {
+  background: linear-gradient(180deg, #b5c47f 0%, #9fb56b 100%);
+  border-radius: 6px;
+  margin: 0 4px;
+  padding: 8px 12px 6px;
+  position: relative;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.3);
+  border: 1px solid #5a6a3a;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-display.compact {
+  height: 48px;
+  padding: 4px 8px 4px;
+}
+
+.mm-display-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  color: #2a3a1a;
+  letter-spacing: 0.5px;
+  height: 11px;
+}
+
+.mm-display-tag {
+  padding: 0 4px;
+  opacity: 0.4;
+}
+.mm-display-tag.on {
+  opacity: 1;
+  font-weight: 800;
+}
+
+.mm-display-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.mm-display-value {
+  font-family: 'DSEG7-Classic', 'Courier New', monospace;
+  font-size: 30px;
+  font-weight: 900;
+  color: #0e1a08;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.mm-display.compact .mm-display-value {
+  font-size: 22px;
+}
+
+.mm-display-unit {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0e1a08;
+  text-align: right;
+  line-height: 1.1;
+}
+
+.mm-display.compact .mm-display-unit {
+  font-size: 11px;
+}
+
+/* === Function buttons row === */
+.mm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 4px;
+}
+
+.mm-btn {
+  background: linear-gradient(180deg, #5a5a5a 0%, #2c2c2c 100%);
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 8px;
+  letter-spacing: 0.5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  cursor: default;
+}
+
+/* === Dial === */
+.mm-dial-wrap {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 14px auto 6px;
+}
+
+.mm-body.compact .mm-dial-wrap {
+  width: 200px;
+  height: 200px;
+  margin: 10px auto 4px;
+}
+
+/* Outer ring with category color bands */
+.mm-dial-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #1a1a1a;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    inset 0 2px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Knob itself */
+.mm-dial-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #6a6a6a 0%, #3a3a3a 50%, #1a1a1a 100%);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 1.6, 0.5, 1);
+  z-index: 5;
+}
+
+.mm-body.compact .mm-dial-knob {
+  width: 80px;
+  height: 80px;
+}
+
+/* Indicator pointer on knob */
+.mm-dial-pointer {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 22px;
+  background: linear-gradient(180deg, #fff 0%, #f5c526 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.mm-body.compact .mm-dial-pointer {
+  height: 16px;
+  width: 3px;
+}
+
+/* Center cap */
+.mm-dial-cap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Position labels around the dial */
+.mm-dial-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 9px;
+  font-weight: 800;
+  color: #f5e5a0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 2px 5px;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+
+.mm-body.compact .mm-dial-label {
+  font-size: 7px;
+  padding: 1px 3px;
+}
+
+.mm-dial-label:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #f5e5a0;
+}
+
+.mm-dial-label.active {
+  background: #f5c526;
+  color: #1a1a1a;
+  border-color: #fff;
+  box-shadow: 0 0 6px rgba(245, 197, 38, 0.8);
+}
+
+/* Category colors */
+.mm-dial-label.cat-off { color: #aaa; }
+.mm-dial-label.cat-ohm { color: #ffe070; }
+.mm-dial-label.cat-dcv { color: #80e080; }
+.mm-dial-label.cat-acv { color: #80c0ff; }
+.mm-dial-label.cat-dca { color: #ff8080; }
+.mm-dial-label.cat-aca { color: #ff80c0; }
+.mm-dial-label.cat-cap { color: #c0a0ff; }
+.mm-dial-label.cat-special { color: #c0c0c0; }
+.mm-dial-label.cat-diode { color: #ffb060; }
+.mm-dial-label.cat-temp { color: #ffa0a0; }
+.mm-dial-label.cat-freq { color: #a0ffff; }
+
+/* === Ports === */
+.mm-ports {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin: 10px 4px 0;
+  padding: 10px 6px 6px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.mm-port {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  flex: 1;
+  position: relative;
+}
+
+.mm-port-label-top {
+  font-size: 8px;
+  font-weight: 800;
+  color: #f5e5a0;
+  margin-bottom: 3px;
+  text-align: center;
+  height: 18px;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+.mm-port-socket {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%, #050505 0%, #1a1a1a 60%, #2c2c2c 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 2px solid;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mm-body.compact .mm-port-socket {
+  width: 22px;
+  height: 22px;
+}
+
+.mm-port-socket.red { border-color: #d63232; }
+.mm-port-socket.black { border-color: #777; }
+.mm-port-socket.danger-warn { border-color: #ff8800; box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 0 8px #ff8800; }
+
+.mm-port-label-bot {
+  font-size: 8px;
+  font-weight: 700;
+  color: #c8a830;
+  margin-top: 4px;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* Probe indicator in a port */
+.mm-port-probe {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.mm-port-probe.red {
+  background: radial-gradient(circle, #ff5050 0%, #a00 100%);
+  box-shadow: 0 0 6px rgba(255, 50, 50, 0.7);
+}
+.mm-port-probe.black {
+  background: radial-gradient(circle, #444 0%, #000 100%);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.mm-port-warn {
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  font-size: 14px;
+  filter: drop-shadow(0 0 2px #ff8800);
+  animation: mm-pulse 1s infinite;
+}
+
+@keyframes mm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* === Challenge container === */
+.mm-challenge {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mm-target-area {
+  background: linear-gradient(180deg, #f9fafc 0%, #eef1f6 100%);
+  border: 2px solid #d8dde6;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 180px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mm-target-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.mm-target-visual {
+  font-size: 56px;
+  margin: 8px 0;
+}
+
+.mm-hotspot {
+  position: absolute;
+  min-width: 56px;
+  height: 36px;
+  padding: 0 10px;
+  border: 2px dashed #888;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 700;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.mm-hotspot:hover {
+  border-color: #2196F3;
+  background: #fff;
+  transform: scale(1.05);
+}
+.mm-hotspot.has-red {
+  border: 3px solid #d63232;
+  background: #ffeaea;
+  color: #a00;
+}
+.mm-hotspot.has-black {
+  border: 3px solid #333;
+  background: #eee;
+}
+
+.mm-step-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.mm-step-row.done {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.mm-step-row.wrong {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.mm-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid currentColor;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.mm-feedback {
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+.mm-feedback.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 2px solid #4caf50;
+}
+.mm-feedback.warn {
+  background: #fff3e0;
+  color: #e65100;
+  border: 2px solid #ff9800;
+}
+
+.mm-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mm-target-area .probe-icon {
+  position: absolute;
+  font-size: 22px;
+  pointer-events: none;
+  z-index: 5;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.mm-pick-probe-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid;
+  background: white;
+}
+.mm-pick-probe-btn.red {
+  border-color: #d63232;
+  color: #a00;
+}
+.mm-pick-probe-btn.red.active {
+  background: #d63232;
+  color: white;
+}
+.mm-pick-probe-btn.black {
+  border-color: #333;
+  color: #222;
+}
+.mm-pick-probe-btn.black.active {
+  background: #222;
+  color: white;
+}

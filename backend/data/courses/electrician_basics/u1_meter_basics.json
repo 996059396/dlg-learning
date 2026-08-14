@@ -1,0 +1,1700 @@
+{
+  "id": "u1_meter_basics",
+  "title": "单元一：验电设备的使用——万用表与试电笔",
+  "description": "从零掌握万用表与试电笔，覆盖测电压、电流、电阻、通断及现场排故全流程",
+  "icon": "🔬",
+  "course_id": "electrician_basics",
+  "lessons": [
+    {
+      "id": "l1_intro",
+      "title": "初识万用表",
+      "description": "认识万用表的类型、结构、档位和插孔",
+      "estimated_time": "5分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "为什么电工要先学验电？",
+          "content": "电工作业中，最关键的事就是确认设备是否带电。安装、检修、处理事故时，绝不允许带电作业！作业前必须使用验电设备试电，确认无电后方可操作。常见验电设备有：万用表🔬、试电笔🖊、钳形电流表🪝、摇表🌀。本单元先专攻最万能的两件——【万用表】与【试电笔】。掌握它们，能在保护人身安全的前提下，看清电路中所有看不见的电信号。",
+          "image": "multimeter_overview",
+          "id": "l1_intro_n0"
+        },
+        {
+          "type": "true_false",
+          "question": "电工检修设备时，必须先停电再操作。",
+          "correct_answer": true,
+          "explanation": "安全规程第一条：安装、检修、处理事故时不准带电作业，作业前必须验电确认无电。",
+          "id": "l1_intro_n1"
+        },
+        {
+          "type": "info",
+          "title": "万用表的两大门派：指针式 vs 数字式",
+          "content": "万用表可分为两大类：\n\n📍 【指针式万用表】：用一根指针在表盘上偏转读数，看上去复古经典。读数依靠机械刻度，容易看错，但对微弱电压波动很敏感。\n\n🔢 【数字式万用表】：直接把数字打在液晶屏上，无需读刻度，结果直观、精度高。现今电工现场绝大多数使用的都是数字式。\n\n💡 比喻：指针式像老式机械表，数字式像智能手表——后者更适合新手与日常使用。本课程默认讲解数字式万用表。",
+          "image": "multimeter_overview",
+          "id": "l1_intro_n2"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列对现代万用表的描述，哪一条最准确？",
+          "options": [
+            {
+              "id": "A",
+              "text": "数字式万用表把读数直接显示在屏幕上，最直观也最常用",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "现今电工现场最常用的是指针式万用表，因为它便宜",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "指针式万用表精度比数字式更高，所以是行业首选",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "数字式万用表只能测电压，不能测电阻",
+              "is_correct": false
+            }
+          ],
+          "explanation": "数字式万用表直接以数字显示结果，是当前最主流的选择。指针式靠人眼读刻度，精度反而不如数字式。",
+          "id": "l1_intro_n3"
+        },
+        {
+          "type": "info",
+          "title": "万用表的三段身体",
+          "content": "无论指针式还是数字式，万用表都分三个部分：\n\n🖥 顶部【液晶显示屏】：测量结果显示区。\n🎛 中间【旋钮（档位转换开关）】：用来切换功能与量程。\n🔌 底部【表笔插孔区】：插红黑两根表笔。\n\n旋钮上你会看到 OFF、1.5V、Ω(电阻)、HFE(三极管)、火线档、V—(直流电压)、V~(交流电压)、A~(交流电流)、A—(直流电流)、F(电容) 等各种档位区域，每个区域内还有细分量程。\n\n⚠️ 用完万用表必须把旋钮打到 OFF 关机，否则电池会一直耗电。",
+          "image": "multimeter_overview",
+          "id": "l1_intro_n4"
+        },
+        {
+          "type": "match",
+          "question": "请将万用表的三大核心部件与其功能连线",
+          "instruction": "点击左侧部件，再点击右侧对应的功能即可连线",
+          "pairs": [
+            {
+              "left": "📺 显示屏",
+              "right": "显示测量得到的数字结果"
+            },
+            {
+              "left": "🔘 旋钮开关",
+              "right": "选择测什么物理量、什么量程"
+            },
+            {
+              "left": "🔌 插孔区",
+              "right": "连接红黑两根表笔"
+            }
+          ],
+          "explanation": "万用表三大件各司其职：显示屏负责呈现数字结果，旋钮决定测什么物理量及量程，插孔区连接红黑表笔。牢记三者分工，用表时才能一步到位，不误读不误操作。",
+          "id": "l1_intro_n5"
+        },
+        {
+          "type": "info",
+          "title": "四个插孔的分工",
+          "content": "数字万用表底部通常有四个插孔，从左到右一般为：\n\n1️⃣ 【20A孔】：测 20A 以内的大电流时，红表笔插这里。\n2️⃣ 【mA / 电容(CX)孔】：测小电流(毫安)或电容时，红表笔插这里。\n3️⃣ 【COM孔】：公共端，黑表笔的永久家——【无论测什么，黑表笔都插这里】！\n4️⃣ 【V/Ω/二极管孔】：测电压、电阻、二极管极性、通断时，红表笔插这里。\n\n🛡 铁律：黑表笔→COM；红表笔则根据测什么换孔。",
+          "image": "meter_ports",
+          "id": "l1_intro_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "黑色表笔的“家”永远应该插在哪个孔里？",
+          "options": [
+            {
+              "id": "A",
+              "text": "带 V/Ω 标识的孔",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "COM 孔（公共端）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "20A 大电流孔",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "mA 毫安孔",
+              "is_correct": false
+            }
+          ],
+          "explanation": "黑表笔永远插在 COM 孔。COM 是 Common（公共端）的缩写，是测量的零电位参考点。",
+          "id": "l1_intro_n7"
+        },
+        {
+          "type": "drag_drop",
+          "question": "现在请你实际操作：把黑表笔插进它该去的孔",
+          "instruction": "点击选择正确的插孔",
+          "target_zone": {
+            "id": "com_port",
+            "label": "COM孔"
+          },
+          "distractors": [
+            {
+              "id": "v_port",
+              "label": "V/Ω孔"
+            },
+            {
+              "id": "ma_port",
+              "label": "mA毫安孔"
+            },
+            {
+              "id": "a_port",
+              "label": "20A大电流孔"
+            }
+          ],
+          "image": "meter_ports",
+          "explanation": "黑表笔永远插 COM 孔——COM 是公共端，是整个测量的零电位参考点。无论测电压、电阻还是电流，黑表笔都钉在 COM，绝不挪窝。",
+          "id": "l1_intro_n8"
+        },
+        {
+          "type": "info",
+          "title": "红表笔的“位置感”",
+          "content": "黑表笔固定后，红表笔要看你今天测什么：\n\n🔹 测电压(V)、电阻(Ω)、二极管、通断 → 插【V/Ω 孔】\n🔹 测小电流(mA)或电容 → 插【mA/CX 孔】\n🔹 测大电流(0.2A ~ 20A) → 插【20A 孔】\n\n📌 90% 日常使用都在 V/Ω 孔。测完电流后【一定要立刻】把红表笔拔回 V/Ω 孔，否则下次顺手测电压会瞬间短路烧表！",
+          "image": "meter_ports",
+          "id": "l1_intro_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你打算用万用表测家里 220V 插座电压，红表笔应该插哪个孔？",
+          "options": [
+            {
+              "id": "A",
+              "text": "COM 孔",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "20A 大电流孔",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "V/Ω 孔（带 V 字标识）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "mA 毫安小电流孔",
+              "is_correct": false
+            }
+          ],
+          "explanation": "测电压必须用 V/Ω 孔。若用电流孔，万用表会变成短路通路，瞬间烧表甚至引发事故。",
+          "id": "l1_intro_n10"
+        },
+        {
+          "type": "drag_drop",
+          "question": "马上要测一节干电池的电压了，红表笔放哪？",
+          "instruction": "选出正确的红表笔插孔",
+          "target_zone": {
+            "id": "v_port",
+            "label": "V/Ω孔"
+          },
+          "distractors": [
+            {
+              "id": "com_port",
+              "label": "COM孔"
+            },
+            {
+              "id": "ma_port",
+              "label": "mA毫安孔"
+            },
+            {
+              "id": "a_port",
+              "label": "20A大电流孔"
+            }
+          ],
+          "image": "meter_ports",
+          "explanation": "测电池电压，红表笔应插 V/Ω 孔。测电压、电阻、通断一律用 V/Ω 孔；红表笔只按被测物理量换孔，而黑表笔始终在 COM 孔。",
+          "id": "l1_intro_n11"
+        },
+        {
+          "type": "fill_blank",
+          "question": "万用表用完后，旋钮必须打到____档位，以避免电池白白损耗。",
+          "answer": "OFF",
+          "acceptable_answers": [
+            "OFF",
+            "off",
+            "关机",
+            "Off"
+          ],
+          "explanation": "OFF。旋到 OFF 挡位会断开表内部供电回路，表头等耗电部件不再耗电，避免长期搁置把电池耗光；同时也防止误操作时表笔意外短接损坏表内电路。用完即关是万用表的基本保养习惯。",
+          "id": "l1_intro_n12"
+        },
+        {
+          "type": "true_false",
+          "question": "数字万用表电池电量不足时，屏幕不会显示任何提示，测量结果依然完全准确。",
+          "correct_answer": false,
+          "explanation": "不对。电池电量不足时屏幕会显示「电池符号 🔋」提示，且内部电压偏低会直接影响测量精度，必须及时更换电池后再测量。",
+          "id": "l1_intro_n13"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于万用表表笔的说法，错误的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "表笔线长期弯折后可能内部断线，测不出值时要先怀疑表笔",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "测电阻前把两根表笔尖搭一起，可初步判断表笔是否完好",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "黑表笔永远插在 COM 孔",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "测量时手指可以放心紧握探针金属部分，不影响读数",
+              "is_correct": true
+            }
+          ],
+          "explanation": "人体本身有电阻和分布电容，手指碰探针金属部分会影响读数，强电场景下还可能触电！正确握法是只捏表笔绝缘塑料部分。",
+          "id": "l1_intro_n14"
+        },
+        {
+          "type": "info",
+          "title": "认识真实万用表：FLUKE vs SENIT/兴泓维",
+          "content": "市面上数字万用表两个梯队：\n\n🏆 【高端进口：FLUKE 福禄克】(如 FLUKE 117/179/87V)：美国品牌，电工/工程师标杆，单价 1500~5000 元。精度高、防护强、CAT 等级齐全，专业现场首选。\n\n💼 【国产入门/中端：SENIT DT9205Pro、兴泓维 9205P、UNI-T 优利德 UT139】：单价 80~300 元，性价比极高，足以应付家用与一般维修场景。\n\n📷 本课程实物参考机型：【SENIT DT9205Pro】(也称兴泓维 9205P)。面板布局：顶部 LCD 屏 → 中间大旋钮(围一圈档位) → 底部四个插孔，左到右依次 20A → mA → COM → VΩHz。屏幕右上角还有 HOLD / RANGE / Hz / LIGHT(背光) 几个辅助按钮。",
+          "image": "real_multimeter_models",
+          "id": "l1_intro_n15"
+        },
+        {
+          "type": "info",
+          "title": "看懂真实面板上的符号",
+          "content": "拿到一只 DT9205Pro，旋钮周围你会看到这些标识：\n\n🔠 【V---】或【V⎓】：直流电压(DCV)，三个短横或一实一虚横线代表直流\n🌊 【V~】：交流电压(ACV)，波浪线代表交流\n⚙ 【Ω】：电阻\n🔊 或 ⏷⏶ ：通断蜂鸣 / 二极管\n🔠 【A---】：直流电流(DCA)；【A~】：交流电流(ACA)\n🔋 【F】或【Cx】：电容\n🌡 【℃】：温度(需配热电偶)\n📶 【Hz】：频率\n📊 【hFE】：三极管放大倍数\n\n屏幕上则可能出现：AC/DC 标识、AUTO(自动量程)、HOLD(数据保持)、🔋(电池低)。",
+          "image": "real_multimeter_panel",
+          "id": "l1_intro_n16"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你看到面板旋钮区有一个标识 \"V---\"(V 加三横线)，它代表什么档位？",
+          "options": [
+            {
+              "id": "A",
+              "text": "DCV 直流电压档",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "ACV 交流电压档",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "AC 功率档",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电流档",
+              "is_correct": false
+            }
+          ],
+          "explanation": "横线(---) 在电学符号体系中代表直流(DC)，波浪线(~)代表交流(AC)。所以 V--- = DCV 直流电压；V~ = ACV 交流电压。",
+          "id": "l1_intro_n17"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "DT9205Pro 的 mA 插孔旁边印着两行小字：\"严禁测电压\" 和 \"FUSED\"。这两行警告分别什么意思？",
+          "options": [
+            {
+              "id": "A",
+              "text": "\"严禁测电压\"=指此孔已禁用；\"FUSED\"=指有热熔胶封死",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "\"严禁测电压\"=电流孔接电压会短路烧表；\"FUSED\"=该孔内置保险丝，过流会熔断保护",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "两条都是宣传文字，可以忽略",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "\"严禁测电压\"=不能测交流电；\"FUSED\"=只能测直流",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电流孔内阻极低，戳到电压上就是短路；mA 孔有保险丝(常见 0.2A/250V 玻璃管)，万一误操作会熔断保护表内电路。另注意：20A 大电流孔通常【不带保险丝】，误操作直接炸表，更危险！",
+          "id": "l1_intro_n18"
+        },
+        {
+          "type": "match",
+          "question": "把真实面板上的符号与它代表的含义连起来",
+          "instruction": "点击左侧符号，再点击右侧对应含义",
+          "pairs": [
+            {
+              "left": "V---",
+              "right": "直流电压 DCV"
+            },
+            {
+              "left": "V~",
+              "right": "交流电压 ACV"
+            },
+            {
+              "left": "Ω",
+              "right": "电阻"
+            },
+            {
+              "left": "A---",
+              "right": "直流电流 DCA"
+            },
+            {
+              "left": "F",
+              "right": "电容"
+            }
+          ],
+          "explanation": "V--- 是直流电压 DCV，V~ 是交流电压 ACV，Ω 是电阻，A--- 是直流电流，F 是电容。横线代表直流、波浪线代表交流，记住这个规律就不容易认错档位。",
+          "id": "l1_intro_n19"
+        }
+      ]
+    },
+    {
+      "id": "l2_battery",
+      "title": "测一节电池——直流电压实战",
+      "description": "学会直流电压档位选择、表笔极性与量程逐步缩小法",
+      "estimated_time": "5分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "交流电 vs 直流电：先认清你的对手",
+          "content": "电分两大种：\n\n🔋 【直流电 DC】：方向不变、有固定正负极。代表：干电池、汽车电瓶、手机锂电。万用表符号为 V— 或 DCV（V 上方一横一虚线）。\n\n🌊 【交流电 AC】：方向不断来回切换。代表：家用 220V 插座、380V 三相电。万用表符号为 V~ 或 ACV（V 上方一条波浪线）。\n\n⚡ 选错档位轻则读数为 0 或乱跳，重则烧表！测电池→DCV，测插座→ACV，绝不能搞错。",
+          "image": "dc_vs_ac",
+          "id": "l2_battery_n0"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测试儿童玩具里的一节 5 号电池，旋钮应该旋到哪个区域？",
+          "options": [
+            {
+              "id": "A",
+              "text": "交流电压档区 V~ (ACV)",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电阻档区 Ω",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "直流电压档区 V— (DCV)",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "交流电流档区 A~",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电池储存的是直流电，必须用 V— 直流电压档。用 V~ 交流档去测电池会显示 0 或乱码。",
+          "id": "l2_battery_n1"
+        },
+        {
+          "type": "info",
+          "title": "量程：从大到小，逐步靠近",
+          "content": "直流电压档下还有细分量程：200mV / 2V / 20V / 200V / 1000V…\n\n📐 选择原则：【选择的量程必须大于被测电压】。\n\n📏 实战技巧——【大量程逐步靠近法】：\n1) 如果不知道被测电压有多大，先选最大量程；\n2) 看到读数后，把档位往下降一级；\n3) 重复直到读数最精确（即读数比当前档位略小，且小数位最多）。\n\n例：测 1.5V 电池，2V 档比 20V 档精确得多！选 200mV 会溢出显示 OL；选 20V 也能测但小数位少。",
+          "image": "multimeter_overview",
+          "id": "l2_battery_n2"
+        },
+        {
+          "type": "simulation_dial",
+          "question": "请将旋钮拨到测量 1.5V 干电池最精准的档位",
+          "instruction": "点击选择正确的面板旋钮档位",
+          "dial_options": [
+            {
+              "label": "OFF",
+              "angle": 0
+            },
+            {
+              "label": "ACV 750V (交流)",
+              "angle": 30,
+              "is_wrong": true
+            },
+            {
+              "label": "DCV 200mV (直流)",
+              "angle": 100,
+              "is_wrong": true
+            },
+            {
+              "label": "DCV 2V (直流)",
+              "angle": 120,
+              "is_correct": true
+            },
+            {
+              "label": "DCV 20V (直流)",
+              "angle": 150,
+              "is_wrong": true
+            },
+            {
+              "label": "Ω 20k (电阻)",
+              "angle": 210,
+              "is_wrong": true
+            }
+          ],
+          "success_msg": "✅ 漂亮！1.5V 电池用 2V 直流档最准——既能覆盖，小数精度还最高。",
+          "fail_msg": "提示：电池是直流(DCV)，1.5V 用 2V 档最佳。200mV 装不下会溢出 OL，20V 能测但精度差。",
+          "explanation": "测 1.5V 干电池应选 DCV 2V 档：量程必须大于被测电压，2V 最贴近 1.5V、小数位最多。200mV 装不下会溢出 OL，20V 能测但精度差；电池是直流电，绝不能用 ACV。",
+          "id": "l2_battery_n3"
+        },
+        {
+          "type": "info",
+          "title": "为什么红接正、黑接负？",
+          "content": "干电池有正极（凸起，+号）和负极（平底，−号）。\n\n📐 标准接法：红表笔点正极，黑表笔点负极。\n\n💡 原因：万用表内部以 COM(黑) 为零电位参考，红表笔检测的是与 COM 的电压差。当红接高电位(+)、黑接低电位(−)时，读数为正；接反则会显示负号。\n\n📍 现场场景：检查家里的遥控器、玩具、家电是否因为电池亏电而无法启动，就是这么测的。",
+          "image": "battery_measure",
+          "id": "l2_battery_n4"
+        },
+        {
+          "type": "simulation_probe",
+          "question": "用表笔实际测一下这枚电池吧！",
+          "instruction": "红表笔接正极(+)，黑表笔接负极(−)",
+          "image": "battery_measure",
+          "hotspots": {
+            "positive": {
+              "label": "正极(+)",
+              "x": 200,
+              "y": 100,
+              "radius": 30
+            },
+            "negative": {
+              "label": "负极(-)",
+              "x": 200,
+              "y": 250,
+              "radius": 30
+            }
+          },
+          "correct_probes": {
+            "red": "positive",
+            "black": "negative"
+          },
+          "feedback_display": "1.50 V ✅",
+          "explanation": "红表笔接正极、黑表笔接负极：万用表以 COM(黑) 为零电位参考，红笔点高电位(+)读数才为正。此接法下屏幕显示 1.50V，即电池实测电压。",
+          "id": "l2_battery_n5"
+        },
+        {
+          "type": "info",
+          "title": "接反了会爆炸吗？——不会，但会显示负号",
+          "content": "好消息：数字万用表测直流电压时，红黑接反不会烧表！\n\n它只会诚实地在数字前面加个【负号】，比如显示【-1.50V】。\n\n💡 这其实是一个有用的功能：在不确定哪是正极哪是负极的电路（如修电瓶车、玩具电路板）时，可以根据是否出现负号来反推极性。看到负号 → 红黑接反了 → 红表笔实际接的是负极。",
+          "image": "battery_measure_reversed",
+          "id": "l2_battery_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测一只 12V 汽车电瓶时，不小心把黑表笔接了正极，红表笔接了负极，屏幕会怎样？",
+          "options": [
+            {
+              "id": "A",
+              "text": "屏幕一片黑，毫无反应",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "正常显示 12.0V，看不出区别",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "万用表内部立刻烧坏冒烟",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "显示 -12.0V，数字前带负号",
+              "is_correct": true
+            }
+          ],
+          "explanation": "数字万用表测直流电压有极性识别，接反仅显示负号。这也是判断未知正负极电池极性的实用方法。",
+          "id": "l2_battery_n7"
+        },
+        {
+          "type": "info",
+          "title": "通过电压判断电瓶剩余电量",
+          "content": "电瓶（如汽车 12V 铅酸电瓶）的容量没法直接测，但可以通过【空载电压】来推断：\n\n🔋 标称 12V 电瓶，常见判断标准：\n   • 12.6V 以上 → 电量充足 💪\n   • 12.0V 左右 → 电量减半\n   • 低于 11.5V → 严重亏电，需充电 ⚠️\n\n📐 操作：红表笔插 V/Ω 孔，黑表笔插 COM，旋钮打到 DCV 20V 档（覆盖 12V），红接电瓶正极，黑接负极。",
+          "image": "battery_measure",
+          "id": "l2_battery_n8"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测一辆汽车的 12V 电瓶得到 12.6V，说明该电瓶电量是____的。（填“充足/不足”）",
+          "answer": "充足",
+          "acceptable_answers": [
+            "充足",
+            "满",
+            "正常",
+            "健康",
+            "够用"
+          ],
+          "explanation": "12V 标称电瓶在 12.6V 以上说明电量饱满。低于 12V 才需要警惕，低于 11.5V 就必须充电。",
+          "id": "l2_battery_n9"
+        },
+        {
+          "type": "true_false",
+          "question": "测一节标称 1.5V 的干电池，如果显示 0.9V，说明电池已经基本耗尽，应该更换。",
+          "correct_answer": true,
+          "explanation": "干电池低于 1.2V 一般已不能正常驱动多数玩具/遥控器。低于 1.0V 视为耗尽。",
+          "id": "l2_battery_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "【现场排故】你怀疑遥控器没反应是因为电池亏电。测量两节串联电池组(应 3V)只显示 1.8V，最可能的原因是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "两节电池中至少有一节严重亏电，导致总电压不足",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "万用表坏了",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "遥控器内部电路自动降压",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "万用表挡位选错了——交流测了直流",
+              "is_correct": false
+            }
+          ],
+          "explanation": "串联电池总电压等于各节之和。3V 只剩 1.8V，说明至少一节电压远低于 1.5V。可以单独测每节确认。",
+          "id": "l2_battery_n11"
+        },
+        {
+          "type": "sort",
+          "question": "把“测一节电池电压”的完整步骤按顺序排好",
+          "instruction": "拖动排序，从准备到读数",
+          "items": [
+            {
+              "id": "1",
+              "text": "黑表笔插 COM 孔，红表笔插 V/Ω 孔"
+            },
+            {
+              "id": "2",
+              "text": "旋钮拨到 DCV 直流电压档，选 2V 量程"
+            },
+            {
+              "id": "3",
+              "text": "红表笔点电池正极(+)，黑表笔点负极(−)"
+            },
+            {
+              "id": "4",
+              "text": "读出屏幕上的电压值"
+            },
+            {
+              "id": "5",
+              "text": "测完把旋钮拨到 OFF 关机"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "explanation": "测电池电压的顺序：先插好表笔(黑 COM、红 V/Ω)，再选 DCV 2V 量程，红接正极黑接负极读数，测完旋回 OFF。先接线后测量、测完关机是避免误操作的基本流程。",
+          "id": "l2_battery_n12"
+        },
+        {
+          "type": "info",
+          "title": "HOLD 按钮：把读数 \"冻结\" 在屏幕上",
+          "content": "DT9205Pro 屏幕右侧/旋钮上方通常有几个辅助小按钮：【HOLD】【RANGE】【Hz】【LIGHT】。\n\n❄ 【HOLD 数据保持键】：按一下，屏幕当前读数会被 \"冻结\"，即使表笔已经离开被测物，数字也不会变。再按一下解除，恢复实时显示。\n\n📌 实际用途：\n• 测高处接线柱，看不清屏幕？按 HOLD，下来再看。\n• 现场要记数据，按 HOLD 后腾出手拿笔抄。\n• 表笔不稳定读数跳动？HOLD 一瞬间抓拍一个值。\n\n💡 注意：HOLD 只是显示锁定，不影响电路连接安全。被测物如果仍带电，表笔仍然在通电！",
+          "image": "meter_hold_button",
+          "id": "l2_battery_n13"
+        },
+        {
+          "type": "info",
+          "title": "手动量程 vs 自动量程",
+          "content": "万用表的量程切换有两种风格：\n\n🔢 【手动量程】(DT9205Pro 默认)：旋钮上 200mV / 2V / 20V / 200V / 1000V 都是【独立档位】，需要你自己选合适的量程。优点：响应快、精度可控；缺点：选错会显示 OL(过载)。\n\n🤖 【自动量程 AUTO】(部分中高端机型)：屏幕显示 \"AUTO\" 字样，万用表自动从大到小切换合适量程。按【RANGE 按钮】可临时切换回手动模式以提高响应速度。\n\n📐 一般规则：DT9205Pro / 9205P 系列偏向纯手动；FLUKE 117/UT139 等多为自动量程。如果你的表上看到 AUTO 字符，说明它在自动量程模式。",
+          "image": "meter_range_button",
+          "id": "l2_battery_n14"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你测一节快没电的 5 号电池(实际只剩 1.0V)，最初选了 DCV 2V 档发现读数在 0.98~1.02 之间反复跳，怎么办最合理？",
+          "options": [
+            {
+              "id": "A",
+              "text": "立刻把档位升到 DCV 20V，让读数稳定",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "2V 档已是覆盖 1V 的最佳量程，跳动是电池本身电压不稳，按一下 HOLD 抓取一个代表值即可；同时该电池已耗尽建议更换",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "换交流档 ACV 2V 重新测",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "万用表坏了，换一只表",
+              "is_correct": false
+            }
+          ],
+          "explanation": "2V 档已是最合适量程，往 20V 升精度反而下降。读数跳动是电池本身电量不稳的表现(亏电电池内阻大、电压会随负载波动)。HOLD 锁屏抓值是现场常用技巧。1.0V 的 5 号电池基本耗尽，更换为宜。",
+          "id": "l2_battery_n15"
+        },
+        {
+          "type": "fill_blank",
+          "question": "按下万用表面板上的 HOLD 按钮，可以将当前测量读数____在屏幕上不再变化，方便记录或观察。",
+          "answer": "保持",
+          "acceptable_answers": [
+            "保持",
+            "锁定",
+            "冻结",
+            "锁住",
+            "定住",
+            "固定"
+          ],
+          "explanation": "HOLD = Data Hold(数据保持)。一按冻结、再按解除。是现场抄数、爬高测量必备功能。",
+          "id": "l2_battery_n16"
+        }
+      ]
+    },
+    {
+      "id": "l3_safety",
+      "title": "致命禁忌——安全第一",
+      "description": "万用表使用中的烧表雷区与保命习惯",
+      "estimated_time": "5分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电流档当电压档用 = 短路炸表",
+          "content": "万用表行业第一禁忌：【红表笔在电流孔(20A 或 mA)，旋钮打在电流档，却去测电压】——这等于直接用一根导线把电源两极短接！\n\n⚡ 原理：电流档内阻几乎为 0（接近一根铜线）。当红表笔还在 20A 孔、黑表笔在 COM 孔，你去戳 220V 火零线，万用表内部从红到黑就是一条几乎短路的通路。\n\n💥 后果：轻则烧断内部保险丝、表笔冒烟；重则爆炸、伤人。这是无数老电工血泪换来的教训。",
+          "image": "safety_warning",
+          "style": "danger",
+          "id": "l3_safety_n0"
+        },
+        {
+          "type": "true_false",
+          "question": "万用表怎么乱接都没事，最多测不出来读数。",
+          "correct_answer": false,
+          "explanation": "大错！电流档内阻接近 0，用电流档去测电压相当于短路电源，会瞬间烧表甚至爆炸伤人。",
+          "id": "l3_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "测电流必须串联，绝不能并联",
+          "content": "测电流和测电压的接法完全相反！\n\n🔌 测电压(并联)：表笔【跨接】在元器件或电源两端，像“旁观者”。\n⛓ 测电流(串联)：必须先把电路断开，把万用表【串】进去，让电流从红表笔进、黑表笔出，像“收费站”。\n\n📍 接线示意：电源(+) → 红表笔 → 万用表内部 → 黑表笔 → 负载(灯) → 电源(−)\n\n⚠️ 致命错误：若用电流档把表【并联】在电源两端（像测电压那样），万用表就成了短路线，瞬间烧毁！",
+          "image": "ammeter_series",
+          "id": "l3_safety_n2"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于测电流的描述，哪个是【对】的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "和测电压一样，把表笔跨接在元器件两端即可",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电流档可以同时测电压，省得换档",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "把电路断开，让万用表串联在电路里，电流从红进黑出",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "测电流不需要换插孔，仍用 V/Ω 孔即可",
+              "is_correct": false
+            }
+          ],
+          "explanation": "测电流必须串联。万用表要插入电路中间，电流从中通过；同时红表笔要插到 20A 或 mA 孔。",
+          "id": "l3_safety_n3"
+        },
+        {
+          "type": "info",
+          "title": "保命习惯：每次测前看两眼",
+          "content": "为了保命保表，把这两个动作刻进肌肉记忆：\n\n👀 【看两眼习惯】：\n1️⃣ 看红表笔现在插在哪个孔？（V/Ω 还是 20A？）\n2️⃣ 看旋钮现在停在哪个档？（电压档还是电流档？）\n\n🔁 如果上一次为了测电流把红表笔放到了 20A 孔，用完【立刻、马上、当场】拔回 V/Ω 孔。\n\n📐 量程不确定时永远从【最大量程】开始，再逐级缩小到精确档位，这样既保护表也保护人。",
+          "image": "meter_ports",
+          "id": "l3_safety_n4"
+        },
+        {
+          "type": "simulation_danger",
+          "question": "⚠️ 现场考验：请测测下面这个家用插座到底有没有电！",
+          "instruction": "动手前先审查万用表状态",
+          "initial_state": {
+            "red_probe_port": "20A(大电流专用孔)",
+            "dial_position": "ACV 750"
+          },
+          "danger_action": "click_socket",
+          "danger_response": {
+            "shake": true,
+            "flash_red": true,
+            "sound": "spark",
+            "message": "🔥 火花四溅！红表笔还在 20A 电流孔！这一戳等同于把火零短接。请先把红表笔换回 V/Ω 孔！"
+          },
+          "correct_sequence": [
+            {
+              "action": "move_probe",
+              "from": "20A",
+              "to": "V/Ω"
+            },
+            {
+              "action": "click_socket"
+            }
+          ],
+          "success_msg": "👏 干得漂亮！你成功避开了一次短路爆炸。先换孔再测电压才是老师傅的姿势！",
+          "explanation": "红表笔还在 20A 电流孔时直接去戳插座，等同用导线短接火零线——电流档内阻接近 0，会瞬间短路炸表。正确顺序：先把红表笔换回 V/Ω 孔，再测电压。",
+          "id": "l3_safety_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "结束了一次 10A 大电流测量，准备收工。最稳妥的做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接关机收起来，反正下次再说",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不用关机，待机会自动省电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "把黑表笔也拔到 20A 孔，方便下次",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "关机(OFF)，并立即把红表笔从 10A 孔拔出、插回 V/Ω 孔再收好",
+              "is_correct": true
+            }
+          ],
+          "explanation": "老师傅血的教训：用完大电流档，立即换回 V/Ω 孔。否则下次顺手去测电压——直接爆表！",
+          "id": "l3_safety_n6"
+        },
+        {
+          "type": "info",
+          "title": "其他不可忽视的安全细节",
+          "content": "除了电流/电压档错配，还有这些细节关乎安全与精度：\n\n👐 【手指不要碰探针金属部分】：人体存在分布电容与电阻，会让读数偏差；强电下还可能触电致命！只能握表笔的绝缘塑料部分。\n\n🪫 【屏幕出现电池图标🔋】：万用表内部电池没电了，读数会失准，需立即更换 9V 方块电池。\n\n🪛 【表笔线检查】：表笔线长期弯折后可能内部断线，测什么都没反应？先把两根表笔尖搭在一起测通断，验证表笔好坏。\n\n👁 【量程未知先选最大】：不知道电压电流多大，先选最大量程，逐步缩小。",
+          "image": "safety_warning",
+          "id": "l3_safety_n7"
+        },
+        {
+          "type": "true_false",
+          "question": "测高电压时，手指可以同时握住两根表笔的金属探针部位，方便操作。",
+          "correct_answer": false,
+          "explanation": "绝对不行！手指碰探针会引入人体电阻影响精度，更严重的是高电压下会直接触电致命。只能握绝缘部分。",
+          "id": "l3_safety_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你用万用表测一个明明应该有电的电路，但屏幕始终显示 0。最可能的原因是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "可能档位错了、表笔线断了、或电池没电了，要逐项排查",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "万用表测什么都得 0，说明电路真的没电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "万用表彻底坏了，必须扔掉",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电压太高把万用表保护机制触发了",
+              "is_correct": false
+            }
+          ],
+          "explanation": "排查顺序：1) 看档位与量程对不对；2) 把两根表笔尖搭一起测通断，验证表笔线是否断；3) 看屏幕有无电池图标；4) 再考虑外部电路。",
+          "id": "l3_safety_n9"
+        },
+        {
+          "type": "sort",
+          "question": "把【一次安全无懈可击的万用表测试】步骤排好",
+          "instruction": "拖动排序",
+          "items": [
+            {
+              "id": "1",
+              "text": "明确要测的物理量(电压/电流/电阻)和大概范围"
+            },
+            {
+              "id": "2",
+              "text": "确认两根表笔已分别坐在 COM 孔和 V/Ω 孔"
+            },
+            {
+              "id": "3",
+              "text": "旋钮拨到对应档位区域，并从大量程开始"
+            },
+            {
+              "id": "4",
+              "text": "探针接触被测部位，读出屏幕数值"
+            },
+            {
+              "id": "5",
+              "text": "测完旋钮回 OFF，并把红表笔拔回 V/Ω 孔"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "explanation": "一次安全测试的顺序：先明确被测物理量与范围，再确认黑表笔在 COM、红表笔在 V/Ω，从大量程开始拨档，接触测量读数，测完旋回 OFF 并把红笔拔回 V/Ω 孔。这套流程能避开电流孔误测电压的炸表雷区。",
+          "id": "l3_safety_n10"
+        },
+        {
+          "type": "simulation_danger",
+          "question": "⚠️ 复合排故：你刚才用 20A 档测完电流，现在要去测 380V 三相电相间电压，请正确操作！",
+          "instruction": "按正确顺序操作，避免短路！",
+          "initial_state": {
+            "red_probe_port": "20A",
+            "dial_position": "A~ 20A"
+          },
+          "danger_action": "touch_phase",
+          "danger_response": {
+            "shake": true,
+            "flash_red": true,
+            "sound": "explosion",
+            "message": "💥 砰！380V 直接短路了！红表笔还在 20A 孔，电流档内阻接近 0，相当于把两相火线短接。万用表已损毁！"
+          },
+          "correct_sequence": [
+            {
+              "action": "move_probe",
+              "from": "20A",
+              "to": "V/Ω"
+            },
+            {
+              "action": "rotate_dial",
+              "to": "ACV 750"
+            },
+            {
+              "action": "touch_phase"
+            }
+          ],
+          "success_msg": "🎉 完美！先换孔、再换档、最后测量。这套流程能让你在电工岗位上活到退休。",
+          "explanation": "测完电流转测 380V 相间电压，须先换孔再换档：把红表笔从 20A 换到 V/Ω 孔，旋钮拨到 ACV 750V，最后才测量。电流档测电压等于短接两相火线，380V 下直接爆炸损表。",
+          "id": "l3_safety_n11"
+        },
+        {
+          "type": "info",
+          "title": "CAT 安全等级：万用表的 \"战场分级\"",
+          "content": "万用表面板和说明书上经常出现【CAT II】【CAT III】【CAT IV】这类标识，这是 IEC 61010 标准下的【测量类别 Measurement Category】，规定该表能承受的【瞬态过电压】等级。\n\n🏠 【CAT II 600V/1000V】：插座末端电器，如台灯、电视、家用电器内部电路。\n🏢 【CAT III 600V/1000V】：建筑配电线路，如户内配电箱、固定安装的设备、三相电机进线。\n🏭 【CAT IV 600V】：建筑电源进户端，户外架空线、电表箱、主电网接入口——最严苛环境，雷击冲击大。\n\n📐 数字越大 → 越靠近电网入口 → 瞬态电压越凶猛 → 对仪表绝缘要求越高。SENIT DT9205Pro 一般为 CAT II 1000V / CAT III 600V；FLUKE 117 为 CAT III 600V；FLUKE 87V 达到 CAT IV 600V。",
+          "image": "cat_levels",
+          "id": "l3_safety_n12"
+        },
+        {
+          "type": "info",
+          "title": "表笔的 CAT 等级要与万用表匹配",
+          "content": "很多人忽视：【表笔本身也有 CAT 等级】！通常印在表笔塑料柄上。\n\n🛡 匹配规则：整套测量系统的 CAT 等级 = 【表 + 表笔中较低者】！\n• 一只 CAT III 600V 的万用表，搭配一对 CAT II 1000V 的表笔 → 实际系统只能算 CAT II。\n• 想用在配电箱(CAT III 场景)，必须表和表笔都 ≥ CAT III。\n\n📐 选购口诀：\n• 表笔 CAT 等级 ≥ 万用表 CAT 等级；\n• 电压上限也要 ≥ 万用表上限；\n• 表笔金属外露部分越短，绝缘越安全(国标新型表笔金属尖外露 ≤ 4mm)。\n\n⚠️ 用低 CAT 表笔搭高 CAT 万用表去测危险场景，等于穿凉鞋去爬雪山，绝缘随时击穿。",
+          "image": "probe_cat_level",
+          "id": "l3_safety_n13"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "我家配电箱铭牌标 \"CAT III 600V\"，我手上有一对 CAT II 1000V 的表笔，能用来测配电箱吗？",
+          "options": [
+            {
+              "id": "A",
+              "text": "可以，电压上限 1000V 完全覆盖 600V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不可以，CAT 等级不能 \"降级使用\"。CAT II 表笔的瞬态过压耐受不够，配电箱属于 CAT III 场景，必须 ≥ CAT III 等级的表笔",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "可以，只要小心一点不会有事",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "可以，CAT 等级只看电压数字大小",
+              "is_correct": false
+            }
+          ],
+          "explanation": "CAT 等级反映的是【瞬态过电压】耐受能力，不是单纯电压上限。配电箱(CAT III)瞬间可能出现远超额定电压的尖峰(数千伏)，CAT II 的绝缘可能被击穿、表笔炸裂伤人。等级只能向上兼容，不能向下使用。",
+          "id": "l3_safety_n14"
+        },
+        {
+          "type": "true_false",
+          "question": "即使是 CAT IV 600V 等级的高端万用表，也绝对不应该在打雷下雨天去测户外电网线路。",
+          "correct_answer": true,
+          "explanation": "雷击瞬间可在线路上感应出数万甚至数十万伏的尖峰电压，远超任何商用万用表 CAT IV 设计极限。安全规程明确禁止在雷雨天进行户外电气测量。同时打雷天人体处于户外开阔带电体附近本身就极其危险。",
+          "id": "l3_safety_n15"
+        }
+      ]
+    },
+    {
+      "id": "l4_resistance",
+      "title": "测量电阻与通断",
+      "description": "电阻档与蜂鸣档的差异、断线判断与三相电机绕组排故",
+      "estimated_time": "5分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电阻是什么？",
+          "content": "电阻(R) 就是阻碍电流通过的“拦路虎”，单位是欧姆 (Ω)。\n\n💧 比喻：把电路想象成水管，电压是水压，电流是水量，那电阻就是水管粗细——管子越细，水流越难通过。\n\n📐 万用表测电阻的原理：表内自带一节小电池，向被测物输出微弱电流，再测量电压降，反推电阻值。\n\n🛑 【铁律】：测电阻【必须断电】！被测电路或元件绝不能带电，否则轻则读数错误，重则烧表！家里量插座电阻——大忌！",
+          "image": "resistance_intro",
+          "id": "l4_resistance_n0"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "在一条老厂房电路里要测一段导线电阻，第一步必须做什么？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把旋钮扭到 Ω，直接戳上去测",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "通上 220V 才能让仪表识别电阻",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "先拉闸断电，确保被测段无电再测",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "把万用表接成串联，像测电流一样接进电路",
+              "is_correct": false
+            }
+          ],
+          "explanation": "测电阻必须在【完全断电】状态下进行。电阻档怕外界电压，带电测会烧表。",
+          "id": "l4_resistance_n1"
+        },
+        {
+          "type": "info",
+          "title": "电阻档也有量程，从大到小靠近",
+          "content": "电阻档(Ω)下细分多个量程：200Ω / 2kΩ / 20kΩ / 200kΩ / 2MΩ / 20MΩ。\n\n📏 选择原则同样是【大到小逐步靠近】：\n• 不知道阻值多大 → 选大量程；\n• 看到读数 → 把档位降一级；\n• 直到读数比量程略小、小数位最多。\n\n🔍 测前自检小技巧：把两根表笔尖直接搭在一起，若显示 0 到零点几欧姆 → 表笔正常；若显示 OL → 表笔线可能断了。\n\n💡 也可以通过这个自检判断表的内阻——内阻越小，测出的电阻越准。",
+          "image": "resistance_intro",
+          "id": "l4_resistance_n2"
+        },
+        {
+          "type": "true_false",
+          "question": "电阻测量前把两根表笔尖搭在一起，可以快速判断表笔线是否完好。",
+          "correct_answer": true,
+          "explanation": "表笔短接应显示 0 到零点几欧姆。若显示 OL 或无穷大，说明表笔线内部断开了。",
+          "id": "l4_resistance_n3"
+        },
+        {
+          "type": "info",
+          "title": "蜂鸣档 vs 电阻档：哥俩有啥不同？",
+          "content": "电阻档区里有一个超实用的【蜂鸣档】，符号通常是 🔊声波 或 ⏷⏶ 二极管图标。\n\n🔁 区别：\n• 【电阻档 Ω】：精确测量阻值，看屏幕数字。\n• 【蜂鸣档 🔊】：专门用来快速判断【通断】——电阻小于约 50Ω 时直接发出长鸣『哔————』，无需低头看屏幕。\n\n🏗 应用场景：100 米长的厂房电缆，老鼠是不是咬断了？\n→ 把蜂鸣档接在线两端，一头“哔”了就说明全程贯通；不响 → 断了。\n\n💡 蜂鸣档还能测二极管极性：正向接（红→正极、黑→负极）会响，反向接不响。",
+          "image": "resistance_intro",
+          "id": "l4_resistance_n4"
+        },
+        {
+          "type": "simulation_dial",
+          "question": "要查一根 80 米长的线中间有没有被咬断，最快用哪个档？",
+          "instruction": "选中专门用于判断通断的【蜂鸣报警档】",
+          "dial_options": [
+            {
+              "label": "OFF",
+              "angle": 0
+            },
+            {
+              "label": "ACV 200",
+              "angle": 60,
+              "is_wrong": true
+            },
+            {
+              "label": "DCV 20",
+              "angle": 120,
+              "is_wrong": true
+            },
+            {
+              "label": "电阻档 Ω 20k",
+              "angle": 210,
+              "is_wrong": true
+            },
+            {
+              "label": "🔊通断蜂鸣档",
+              "angle": 250,
+              "is_correct": true
+            }
+          ],
+          "success_msg": "✅ 选得很准！蜂鸣档不用看屏幕，听声音就知道通不通，是排查断线最快的方式。",
+          "fail_msg": "提示：找带 🔊 喇叭波纹或二极管图标的档位。单纯电阻档需要低头看数字，蜂鸣档直接听声音最省时。",
+          "explanation": "查长线通断最快用蜂鸣档：电阻小于约 50Ω 会直接长鸣，不用低头看屏幕。电阻档要读数字较慢，蜂鸣档靠耳朵听声，是排查断线最省时的档位。",
+          "id": "l4_resistance_n5"
+        },
+        {
+          "type": "simulation_probe",
+          "question": "现在表笔在你手上，把它放到电缆两头听听响不响！",
+          "instruction": "分别把黑、红表笔放在电缆 A 端和 B 端",
+          "image": "wire_continuity",
+          "hotspots": {
+            "wire_end_a": {
+              "label": "电缆A端头",
+              "x": 80,
+              "y": 175,
+              "radius": 25
+            },
+            "wire_end_b": {
+              "label": "电缆B另一头",
+              "x": 320,
+              "y": 175,
+              "radius": 25
+            }
+          },
+          "correct_probes": {
+            "red": "wire_end_a",
+            "black": "wire_end_b"
+          },
+          "allow_swap": true,
+          "feedback_display": "🔊哔————！ (屏幕显示 0.00 Ω)",
+          "explanation": "两表笔分别搭在电缆两端，蜂鸣加屏幕 0.00Ω 即线路全程贯通。通断测试不分红黑极性，只要表笔接触良好，长鸣一声就说明没有断线。",
+          "id": "l4_resistance_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "蜂鸣档长鸣『哔————』且屏幕读数接近 0Ω，说明这条线是____的。",
+          "answer": "通的",
+          "acceptable_answers": [
+            "通的",
+            "连通",
+            "完好",
+            "通路",
+            "通断正常",
+            "导通"
+          ],
+          "explanation": "蜂鸣 + 接近 0Ω = 完全连通。若不响或显示 OL，说明线中间断了。",
+          "id": "l4_resistance_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测一个零件电阻，屏幕显示『1』或『OL』，是什么意思？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电阻就是 1 欧姆",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "万用表彻底坏了",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电池没电导致显示乱码",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "量程太小被撑爆，或物体已断路阻值趋于无穷大",
+              "is_correct": true
+            }
+          ],
+          "explanation": "OL = OverLoad (溢出)。要么把档位调大试试，要么说明该零件确实开路(断了)。",
+          "id": "l4_resistance_n8"
+        },
+        {
+          "type": "info",
+          "title": "三相电机绕组排故：电阻档的杀手锏",
+          "content": "三相异步电机有三相绕组(A、B、C)，正常时【任意两相之间电阻基本相等】。\n\n📐 操作步骤：\n1) 电机断电断开！\n2) 红插 V/Ω 孔、黑插 COM，旋钮打到 200Ω 档；\n3) 分别测 A-B、B-C、C-A 三对相间电阻；\n4) 比较结果：\n   • 三个值基本相等 → 绕组正常 ✅\n   • 某两相测不出(OL) → 该相绕组烧断 🔥\n   • 三个值差异较大 → 可能存在匝间短路 ⚠️\n\n这就是电工通过万用表【不拆机】就判断电机好坏的方法。",
+          "image": "motor_winding",
+          "id": "l4_resistance_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "【现场排故】一台三相电机不能启动，断电后用万用表测三相绕组电阻：A-B=5Ω、B-C=5Ω、C-A=OL(无穷大)。最可能的故障是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "C-A 之间绕组烧断了（开路）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电机完全正常，是供电电源问题",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "三相电源相序错了",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "万用表 200Ω 量程太小，应该用 2kΩ",
+              "is_correct": false
+            }
+          ],
+          "explanation": "两相正常、一对显示 OL，说明这一对之间的绕组已经断了（烧毁）。必须拆机重绕。",
+          "id": "l4_resistance_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "【现场排故】测一段疑似断了的延长线，蜂鸣档不响、屏幕 OL。再次用 200Ω 电阻档复测仍 OL。最合理结论是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "线肯定是好的，是万用表自己坏了",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "线中间断了，需要更换或重新接线",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "应该把档位调到 ACV 才能测出来",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "线还带电，所以测不准",
+              "is_correct": false
+            }
+          ],
+          "explanation": "蜂鸣不响 + 电阻 OL，两个档位双重验证：线中间确实断了。可以再先把表笔短接验证表笔无问题。",
+          "id": "l4_resistance_n11"
+        },
+        {
+          "type": "sort",
+          "question": "把【用蜂鸣档判断一根线通断】的完整步骤排好",
+          "instruction": "从准备到收尾",
+          "items": [
+            {
+              "id": "1",
+              "text": "确认被测线路完全断电"
+            },
+            {
+              "id": "2",
+              "text": "红表笔插 V/Ω 孔，黑表笔插 COM 孔"
+            },
+            {
+              "id": "3",
+              "text": "旋钮拨到蜂鸣档 🔊"
+            },
+            {
+              "id": "4",
+              "text": "先把两表笔尖搭一起，确认表笔自检会响"
+            },
+            {
+              "id": "5",
+              "text": "将两表笔分别接在线的两端，听是否有蜂鸣"
+            },
+            {
+              "id": "6",
+              "text": "测完旋钮回 OFF"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ],
+          "explanation": "用蜂鸣档查通断的顺序：先断电，黑表笔插 COM、红表笔插 V/Ω，拨到蜂鸣档，先短接表笔尖自检是否会响，再搭被测线两端听蜂鸣，测完回 OFF。先自检再测量，结果才可靠。",
+          "id": "l4_resistance_n12"
+        },
+        {
+          "type": "info",
+          "title": "通断蜂鸣档 vs 电阻档：精确边界",
+          "content": "上一节讲了蜂鸣档和电阻档功能不同，这里再讲清【精确数值边界】：\n\n🔊 【蜂鸣档(Continuity)】内置一个阈值电路：\n• 被测电阻【< 约 50Ω】 → 连续长鸣『哔————』\n• 被测电阻【> 约 50Ω】 → 不响，但屏幕仍然显示具体阻值\n\n📐 不同品牌阈值略有差异：\n• SENIT DT9205Pro：约 50Ω 以下响\n• FLUKE 117：约 25Ω 以下响\n• UNI-T UT139：约 70Ω 以下响\n\n💡 含义：蜂鸣档只是 \"低阻通断快报警\"，不是 \"有电阻就响\"。要精确知道阻值大小，还得切换到 Ω 档读屏幕。",
+          "image": "buzz_vs_ohm",
+          "id": "l4_resistance_n13"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "我用蜂鸣档去测一只标称 100Ω 的精密电阻，万用表【没有响】，但屏幕上稳定显示 100.2Ω。这说明什么？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电阻坏了已经断路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "万用表坏了",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "100Ω 高于蜂鸣档约 50Ω 的报警阈值，所以不响是完全正常的；屏幕显示 100.2Ω 表明电阻完好",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "表笔线断了",
+              "is_correct": false
+            }
+          ],
+          "explanation": "蜂鸣档的报警阈值大多数表在 50Ω 上下。100Ω 已超出该阈值，所以不响合情合理。屏幕上还能稳稳显示 100.2Ω，说明电路【通】且阻值正常。要快速判断 \"是否通路且阻值在某范围\"，建议直接看屏幕数字而不是只听声音。",
+          "id": "l4_resistance_n14"
+        },
+        {
+          "type": "info",
+          "title": "测大电阻：量程不能选太小",
+          "content": "测高阻值电阻(如 1MΩ 以上的绝缘电阻、保护电阻) 时，要特别注意：\n\n⚠️ 【量程不能太小】：用 200Ω 档测 1MΩ 电阻，屏幕只会显示 OL(溢出)。必须从 2MΩ 甚至 20MΩ 档开始。\n\n🔄 【从大到小逆向选择】：\n1) 先试 200MΩ 档(若有)或最大档 → 看到数字；\n2) 逐级降到读数最精细的档位。\n\n📐 高阻测量额外注意：\n• 手指【不要同时碰两个表笔金属】，否则人体电阻(几百 kΩ ~ 几 MΩ)会和被测物【并联】，读数偏小。\n• 环境湿度高时绝缘电阻会下降，读数不稳。\n• 测兆欧级绝缘电阻最好用专门的【摇表(兆欧表)】，能输出 500V/1000V 高压更接近实际工况。\n\n💡 DT9205Pro 电阻档量程：200Ω / 2kΩ / 20kΩ / 200kΩ / 2MΩ / 20MΩ，覆盖范围足够日常使用。",
+          "image": "high_resistance_measure",
+          "id": "l4_resistance_n15"
+        }
+      ]
+    },
+    {
+      "id": "l5_ac_voltage",
+      "title": "测交流电压与试电笔实战",
+      "description": "测 220V/380V 交流电压、区分火零地线、试电笔正确握法与漏电判断",
+      "estimated_time": "6分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "交流电压：家用电的真面目",
+          "content": "我们墙上的插座、厂里的电机用的都是【交流电】(AC)。\n\n🇨🇳 中国标准：\n• 单相 220V：火线(L) 与 零线(N) 之间的电压，家用电器都用它。\n• 三相 380V：任意两根火线(A/B/C 三相) 之间的电压，工业电机用它。\n• 火线对地：约 220V；零线对地：接近 0V。\n\n🔄 “交流”意味着电压方向以 50Hz 反复换向——每个周期方向变换 2 次，即每秒换向 100 次——所以【没有正负极】！红黑表笔随便接，读数都是正数。\n\n⚠️ 致命提醒：测交流电属于强电操作，操作前务必握表笔绝缘部分、单手操作、脚穿绝缘鞋。",
+          "image": "ac_voltage",
+          "id": "l5_ac_voltage_n0"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于中国家用 220V 交流电的说法，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "220V 是火线对地的电压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "交流电有正负极，红黑表笔必须接对",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "测交流电要用 DCV 档",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "220V 是火线与零线之间的电压",
+              "is_correct": true
+            }
+          ],
+          "explanation": "220V 是火零之间的电压；火对地虽然也约 220V 但定义不同。交流电没有正负极，测时无需区分表笔颜色。",
+          "id": "l5_ac_voltage_n1"
+        },
+        {
+          "type": "info",
+          "title": "测 220V 完整流程",
+          "content": "📐 操作步骤：\n\n1️⃣ 红表笔插【V/Ω 孔】，黑表笔插【COM 孔】；\n2️⃣ 旋钮拨到【ACV 交流电压档】，量程选【750V】(因为 750V > 220V，且能覆盖 380V)；\n3️⃣ 两根表笔不分颜色，分别插入插座两个孔；\n4️⃣ 读数：正常应在 220V 左右(允许 ±10%，即 198V~242V)。\n\n💡 区分火零地(必须两根表笔同时接触，绝不可只插一根)：\n• 火线(L)对零线(N)：正常约 220V；\n• 火线(L)对地线(PE)：地线接地良好时也约 220V；\n• 零线(N)对地线(PE)：接近 0V(因为 N 与 PE 在变压器处等电位)。\n→ 若 L-PE 明显小于 220V 甚至为 0，说明地线未可靠接地。\n\n⚠️ 禁止「一根表笔悬空」去测电压：悬空表笔只能靠人体耦合读数，既不准确又危险——明明带电也可能读成 0V，极易触电。区分火线与零线，请改用试电笔(氖管发亮的那孔是火线)，或按上面的方法用两根表笔跨测。",
+          "image": "ac_voltage",
+          "id": "l5_ac_voltage_n2"
+        },
+        {
+          "type": "simulation_dial",
+          "question": "要测家里 220V 插座电压，旋钮应该拨到哪一档？",
+          "instruction": "选出最合适的档位",
+          "dial_options": [
+            {
+              "label": "OFF",
+              "angle": 0
+            },
+            {
+              "label": "DCV 750V",
+              "angle": 60,
+              "is_wrong": true
+            },
+            {
+              "label": "ACV 200V",
+              "angle": 100,
+              "is_wrong": true
+            },
+            {
+              "label": "ACV 750V",
+              "angle": 130,
+              "is_correct": true
+            },
+            {
+              "label": "Ω 20k",
+              "angle": 200,
+              "is_wrong": true
+            },
+            {
+              "label": "A~ 20A",
+              "angle": 280,
+              "is_wrong": true
+            }
+          ],
+          "success_msg": "✅ 完美！ACV 750V 能覆盖 220V，也能测 380V 三相相间电压，是家用/工业最常用档。",
+          "fail_msg": "提示：220V 是交流(ACV)；200V 档差一点就装不下 220V(怕电压波动)，所以选 750V 档最安全。",
+          "explanation": "测 220V 插座选 ACV 750V 档：220V 是交流电须用 ACV 档，且 200V 档装不下 220V 会溢出，750V 量程既能覆盖 220V 也能测 380V，是最稳妥的常用档。",
+          "id": "l5_ac_voltage_n3"
+        },
+        {
+          "type": "info",
+          "title": "测三相 380V 与判断三相平衡",
+          "content": "工厂车间常有三相电源，三根火线分别叫 A 相、B 相、C 相。\n\n📐 关键电压关系：\n• 任意两相之间(A-B、B-C、C-A) = 【380V】 (称为“线电压”)\n• 任意一相对零线(A-N、B-N、C-N) = 【220V】 (称为“相电压”)\n• 任意一相对地线(A-PE 等) = 接近 220V\n\n🔍 三相平衡判断：分别测 A-B、B-C、C-A 三个值——\n• 三个值基本相等(都约 380V) → 三相平衡，电源正常 ✅\n• 某一对偏差大 → 缺相或电源故障 ⚠️\n\n操作：红→V/Ω 孔，黑→COM 孔，档位仍是 ACV 750V。",
+          "image": "three_phase",
+          "id": "l5_ac_voltage_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测三相电机进线，得到 A-B=380V、B-C≈190V、C-A≈190V。最可能的问题是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "三相完全正常，电压合格",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "万用表档位选错了",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电源频率不是 50Hz",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "C 相缺相或断线，C 相相关电压异常",
+              "is_correct": true
+            }
+          ],
+          "explanation": "C 相一旦缺失，凡是涉及 C 相的两组线电压(B-C、C-A)都会明显下降(约降为正常值的一半)，而 A-B 仍正常。这里 B-C≈190V、C-A≈190V、A-B=380V，正是 C 相缺相或断线的典型表现，需断电后排查 C 相熔断器、开关触点与接线。",
+          "id": "l5_ac_voltage_n5"
+        },
+        {
+          "type": "info",
+          "title": "试电笔：电工的“电感应耳朵”",
+          "content": "试电笔(又叫【验电笔】、【测电笔】) 是最简单、便携的验电工具，长得像支笔。\n\n🔬 内部结构：\n• 金属笔尖 → 接触被测物\n• 高阻值电阻 → 限流降压保护人体\n• 氖管(内管) → 有电就发光\n• 弹簧 + 金属笔帽尾端 → 给人体导通回路\n\n⚡ 工作原理：手握笔帽时，电流路径是【被测物 → 笔尖 → 电阻 → 氖管 → 弹簧 → 人体 → 大地】。氖管发光说明有电压。整条回路因为高阻限流，电流很小(微安级)，对人体安全。\n\n📐 适用范围：检测【60V ~ 500V】 的交流电压。【低于 60V 不亮，高于 500V 严禁使用】(会击穿绝缘伤人)。",
+          "image": "test_pen",
+          "id": "l5_ac_voltage_n6"
+        },
+        {
+          "type": "true_false",
+          "question": "试电笔可以用来检测 10kV 高压线是否带电。",
+          "correct_answer": false,
+          "explanation": "试电笔适用范围是 60V~500V。超过 500V 会击穿其内部绝缘，造成触电事故。高压验电要用专用高压验电器。",
+          "id": "l5_ac_voltage_n7"
+        },
+        {
+          "type": "info",
+          "title": "试电笔握法：错一下就送命",
+          "content": "🛑 错误握法：手指捏住前端【金属笔尖】——这就等于把人体直接连进了带电体！绝缘电阻被旁路，瞬间触电。\n\n✅ 正确握法：\n• 食指顶住笔尾的【金属笔帽】（提供人体接地通路）\n• 大拇指、中指、无名指捏住笔身的【绝缘塑料部分】\n• 手指【绝对不能碰前端金属笔尖】\n\n💡 记忆口诀：『食指顶笔帽，五指捏塑料，金属尖不碰，氖管亮即电』。\n\n🔍 判断标准：氖管发亮 → 有电；不亮 → 无电或电压低于 60V。",
+          "image": "test_pen_grip",
+          "id": "l5_ac_voltage_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用试电笔测插座电压前，正确的握持方式是哪一种？",
+          "instruction": "判断哪一步符合试电笔安全握法",
+          "options": [
+            {
+              "id": "A",
+              "text": "食指顶住笔尾金属帽，其余手指捏住塑料笔身，金属笔尖接触被测点",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "手握紧金属笔尖，用笔尾去接触被测点",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "五指攥住笔身中部，笔尖悬空看氖管是否发亮",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "湿手拿试电笔，同时把笔尖戳进插座两个孔",
+              "is_correct": false
+            }
+          ],
+          "explanation": "试电笔要靠人体形成回路：食指顶住笔尾金属帽、手指只捏塑料笔身、笔尖接触被测点，氖管发亮即带电。手碰金属尖、笔尖悬空、湿手或同时测两孔都极其危险。",
+          "id": "l5_ac_voltage_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用试电笔分别插入插座的两个孔，发现【两个孔氖管都发亮】。最可能的原因是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "插座正常，两孔都是火线设计",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "零线断开了(俗称“断零”)，导致零线被火线带电",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "试电笔坏了",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电压过高超过 500V 才会两孔都亮",
+              "is_correct": false
+            }
+          ],
+          "explanation": "正常时：火线亮、零线不亮。两孔都亮说明零线断线了——零线失去接地，通过负载被火线“带电”，必须立即修复，否则有触电危险！",
+          "id": "l5_ac_voltage_n10"
+        },
+        {
+          "type": "info",
+          "title": "用试电笔检测家电漏电",
+          "content": "家里的洗衣机、冰箱外壳碰一下感觉麻手？可能漏电了！\n\n📐 检测步骤：\n1) 按正确握法握住试电笔；\n2) 用笔尖触碰电器的【金属外壳部分】（绝缘的塑料壳没用）；\n3) 观察氖管：\n   • 不亮 → 没有漏电 ✅\n   • 亮 → 可能漏电 ⚠️（也可能是感应电压）\n\n🔄 排除感应电干扰：若是两孔插头(无地线)，可以左右调换一下插头方向再次插入插座再测——如果还亮，基本确认是真漏电，必须停用送修！\n\n⚠️ 漏电的电器再用下去随时可能电死人，绝不能拖延。",
+          "image": "leak_detect",
+          "id": "l5_ac_voltage_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "【现场排故】插座插电视没反应。试电笔测两孔：左孔亮、右孔不亮。万用表测两孔间电压：只有 80V，不是 220V。最可能问题是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电视坏了",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "万用表挡位选错了",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "零线接触不良或部分断开，火线仍在但回路阻抗高",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "电压偏低是正常波动",
+              "is_correct": false
+            }
+          ],
+          "explanation": "左孔亮(火线正常)，但电压只有 80V 远低于 220V → 零线虽未完全断但接触不良，导致测量电压偏低。需检查零线接线柱与配电箱零排。",
+          "id": "l5_ac_voltage_n12"
+        },
+        {
+          "type": "fill_blank",
+          "question": "试电笔最大可测交流电压不应超过____V，否则有触电危险。",
+          "answer": "500",
+          "acceptable_answers": [
+            "500",
+            "500V",
+            "500v"
+          ],
+          "explanation": "试电笔安全使用范围是 60V~500V。超过 500V 必须用专业高压验电器。",
+          "id": "l5_ac_voltage_n13"
+        },
+        {
+          "type": "sort",
+          "question": "把【用试电笔判断插座火零线】的完整流程排好",
+          "instruction": "拖动排序",
+          "items": [
+            {
+              "id": "1",
+              "text": "检查试电笔本身：先在确认有电的地方测一下，验证氖管能亮"
+            },
+            {
+              "id": "2",
+              "text": "食指顶住笔尾金属帽，其余手指握住塑料笔身"
+            },
+            {
+              "id": "3",
+              "text": "用笔尖依次插入插座的两个孔"
+            },
+            {
+              "id": "4",
+              "text": "氖管亮的那孔是火线，不亮的那孔是零线"
+            },
+            {
+              "id": "5",
+              "text": "如有疑虑(如两孔都亮)，立即停止使用并请专业电工排查"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "explanation": "用试电笔辨火零的顺序：先在确认带电处验证氖管能亮，再食指顶笔尾金属帽、手指捏塑料笔身，笔尖依次插两孔，亮的是火线，不亮的是零线，两孔都亮要立即停用请电工排查。",
+          "id": "l5_ac_voltage_n14"
+        },
+        {
+          "type": "simulation_danger",
+          "question": "⚠️ 综合实战：客户报修说插座没电，你赶到现场，请用正确流程检查！",
+          "instruction": "按安全顺序排查",
+          "initial_state": {
+            "scene": "客户家配电箱开着，插座外观正常",
+            "tools": [
+              "万用表(红表笔在20A孔，档位ACV750)",
+              "试电笔"
+            ]
+          },
+          "danger_action": "test_socket_with_meter",
+          "danger_response": {
+            "shake": true,
+            "flash_red": true,
+            "sound": "spark",
+            "message": "🔥 砰！万用表红表笔还在 20A 电流孔！这一下直接把插座短接，断路器跳闸，万用表内部保险炸了！请先检查万用表设置！"
+          },
+          "correct_sequence": [
+            {
+              "action": "move_probe",
+              "from": "20A",
+              "to": "V/Ω"
+            },
+            {
+              "action": "use_test_pen_first"
+            },
+            {
+              "action": "test_socket_with_meter"
+            }
+          ],
+          "success_msg": "🎉 优秀流程！先看万用表设置 → 用试电笔初判 → 再用万用表精测。这才是合格电工的工作方式！",
+          "explanation": "正确流程是先检查万用表：红表笔从 20A 电流孔换回 V/Ω 孔，否则戳插座即短路；再用试电笔初判有没有电，最后用万用表精测电压。先验表再验电，先粗测后精测，才是合格电工的顺序。",
+          "id": "l5_ac_voltage_n15"
+        },
+        {
+          "type": "info",
+          "title": "火线 L、零线 N、地线 PE：三者关系",
+          "content": "中国低压配电制度采用【TN-S 三相五线制】(或单相三线制)，进入家庭/商铺的电源线一般有三种：\n\n🔥 【L 线 Live(火线)】：相对大地约 220V，电流的 \"来路\"，颜色规范为【红/黄/绿】。\n⚪ 【N 线 Neutral(零线)】：与大地等电位(约 0V)，电流的 \"回路\"，颜色规范为【蓝色】(或淡蓝)。\n🌍 【PE 线 Protective Earth(保护地线)】：直接接大地，正常时不带电、不通过电流，仅作为漏电时的泄放通道，颜色规范为【黄绿双色】。\n\n📐 关键电压关系：\n• L ↔ N = 220V (这是用电的工作电压)\n• L ↔ PE ≈ 220V (因为 N 和 PE 在配电箱接地排其实是等电位的)\n• N ↔ PE ≈ 0V (理论同电位，实际可能 0~2V 微小差值)\n\n💡 PE 线是 \"保命线\"——金属外壳一旦漏电，电流经 PE 直接泄入大地，触发漏电保护跳闸，避免人触电。",
+          "image": "lne_relation",
+          "id": "l5_ac_voltage_n16"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "我把万用表 ACV 750V 档接家用插座：红表笔插右孔(火线 L)、黑表笔插左孔(零线 N)，显示 220V。现在保持红表笔不动，把黑表笔从 N 孔换到地线孔(PE)，屏幕会显示什么？",
+          "options": [
+            {
+              "id": "A",
+              "text": "显示 0V，因为换了地线就没电压了",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "显示 380V，三相电压",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "显示 110V，电压减半",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "依然约 220V，因为 N 与 PE 等电位(都约 0V)，所以 L 对 PE 的电压差仍然约 220V",
+              "is_correct": true
+            }
+          ],
+          "explanation": "在 TN-S 制式下，N 和 PE 在配电箱的接地排相连，理论等电位(都 ≈ 0V)。所以无论参考端是 N 还是 PE，相对火线 L 的电压差都是 220V。如果你测 L-PE 远小于 220V，反而要警惕 PE 线接触不良或断开。",
+          "id": "l5_ac_voltage_n17"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请用万用表测家用 220V 插座（先用最大量程探测）",
+          "instruction": "依次：① 拨档位 → ② 检查表笔 → ③ 探针接触两孔 → ④ 提交",
+          "steps": [
+            {
+              "step": 1,
+              "description": "黑表笔确认插在 COM 孔，红表笔插 VΩHz 孔",
+              "required_state": {
+                "black_probe": "COM",
+                "red_probe": "VΩHz"
+              }
+            },
+            {
+              "step": 2,
+              "description": "旋钮拨到 ACV 750V 档(大量程优先)",
+              "required_dial": "ACV_750V"
+            },
+            {
+              "step": 3,
+              "description": "两根表笔分别插入插座两孔(交流无极性)，屏幕显示约 220V",
+              "expected_reading": "220V",
+              "tolerance": 20
+            },
+            {
+              "step": 4,
+              "description": "测完先把旋钮回 OFF，再拔出表笔",
+              "required_dial": "OFF"
+            }
+          ],
+          "danger_actions": [
+            {
+              "action": "use_DCV_to_measure_AC",
+              "feedback": "❌ 220V 是交流电，必须用 ACV 档！DCV 档会显示 0 或乱跳。"
+            },
+            {
+              "action": "use_A_port_to_measure_V",
+              "feedback": "💥 红表笔还在 20A 或 mA 电流孔！这一插就是短路，会跳闸或炸表！"
+            },
+            {
+              "action": "use_ACV_200V_first",
+              "feedback": "⚠️ 220V 已经超过 200V 档上限，会显示 OL(过载)。应先用 ACV 750V 大量程，再降档精测。"
+            }
+          ],
+          "success_msg": "正确！220V 超过 ACV_200V 档上限，必须用 ACV_750V 大量程；ACV_750 已是最接近 220V 的量程，读数即精确值",
+          "image": "ac_voltage_socket",
+          "explanation": "测 220V 插座：黑表笔插 COM、红表笔插 V/Ω 孔，旋钮拨 ACV 750V(大量程优先，220V 超过 200V 档上限)，两笔分插两孔显示约 220V，测完先回 OFF 再拔笔。交流无极性，红黑可任意交换。",
+          "id": "l5_ac_voltage_n18",
+          "target": {
+            "type": "socket_220v",
+            "label": "🔌 220V 家用插座",
+            "hotspots": {
+              "live": {
+                "label": "火线 (L)",
+                "x": 80,
+                "y": 100
+              },
+              "neutral": {
+                "label": "零线 (N)",
+                "x": 220,
+                "y": 100
+              }
+            }
+          },
+          "correct_setup": {
+            "dial": "ACV_750",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "live",
+            "black_touch": "neutral"
+          },
+          "allow_swap": true,
+          "correct_display": "220.0",
+          "fail_msg": "测交流电要选 ACV(V~) 档，且必须用最大量程开始试探！"
+        }
+      ]
+    }
+  ]
+}

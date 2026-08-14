@@ -1,0 +1,757 @@
+{
+  "id": "s8_grounding_lightning_cable",
+  "title": "电工考证单元八：接地、防雷与电力电缆",
+  "description": "低压配电系统类型、接地装置与接地电阻、防雷保护、电力电缆、保护配置综合",
+  "icon": "⚡",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s8a_system_types",
+      "title": "低压配电系统类型",
+      "description": "TN-C、TN-S、TT、IT 系统的特点",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "系统类型总览",
+          "content": "低压配电系统按保护接地方式分三类：TN 系统——电源中性点直接接地，设备外壳接保护零线；TT 系统——电源中性点直接接地，设备外壳各自独立接地（不与零线相连）；IT 系统——电源中性点不接地（或经阻抗接地），设备外壳接地。",
+          "id": "s8a_system_types_n0"
+        },
+        {
+          "type": "info",
+          "title": "TN-C、TN-S、TN-C-S",
+          "content": "TN 系统又分三种：TN-C——保护零线 PE 与工作零线 N 合用一根线（PEN 线），即三相四线制；TN-S——PE 与 N 从源头分开，三相五线制，最安全，现代建筑采用；TN-C-S——前端合用、进入建筑物后分开。",
+          "id": "s8a_system_types_n1"
+        },
+        {
+          "type": "info",
+          "title": "TT 系统",
+          "content": "TT 系统：中性点直接接地，设备金属外壳就地单独接地，与电源零线无关。其保护靠设备接地 + 漏电保护器：漏电时漏电电流经设备接地电阻构成回路，漏电保护器检测到剩余电流跳闸。农村、户外等单独接地的场合常用。",
+          "id": "s8a_system_types_n2"
+        },
+        {
+          "type": "info",
+          "title": "IT 系统",
+          "content": "IT 系统：中性点不接地（或经阻抗接地），供电连续性最好——第一次单相接地时因无电流回路，故障电流很小、系统可继续运行，但必须装绝缘监测报警。用于医院手术室、矿山井下等对供电连续性要求高的场所。",
+          "id": "s8a_system_types_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "现代建筑普遍采用、PE 与 N 从电源中性点就分开的三相五线制是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "TN-C 系统",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "TT 系统",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "TN-S 系统",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "IT 系统",
+              "is_correct": false
+            }
+          ],
+          "explanation": "TN-S 为三相五线制：PE（保护零线）与 N（工作零线）完全分开敷设，安全性、抗干扰性最好，现代建筑采用。",
+          "id": "s8a_system_types_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "TN-C 系统的特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "PE 与 N 完全分开",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "中性点不接地",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "设备各自独立接地",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "保护零线与工作零线合用一根 PEN 线（三相四线制）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "TN-C 中 PE 与 N 合并为 PEN 线，省一根导线但安全性差，PEN 断线时外壳带电，已逐步淘汰。",
+          "id": "s8a_system_types_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "TT 系统中设备金属外壳的保护接地与电源中性点的接地共用同一个接地极。",
+          "correct_answer": false,
+          "explanation": "不对。TT 系统的两个「T」正是：电源中性点接地、设备金属外壳独立接地，二者各自分开、不共用接地极。TN-C 的 PEN 线只是把 PE 与 N 合并为一根导线（共用导线），与本题的「共用接地极」不是同一回事。",
+          "id": "s8a_system_types_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "第一次单相接地时故障电流很小、系统可继续运行，适合手术室/矿山井下的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "IT 系统（中性点不接地或经阻抗接地）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "TT 系统",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "TN-S 系统",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "TN-C 系统",
+              "is_correct": false
+            }
+          ],
+          "explanation": "IT 系统中性点不接地，单相接地不构成电流回路，供电不中断，但须装绝缘监测并尽快排除故障。",
+          "id": "s8a_system_types_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "TN-S 系统又称三相 ____ 线制（按导线根数）。",
+          "answer": "五",
+          "acceptable_answers": [
+            "五",
+            "5",
+            "五线",
+            "5线"
+          ],
+          "explanation": "TN-S 有 L1/L2/L3 三相 + N + PE 共五根线，故称三相五线制。",
+          "id": "s8a_system_types_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "TN-C-S 系统是前端 PE 与 N 合用（PEN），进入建筑物或户内后把 PEN 分开为 PE 与 N。",
+          "correct_answer": true,
+          "explanation": "TN-C-S 在电源侧与进户前合用 PEN，入户后重复接地并分开为 PE 和 N，兼顾经济与安全。",
+          "id": "s8a_system_types_n9"
+        }
+      ]
+    },
+    {
+      "id": "s8b_grounding_device",
+      "title": "接地装置与接地电阻",
+      "description": "人工接地体、接地电阻标准、测量",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "接地装置的组成",
+          "content": "接地装置由接地体和接地线组成：接地体是埋入地中并与大地直接接触的金属导体（人工接地体用角钢、钢管、圆钢，或利用自然接地体如建筑物基础钢筋）；接地线是连接接地体与设备的金属导体。",
+          "id": "s8b_grounding_device_n0"
+        },
+        {
+          "type": "info",
+          "title": "接地电阻的标准",
+          "content": "接地电阻越小越好。常见标准：低压配电系统及设备保护接地 ≤4Ω；重复接地、防雷接地等按规程（防雷接地一般 ≤10Ω，独立避雷针 ≤10Ω）。接地电阻超标须增设接地体或降阻处理。",
+          "id": "s8b_grounding_device_n1"
+        },
+        {
+          "type": "info",
+          "title": "接地电阻的测量",
+          "content": "接地电阻用接地电阻测量仪（接地摇表）测量：按仪器的 P（电位）、C（电流）、E（接地）三个接线端子把辅助接地棒打入地中布置好，摇测读数。测量要在干燥天气进行，读数才代表真实土壤条件。",
+          "id": "s8b_grounding_device_n2"
+        },
+        {
+          "type": "info",
+          "title": "接地体施工要求",
+          "content": "人工接地体：垂直接地体间距不小于其长度的 2 倍，埋深不小于 0.6m；水平接地体埋深不小于 0.6m；接地体与接地线连接处用焊接并防腐。多根接地体并联时，总接地电阻随根数增加而减小。",
+          "id": "s8b_grounding_device_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "低压配电系统的保护接地电阻一般要求不大于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "400Ω",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "4Ω",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "40Ω",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "0.4Ω",
+              "is_correct": false
+            }
+          ],
+          "explanation": "低压设备保护接地电阻一般 ≤4Ω，接地电阻越小漏电时外壳电位越低越安全。",
+          "id": "s8b_grounding_device_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量接地电阻应使用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "普通万用表电阻挡",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "兆欧表",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "接地电阻测量仪（接地摇表）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "钳形电流表",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接地电阻测量仪带辅助接地极（P/C 极）专门测接地电阻；万用表、兆欧表测不了土壤散流电阻。",
+          "id": "s8b_grounding_device_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "人工垂直接地体埋得越浅越好，这样便于检修和更换。",
+          "correct_answer": false,
+          "explanation": "不对。人工垂直接地体埋深一般不小于 0.6m，以避开冻土层和地表干湿变化的影响；垂直接地体间距不小于其长度的 2 倍，避免相互屏蔽而降低散流能力。",
+          "id": "s8b_grounding_device_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "独立避雷针的防雷接地电阻一般要求不大于 ____ Ω。",
+          "answer": "10",
+          "acceptable_answers": [
+            "10",
+            "10Ω",
+            "10 Ω",
+            "十"
+          ],
+          "explanation": "防雷接地电阻一般 ≤10Ω；低压设备保护接地 ≤4Ω——两个标准要分清。",
+          "id": "s8b_grounding_device_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "接地电阻超标时，正确的处理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "不处理，凑合使用",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "把接地线剪短",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "加大设备功率",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "增设接地体（多根并联）或降阻处理",
+              "is_correct": true
+            }
+          ],
+          "explanation": "接地电阻过大漏电时外壳电位高、分流失效，须增设接地体、用降阻剂或换土处理直至达标。",
+          "id": "s8b_grounding_device_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "接地体与接地线的连接处应采用焊接并做防腐处理。",
+          "correct_answer": true,
+          "explanation": "焊接保证连接可靠、接触电阻小，防腐防锈蚀，保证接地装置长期有效。",
+          "id": "s8b_grounding_device_n9"
+        }
+      ]
+    },
+    {
+      "id": "s8c_lightning",
+      "title": "防雷保护",
+      "description": "避雷针、避雷带、避雷器、等电位连接",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "防雷的基本手段",
+          "content": "防雷的总体思路是「引雷入地、控制电位」：用避雷针/避雷带把雷电流接引下来，经引下线和接地装置泄放入地；对进入建筑物的电源、信号线路装设避雷器（SPD），限制雷电过电压；同时做好等电位连接。",
+          "id": "s8c_lightning_n0"
+        },
+        {
+          "type": "info",
+          "title": "避雷针与保护范围",
+          "content": "避雷针（接闪杆）装在最高点，靠针尖尖端放电把附近雷云放电引向自身，雷电流经引下线、接地装置入地，从而保护其下方的设备。保护范围按折线法/滚球法确定，针越高保护半径越大。",
+          "id": "s8c_lightning_n1"
+        },
+        {
+          "type": "info",
+          "title": "避雷器（浪涌保护器）",
+          "content": "避雷器并联在电源或信号线路与地之间，正常时呈高阻、不影响运行；雷电过电压来临时快速导通，把过电压泄放人地、钳制电压，保护设备绝缘。低压系统常用氧化锌避雷器（SPD）。",
+          "id": "s8c_lightning_n2"
+        },
+        {
+          "type": "info",
+          "title": "等电位连接",
+          "content": "等电位连接把建筑物内外的金属管道、基础钢筋、设备金属外壳等用等电位联结线连到等电位端子箱，使雷击或故障时各金属部分电位相等、不产生危险电位差，防止人身电击和设备损坏。",
+          "id": "s8c_lightning_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "避雷针的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把雷电流接引下来经引下线和接地装置泄放入地，保护下方设备",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "把雷变成电能储存",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "测量雷电压",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "把雷电挡住不让它落下",
+              "is_correct": false
+            }
+          ],
+          "explanation": "避雷针并非「挡雷」，而是主动接闪引雷入地，使雷电流按预定通道泄放，保护其保护范围内设备。",
+          "id": "s8c_lightning_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "防止雷电过电压侵入用电设备，电源线路应装设？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接触器",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "避雷器（浪涌保护器 SPD）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "熔断器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "热继电器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "避雷器并联在线路与地间，雷电过电压时导通泄放、钳位电压，保护设备；熔断器热继是过流/过载保护。",
+          "id": "s8c_lightning_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "等电位连接是把建筑物内外的金属管道、设备外壳等相互绝缘，防止电流流过。",
+          "correct_answer": false,
+          "explanation": "不对。等电位连接恰恰相反，是把金属管道、设备外壳等全部连成同一电位，使雷击或故障时各金属部分之间不产生危险电位差，从而避免跨步电压和接触电压伤人。",
+          "id": "s8c_lightning_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "低压系统的防雷常用 ____ 锌避雷器（SPD）来限制过电压。",
+          "answer": "氧化",
+          "acceptable_answers": [
+            "氧化",
+            "氧化锌",
+            "ZnO",
+            "氧化锌（ZnO）"
+          ],
+          "explanation": "氧化锌避雷器（MOV）非线性特性好：正常高阻、过压低阻泄放，是低压配电主流 SPD。",
+          "id": "s8c_lightning_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于避雷装置，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "避雷针接地线可以随意断开",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "装了避雷针就绝对安全",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "避雷针的接地装置应与被保护设备的接地可靠连接",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "引下线不需要接地",
+              "is_correct": false
+            }
+          ],
+          "explanation": "雷电流要可靠入地，接地必须良好且与被保护设备等电位连接；避雷只能降低风险、不能保证绝对安全。",
+          "id": "s8c_lightning_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "雷雨天人员应远离避雷针引下线和大树，避免接触电压和跨步电压伤害。",
+          "correct_answer": true,
+          "explanation": "雷击时引下线周围、大树旁有巨大雷电流散流，会形成跨步电压和接触电压，人应远离。",
+          "id": "s8c_lightning_n9"
+        }
+      ]
+    },
+    {
+      "id": "s8d_cables",
+      "title": "电力电缆",
+      "description": "电缆结构、敷设方式、识别与接头",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电力电缆的结构",
+          "content": "电力电缆由导体（铜或铝芯）、绝缘层、屏蔽层（高压）、保护层（护套）构成。按绝缘分：聚氯乙烯（PVC）、交联聚乙烯（XLPE，YJV 型最常用）、橡皮等。型号如 YJV-0.6/1kV 3×16：铜芯交联聚乙烯绝缘聚氯乙烯护套电力电缆，额定电压 0.6/1kV，3 芯 16mm²。",
+          "id": "s8d_cables_n0"
+        },
+        {
+          "type": "info",
+          "title": "敷设方式",
+          "content": "电缆常见敷设方式：直埋（沟内铺沙盖砖，埋深一般不小于 0.7m）、穿管敷设、电缆沟/电缆隧道敷设、桥架敷设、沿墙明敷。直埋电缆在转角、接头处设标志桩，与其他管线交叉要保护。",
+          "id": "s8d_cables_n1"
+        },
+        {
+          "type": "info",
+          "title": "电缆型号识别",
+          "content": "型号字母含义：YJV 交联聚乙烯绝缘聚氯乙烯护套；VV 聚氯乙烯绝缘聚氯乙烯护套；ZR 阻燃、NH 耐火、WDZ 低烟无卤阻燃；电压等级 0.6/1kV（相电压/线电压）。选型按载流量、敷设环境（阻燃/耐火）和电压等级确定。",
+          "id": "s8d_cables_n2"
+        },
+        {
+          "type": "info",
+          "title": "电缆接头与终端",
+          "content": "电缆敷设要留有裕量，接头和终端是薄弱环节：低压电缆中间接头、终端头须用专用附件并按工艺制作，保证绝缘密封。电缆运行中不得长期过载，接头处最易发热，要检查测温。",
+          "id": "s8d_cables_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "型号 YJV 的含义是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "橡皮绝缘电缆",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "油浸纸绝缘电缆",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "耐火控制电缆",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "交联聚乙烯绝缘、聚氯乙烯护套（铜芯电力电缆）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "YJV = 交联聚乙烯（XLPE）绝缘、聚氯乙烯护套，是当前最常用的电力电缆型号。",
+          "id": "s8d_cables_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电力电缆直埋地中的埋深一般不小于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.7m",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "2m",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "5m",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "0.1m",
+              "is_correct": false
+            }
+          ],
+          "explanation": "直埋电缆沟内铺沙盖砖，埋深一般 ≥0.7m，防外力损伤并避开冻土层影响。",
+          "id": "s8d_cables_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电缆中间接头只要用绝缘胶带缠绕严密，就可以长期安全运行。",
+          "correct_answer": false,
+          "explanation": "不对。中间接头和终端是绝缘与电场集中的薄弱环节，必须用专用接头附件按标准工艺压接并密封处理；仅用胶带缠绕耐压不足、易进水，是电缆事故的高发原因。",
+          "id": "s8d_cables_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "型号前缀 ZR 表示？",
+          "options": [
+            {
+              "id": "A",
+              "text": "架空绝缘线",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "阻燃电缆",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "耐火电缆",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "高压电缆",
+              "is_correct": false
+            }
+          ],
+          "explanation": "ZR=阻燃，NH=耐火，WDZ=低烟无卤阻燃。消防等场所按防火要求选 ZR/NH/WDZ 型。",
+          "id": "s8d_cables_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "电缆型号标注的电压等级如 0.6/1kV，表示 ____ 电压 / 线电压。",
+          "answer": "相",
+          "acceptable_answers": [
+            "相",
+            "相电压",
+            "额定相"
+          ],
+          "explanation": "0.6kV 是相对地（相）电压，1kV 是线电压；两者共同表示电缆的绝缘承受能力。",
+          "id": "s8d_cables_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电缆长期过载运行或接头接触不良，会使接头处发热，是电缆故障的常见诱因。",
+          "correct_answer": true,
+          "explanation": "过载使线芯温升超标加速绝缘老化；接头电阻大局部发热，最终导致故障。要测温巡检。",
+          "id": "s8d_cables_n9"
+        }
+      ]
+    },
+    {
+      "id": "s8e_protection_config",
+      "title": "保护配置综合",
+      "description": "短路、过载、漏电、接地保护的配合",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "保护的四道防线",
+          "content": "低压配电的保护按故障类型配置：短路保护（熔断器、断路器电磁脱扣）——故障电流大、动作快；过载保护（热继电器、断路器热脱扣）——允许短时过载、延时动作；漏电保护（漏电保护器）——人身防护、≤30mA/<0.1s；接地保护（保护接地/接零）——降低故障电压。",
+          "id": "s8e_protection_config_n0"
+        },
+        {
+          "type": "info",
+          "title": "各级保护的配合",
+          "content": "上下级保护要选择性配合：下级故障由下级开关先切除，上级后备。靠整定电流和动作时间分级——短路保护上级动作电流应大于下级，时间上逐级有级差，避免故障扩大造成越级跳闸。",
+          "id": "s8e_protection_config_n1"
+        },
+        {
+          "type": "info",
+          "title": "保护的选择性",
+          "content": "选择性 = 只切除故障回路、不波及无故障回路。例如配电箱内某分支短路，应只跳该分支断路器，而总闸不跳，保证其他回路继续供电。通过合理选级联的断路器和整定参数实现。",
+          "id": "s8e_protection_config_n2"
+        },
+        {
+          "type": "info",
+          "title": "接地保护与漏电保护的配合",
+          "content": "设备漏电时：保护接地把外壳电位限制住（防接触电压），漏电保护器检测剩余电流跳闸（防触电时间）。两者配合：接地把漏电流引回、构成漏保动作的电流回路；漏保快速断电，共同保护人身安全。",
+          "id": "s8e_protection_config_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列保护中，动作最快、专门对付大故障电流的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "过载保护（热脱扣）",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "过载保护（热继电器）",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "短路保护（熔断器/断路器电磁脱扣）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "绝缘监测",
+              "is_correct": false
+            }
+          ],
+          "explanation": "短路电流巨大，熔断器熔断或电磁脱扣瞬时动作最快；过载保护有延时，允许短时过载。",
+          "id": "s8e_protection_config_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "保护的选择性指的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "所有开关一起跳闸",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "越级跳闸",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "故障后系统全停",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只切除故障回路，不波及其他正常回路",
+              "is_correct": true
+            }
+          ],
+          "explanation": "选择性通过上下级整定配合实现：下级先跳、上级后备，故障隔离在最小范围，保证其他回路供电。",
+          "id": "s8e_protection_config_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "保护接地的作用是限制设备漏电时外壳的对地电位，防止接触电压伤人。",
+          "correct_answer": true,
+          "explanation": "外壳接地后漏电电流经接地体泄放，外壳电位被钳在安全范围，人体接触时分流减小。",
+          "id": "s8e_protection_config_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "为什么设备装了保护接地还要装漏电保护器？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接地限制电压、漏保快速断电，两者配合更可靠",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "接地可以完全替代漏保",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "装了反而更危险",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "漏保可以完全替代接地",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接地把漏电电流构成回路并限制外壳电位，漏保检测剩余电流快速跳闸断电，缺一不可。",
+          "id": "s8e_protection_config_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "上下级保护配合中，____ 级（下/上）应先动作切除本回路故障。",
+          "answer": "下",
+          "acceptable_answers": [
+            "下",
+            "下级",
+            "本",
+            "故障级"
+          ],
+          "explanation": "选择性要求下级（离故障最近的开关）先动作，上级作为后备，避免越级跳闸扩大停电范围。",
+          "id": "s8e_protection_config_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "短路保护与过载保护可以相互替代，装设了短路保护就不需要过载保护。",
+          "correct_answer": false,
+          "explanation": "不对。短路须瞬时快速切除、过载允许短时运行（利用热惯性），两者的电流整定和动作特性完全不同，各有分工、不能相互替代。只装短路保护，轻微过载时根本不会跳闸，电机照烧。",
+          "id": "s8e_protection_config_n9"
+        },
+        {
+          "type": "info",
+          "title": "GFCI 与 RCD：中美漏电保护的阈值差异",
+          "content": "美国资料里的 GFCI（接地故障断路器，NEC Class A）与中国的剩余电流动作保护器（RCD/漏保）原理相同——检测对地泄漏电流并快速切断。但跳闸阈值不同：美国 GFCI 在 4-6mA 对地泄漏即跳闸（NEC 要求浴室、厨房、户外等插座回路装设，因为美标 120V 插座回路电流小、人身触电更易致命，故阈值取人体摆脱电流以下）；中国家用漏保按 GB 标准常用 30mA/0.1s（30mA 接近人体摆脱阈值，兼顾人身防护与防误动作）。这是标准语境差异，不是原理差异。中国电工考试一律按 30mA/0.1s 与「剩余电流动作保护器/RCD」口径作答。",
+          "id": "s8e_protection_config_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "美国 GFCI（Class A）与中国家用漏保（RCD）的典型动作电流分别是多少？",
+          "options": [
+            {
+              "id": "A",
+              "text": "GFCI 4-6mA，中国家用 RCD 30mA",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "GFCI 30mA，中国家用 RCD 4-6mA",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "GFCI 100mA，中国家用 RCD 300mA",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "两者都是 30mA",
+              "is_correct": false
+            }
+          ],
+          "explanation": "美国 GFCI Class A 在 4-6mA 即跳闸（美标 NEC 语境）；中国家用漏保典型值 30mA（GB 标准，30mA/0.1s）。GFCI 是美式术语，国内考试一律用「剩余电流动作保护器」与 30mA 口径，遇到 4-6mA 时先判断是不是美国语境。",
+          "id": "s8e_protection_config_n11"
+        }
+      ]
+    }
+  ]
+}

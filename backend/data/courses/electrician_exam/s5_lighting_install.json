@@ -1,0 +1,766 @@
+{
+  "id": "s5_lighting_install",
+  "title": "电工考证单元五：照明与电气安装",
+  "description": "照明光源、开关与插座安装、电能表与电功率、照明电路连接、电气安装验收",
+  "icon": "💡",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s5a_lighting_types",
+      "title": "照明光源",
+      "description": "白炽灯、荧光灯、LED 的原理与特点",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "白炽灯",
+          "content": "白炽灯靠钨丝通电发热到白炽状态而发光，属热辐射光源。它结构简单、价格便宜、显色性好、启动快、无频闪，但发光效率很低（电能大部分变热）、寿命较短，正逐步被节能光源取代。",
+          "id": "s5a_lighting_types_n0"
+        },
+        {
+          "type": "info",
+          "title": "荧光灯（日光灯）",
+          "content": "荧光灯靠气体放电产生紫外线、激发管内荧光粉发光，属气体放电光源，发光效率约为白炽灯的 4～5 倍。荧光灯电路由灯管、镇流器、启辉器（辉光启动器）组成：启辉器启动时产生高压、点亮灯管，镇流器在启动和运行中起限流作用。",
+          "id": "s5a_lighting_types_n1"
+        },
+        {
+          "type": "info",
+          "title": "LED 灯",
+          "content": "LED（发光二极管）靠半导体 PN 结电致发光，是目前主流光源：发光效率高、寿命长、启动快、体积小、可控性好，且不含汞、绿色环保。LED 灯珠需配套驱动电源（恒流驱动）工作，家用 LED 灯通过灯头内置驱动直接接入 220V。",
+          "id": "s5a_lighting_types_n2"
+        },
+        {
+          "type": "info",
+          "title": "光源的性能指标",
+          "content": "衡量光源的主要指标：光通量（流明 lm，表示发光总量）、光效（流明/瓦，发光效率）、显色指数（Ra，颜色还原能力，越高越好）、色温（K，光的颜色冷暖）、寿命。LED 光效和寿命远超白炽灯、荧光灯。",
+          "id": "s5a_lighting_types_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "白炽灯的发光原理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "钨丝通电发热到白炽状态，热辐射发光",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "气体放电激发荧光粉发光",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "半导体 PN 结电致发光",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "光电效应发光",
+              "is_correct": false
+            }
+          ],
+          "explanation": "白炽灯是热辐射光源，靠钨丝高温白炽发光；荧光灯是气体放电发光；LED 是电致发光。",
+          "id": "s5a_lighting_types_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "荧光灯电路中的镇流器主要起什么作用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把交流变直流",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "启动时产生高压，运行时限流",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "储存电能",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "散热",
+              "is_correct": false
+            }
+          ],
+          "explanation": "镇流器（电感）在启动瞬间与启辉器配合产生自感高压点亮灯管，运行中利用感抗限制灯管电流。",
+          "id": "s5a_lighting_types_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "LED 灯的发光效率和使用寿命都远高于白炽灯，且不含汞、绿色环保。",
+          "correct_answer": true,
+          "explanation": "LED 光效高（达 100 lm/W 以上）、寿命长（数万小时），无汞污染；白炽灯光效仅 10 lm/W 左右、寿命短。",
+          "id": "s5a_lighting_types_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "荧光灯电路由灯管、____、启辉器三部分组成。",
+          "answer": "镇流器",
+          "acceptable_answers": [
+            "镇流器",
+            "镇流器（电感）",
+            "电感镇流器",
+            "镇流器（电子）"
+          ],
+          "explanation": "镇流器 + 启辉器是荧光灯工作的关键：启辉器负责启动，镇流器启动升压、运行限流。",
+          "id": "s5a_lighting_types_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "白炽灯相比 LED 灯的主要缺点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "启动慢",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "含汞污染环境",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "发光效率低、寿命短（大部分电能转化为热）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "显色性差",
+              "is_correct": false
+            }
+          ],
+          "explanation": "白炽灯优点是启动快、显色好、价格低，但光效低（~10 lm/W）、寿命短。LED 恰好强在光效与寿命。",
+          "id": "s5a_lighting_types_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "光效的单位就是流明（lm），表示灯泡发出的总光通量。",
+          "correct_answer": false,
+          "explanation": "不对。流明（lm）只是光通量的单位，不含功率；光效 = 光通量 ÷ 功率，单位是流明每瓦（lm/W），表示每瓦电功率发出多少光，是衡量光源节能程度的核心指标。",
+          "id": "s5a_lighting_types_n9"
+        }
+      ]
+    },
+    {
+      "id": "s5b_switch_socket",
+      "title": "开关与插座的安装",
+      "description": "开关控火线、插座左零右火上地、安装高度",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "开关必须接火线",
+          "content": "照明开关必须串接在火线（相线）上，控制火线的通断。这样关灯后灯头、灯具上不带电，更换灯泡、擦拭灯具时才安全。如果开关接在零线上，关灯后灯头仍带火线电压，极易造成触电。",
+          "id": "s5b_switch_socket_n0"
+        },
+        {
+          "type": "info",
+          "title": "插座接线规范",
+          "content": "单相三孔插座的接线口诀「左零右火上接地」：面对插座，左孔接工作零线 N，右孔接火线 L，上孔（中间孔）接保护地线 PE。两孔插座为左零右火。PE 孔必须可靠接地，绝不能用零线代替接地。",
+          "id": "s5b_switch_socket_n1"
+        },
+        {
+          "type": "info",
+          "title": "安装高度",
+          "content": "插座安装高度一般距地面 0.3m（视听、台面插座视需要），开关距地面 1.3～1.4m。潮湿场所（卫生间、厨房操作位、户外）须用防潮/防水插座，并加装漏电保护。儿童活动场所宜用带保护门的插座。",
+          "id": "s5b_switch_socket_n2"
+        },
+        {
+          "type": "info",
+          "title": "安装工艺要求",
+          "content": "接线时导线与接线柱要压接牢固、不露铜丝，多股线先拧紧或压接线端子；同一开关面板内的接线要规范、线色分明；面板装正、紧贴墙面。安装完要通电试验，用验电笔核对火零地接线正确。",
+          "id": "s5b_switch_socket_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "照明开关应串接在？",
+          "options": [
+            {
+              "id": "A",
+              "text": "开关接在哪都行",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "零线上，节省火线",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "火线和零线都接",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "火线上，关灯后灯具不带电",
+              "is_correct": true
+            }
+          ],
+          "explanation": "开关必须控火线。接零线则关灯后灯头仍带电，检修、换灯泡易触电，是严重隐患。",
+          "id": "s5b_switch_socket_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "面对单相三孔插座，正确的接线是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "左零右火上接地",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "左火上零下接地",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "右零左火上接地",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "上孔接火线",
+              "is_correct": false
+            }
+          ],
+          "explanation": "三孔插座左孔 N（零）、右孔 L（火）、上孔 PE（地），即「左零右火上接地」；地线不能用零线替代。",
+          "id": "s5b_switch_socket_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "单相插座的保护接地孔可以用工作零线来代替。",
+          "correct_answer": false,
+          "explanation": "PE 与 N 职责不同：N 是载流回路、PE 是保护。用零线当地线，零线断线时外壳反而带电，严禁混接。",
+          "id": "s5b_switch_socket_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "照明开关的安装高度一般距地面 ____ 米左右。",
+          "answer": "1.3",
+          "acceptable_answers": [
+            "1.3",
+            "1.4",
+            "1.3~1.4",
+            "1.3-1.4",
+            "1.35"
+          ],
+          "explanation": "开关一般装在距地面 1.3～1.4m 处，方便伸手触及；插座一般 0.3m。",
+          "id": "s5b_switch_socket_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "卫生间、厨房等潮湿场所的插座应采用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "普通插座即可",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "防潮防水型插座，并配合漏电保护",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "两孔插座不用接地",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "不装插座最省事",
+              "is_correct": false
+            }
+          ],
+          "explanation": "潮湿场所触电风险高，须用防潮防水插座并装漏电保护，人体直接接触水+电更危险。",
+          "id": "s5b_switch_socket_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "接线时导线应压接牢固、不露铜丝，多股导线宜先拧紧或压接端子，防止虚接发热。",
+          "correct_answer": true,
+          "explanation": "虚接会造成接触电阻大、局部发热甚至起火，且易造成电压不稳。压接牢固是安装的基本工艺要求。",
+          "id": "s5b_switch_socket_n9"
+        }
+      ]
+    },
+    {
+      "id": "s5c_meter_power",
+      "title": "电能表与电功率",
+      "description": "单相电度表接线、读数、功率计算 P=UI",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电能的计量",
+          "content": "电能表（电度表、千瓦时表）用来计量消耗的电能，单位是千瓦时（kWh），1 度电 = 1kWh。单相电能表有 4 个接线端子：1 进火、2 出火、3 进零、4 出零，即「1、3 进，2、4 出」。接线错误会不转或反转、计量不准。",
+          "id": "s5c_meter_power_n0"
+        },
+        {
+          "type": "info",
+          "title": "电功率的计算",
+          "content": "单相电功率 P = U·I（纯电阻负载）；三相负载总功率 P = √3·U线·I线·cosφ。日常估算：电流（A）≈ 功率（W）÷ 220V。例如 2200W 的用电设备，工作电流约 10A。",
+          "id": "s5c_meter_power_n1"
+        },
+        {
+          "type": "info",
+          "title": "读表与计量",
+          "content": "电能表读数按表盘窗口示数读取，本月用电量 = 本月读数 − 上月读数。电子式电能表还显示脉冲等状态；智能电表由电力部门远程采集。计量总表前端严禁私接用电，表内接线由专业人员处理。",
+          "id": "s5c_meter_power_n2"
+        },
+        {
+          "type": "info",
+          "title": "互感器计量",
+          "content": "大电流（如 100A 以上）回路用电流互感器配合电能表计量：一次侧穿主线路，二次侧接电能表，读数需乘以互感器变比（倍率）才是实际电量。电流互感器二次侧严禁开路，否则产生危险高压。",
+          "id": "s5c_meter_power_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "单相电能表的正确接线是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "任意接都行",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "只接两根火线",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "1、3 进，2、4 出（1 火进 2 火出，3 零进 4 零出）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "1、2 进，3、4 出",
+              "is_correct": false
+            }
+          ],
+          "explanation": "单相电度表标准接法 1、3 进，2、4 出：1 火进、2 火出、3 零进、4 零出。接错会不转或计量不准。",
+          "id": "s5c_meter_power_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "1 度电等于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1000 瓦",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "1 瓦时",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "1 焦耳",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "1 千瓦时（1kWh）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "1 度电 = 1kWh = 3.6×10⁶ 焦耳。电能表计量的就是千瓦时。",
+          "id": "s5c_meter_power_n5"
+        },
+        {
+          "type": "fill_blank",
+          "question": "一台 2200W 的用电设备接在 220V 电源上，工作电流约为 ____ A。",
+          "answer": "10",
+          "acceptable_answers": [
+            "10",
+            "10A",
+            "10 A",
+            "十"
+          ],
+          "explanation": "I = P/U = 2200÷220 = 10A。估算电流：功率(W)÷220 = 电流(A)。",
+          "id": "s5c_meter_power_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电流互感器二次侧（接电能表侧）严禁？",
+          "options": [
+            {
+              "id": "A",
+              "text": "开路",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "短路",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "接地",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "短接后接地",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电流互感器二次侧开路时，铁芯磁通剧增、二次感应出危险高压并烧毁互感器。二次侧必须经电能表构成闭合回路。",
+          "id": "s5c_meter_power_n7"
+        },
+        {
+          "type": "true_false",
+          "question": "经电流互感器计量的电量，实际值就等于电表读数，不需要乘变比（倍率）。",
+          "correct_answer": false,
+          "explanation": "不对。电流互感器把大电流按变比缩小后送入电表，表读数是被缩小后的值，实际电量必须乘以互感器变比（倍率）才能还原真实用电量，漏乘倍率会造成巨大的计量误差。",
+          "id": "s5c_meter_power_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "三相纯电阻对称负载的总功率 P = √3·U线·I线。",
+          "correct_answer": true,
+          "explanation": "三相功率 P = √3·U线·I线·cosφ，纯电阻负载 cosφ=1，故 P = √3·U线·I线。",
+          "id": "s5c_meter_power_n9"
+        }
+      ]
+    },
+    {
+      "id": "s5d_lighting_circuit",
+      "title": "照明电路的连接",
+      "description": "串并联、日光灯电路组成、多头灯接线",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "灯与控制的关系",
+          "content": "照明电路里，各盏灯之间通常并联连接，保证一盏灯故障不影响其他灯，且每盏灯都承受额定电压 220V。开关与被控灯具串联，控制该灯（或该组灯）的通断。",
+          "id": "s5d_lighting_circuit_n0"
+        },
+        {
+          "type": "info",
+          "title": "荧光灯的完整接线",
+          "content": "荧光灯（日光灯）接线：电源火线→开关→镇流器→灯管一端灯丝，启辉器并联在灯管两端，灯管另一端灯丝接零线。启动时启辉器先闭合预热灯丝，再突然断开使镇流器产生高压击穿灯管气体，灯管点亮后启辉器停止工作。",
+          "id": "s5d_lighting_circuit_n1"
+        },
+        {
+          "type": "info",
+          "title": "一灯一控与多控",
+          "content": "单联开关控制一盏（或一组）灯最简单。需要在两处都能控制同一盏灯（楼梯灯）时用双控开关：两只双控开关用两条控制线相连，改变任何一个开关位置都改变灯的亮灭。",
+          "id": "s5d_lighting_circuit_n2"
+        },
+        {
+          "type": "info",
+          "title": "多头灯与接线端子",
+          "content": "一个开关控制多盏灯时，各灯并联后统一接火线（经开关）与零线。灯头接线必须让火线接到灯头中心的弹簧片（舌簧）端、零线接螺纹端——这样换灯泡时手触及螺纹端不带电，更安全。",
+          "id": "s5d_lighting_circuit_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "照明电路中各盏灯之间应采用什么连接方式？",
+          "options": [
+            {
+              "id": "A",
+              "text": "串联，节省导线",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "并联，互不影响、电压都是 220V",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "混联随机接",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "串联，一个坏全灭",
+              "is_correct": false
+            }
+          ],
+          "explanation": "并联时每盏灯独立承受 220V、互不影响；串联则互相牵制，一盏坏全不亮，且电压被分压。",
+          "id": "s5d_lighting_circuit_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "楼梯上下两端都能控制同一盏灯，应采用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "两只单联开关串联",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "一只开关就够",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "两只双控开关配合控制",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "两只单联开关并联",
+              "is_correct": false
+            }
+          ],
+          "explanation": "双控开关（单刀双掷）用两条控制线连接，任一位置操作都能改变灯的状态，适合楼梯、走廊两端控灯。",
+          "id": "s5d_lighting_circuit_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "荧光灯启动时启辉器先闭合使灯丝预热，再断开使镇流器产生高压将灯管点亮。",
+          "correct_answer": true,
+          "explanation": "这就是荧光灯启动原理：预热—断开—自感高压—放电点亮。灯管点亮后启辉器（辉光）停止工作。",
+          "id": "s5d_lighting_circuit_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "灯头接线时，火线应接到灯头中心的 ____（弹簧片）端，零线接螺纹端。",
+          "answer": "舌簧",
+          "acceptable_answers": [
+            "舌簧",
+            "弹簧片",
+            "弹簧",
+            "中心触点"
+          ],
+          "explanation": "火线接中心弹簧片、零线接螺纹外壳，换灯泡时手碰螺纹端不带电，安全。",
+          "id": "s5d_lighting_circuit_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于日光灯电路，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "不需要启辉器也能正常工作",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "启辉器与灯管串联",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "镇流器与灯管并联",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "镇流器与灯管串联，启辉器与灯管并联",
+              "is_correct": true
+            }
+          ],
+          "explanation": "镇流器串在灯管支路限流，启辉器并在灯管两端配合启动——这是日光灯的基本电路结构。",
+          "id": "s5d_lighting_circuit_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "多个开关控制多组灯时，各组灯串联在一起，一组故障会导致所有组灯熄灭。",
+          "correct_answer": false,
+          "explanation": "不对。照明各组灯采用并联连接、各自开关控制，一组灯故障（如短路烧熔断器也只会影响该支路）不影响其他组正常点亮，这正是照明电路安全可靠、便于维护的原则。",
+          "id": "s5d_lighting_circuit_n9"
+        }
+      ]
+    },
+    {
+      "id": "s5e_install_check",
+      "title": "电气安装验收",
+      "description": "线色规范、端子压接、绝缘测试、安全要求",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "验收的基本项目",
+          "content": "电气安装完成后要验收：核对线色、导线规格是否符合设计；检查接线是否牢固、端子有无虚接；测量线路绝缘电阻（一般不低于 0.5MΩ）；检查开关、插座、灯具安装是否牢固端正；通电试验各回路功能正常、漏电保护动作灵敏。",
+          "id": "s5e_install_check_n0"
+        },
+        {
+          "type": "info",
+          "title": "绝缘电阻测试",
+          "content": "用兆欧表测量线路对地绝缘和相间绝缘，新装线路绝缘电阻一般不小于 0.5MΩ。测试时要断开用电设备、确认线路不带电，测完对大电容线路放电。绝缘不合格（受潮、破损）必须处理后才能送电。",
+          "id": "s5e_install_check_n1"
+        },
+        {
+          "type": "info",
+          "title": "漏电保护测试",
+          "content": "漏电保护器装好后按试验按钮应能可靠跳闸；用试验仪器验证动作电流、动作时间符合要求（人身保护 ≤30mA、<0.1s）。每月至少按一次试验按钮检查其完好性。",
+          "id": "s5e_install_check_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全隐患要点",
+          "content": "验收中重点排查：开关接零线、插座缺地线或用零线当地线、铜铝混接、线径偏小、穿管破损、接线盒裸露、灯具安装不牢固等隐患。发现问题整改合格后才能投入使用。",
+          "id": "s5e_install_check_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "新装电气线路验收时，用兆欧表测得的绝缘电阻一般应不小于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.5MΩ",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "0.05MΩ",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "5MΩ",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "50MΩ",
+              "is_correct": false
+            }
+          ],
+          "explanation": "低压线路绝缘电阻合格标准一般为 ≥0.5MΩ（相对地、相间），低于此值须处理后才能送电。",
+          "id": "s5e_install_check_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "漏电保护器验收时用试验按钮测试，应能？",
+          "options": [
+            {
+              "id": "A",
+              "text": "指示灯亮但不断电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "可靠跳闸断电",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "发出蜂鸣但不断电",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "没有任何反应",
+              "is_correct": false
+            }
+          ],
+          "explanation": "按试验按钮会模拟漏电信号，合格的保护器应立即跳闸。每月应试验一次，长期不试可能失效。",
+          "id": "s5e_install_check_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "用兆欧表测线路绝缘时，可以带负载直接测量，这样结果更真实。",
+          "correct_answer": false,
+          "explanation": "不对。兆欧表输出高电压，带电测量会触电并损坏仪表；用电设备接入也会分流导致读数不准。必须先断开所有用电设备并确认线路不带电，再测绝缘电阻。",
+          "id": "s5e_install_check_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "用于人身保护的漏电保护器，额定动作电流应不大于 ____ mA。",
+          "answer": "30",
+          "acceptable_answers": [
+            "30",
+            "30mA",
+            "30 mA",
+            "三十"
+          ],
+          "explanation": "人身保护要求 ≤30mA、动作时间 <0.1s，才能有效防止心室颤动。",
+          "id": "s5e_install_check_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列哪种情况属于验收必须整改的安全隐患？",
+          "options": [
+            {
+              "id": "A",
+              "text": "导线截面满足载流量",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "开关接在火线上",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "插座缺地线或用零线代替接地",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "灯并联连接",
+              "is_correct": false
+            }
+          ],
+          "explanation": "缺地线、零线代地线都会使设备漏电时外壳带电，是必须整改的严重隐患；并联、开关控火线才是正确做法。",
+          "id": "s5e_install_check_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "线路绝缘不合格（受潮、破损）时，必须先处理后才能送电使用。",
+          "correct_answer": true,
+          "explanation": "绝缘不良会引发漏电、短路甚至火灾，必须先查明并处理（烘干、更换破损段）再送电。",
+          "id": "s5e_install_check_n9"
+        },
+        {
+          "type": "info",
+          "title": "布线工艺规则：接头与穿管",
+          "content": "布线安装的基本工艺要求：穿管敷设的管内导线不允许有接头——导线连接只能设在接线盒（分线盒）内，否则故障点被封闭在管内无法检修。导线接头必须连接可靠：机械强度不低于原导线（螺栓压接、焊接或专用压线帽），接头处绝缘要恢复良好（包缠绝缘胶带）。明敷（沿墙/顶棚）与暗敷（埋墙/埋地）都要保证导线受机械损伤防护与散热。",
+          "id": "s5e_install_check_n10"
+        },
+        {
+          "type": "true_false",
+          "question": "穿管敷设时，可以在管内把两根导线接头直接连接，只要绝缘包好就行。",
+          "correct_answer": false,
+          "explanation": "错误。穿管内不允许有导线接头——接头只能在接线盒内。管内接头一旦出故障，无法检修，且接头处绝缘破损易造成相间短路。",
+          "id": "s5e_install_check_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "对导线接头的工艺要求，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接头机械强度不得低于原导线的机械强度，且要恢复绝缘",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "接头只要求接触良好，绝缘可以不恢复",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "接头机械强度低于原导线没关系，因为电流能过就行",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接头越多越好，方便日后分支",
+              "is_correct": false
+            }
+          ],
+          "explanation": "导线接头三要求：连接可靠（电流畅通、接触电阻小）、机械强度不低于原导线、绝缘恢复良好。接头是线路的薄弱环节，应尽量少而可靠。",
+          "id": "s5e_install_check_n12"
+        }
+      ]
+    }
+  ]
+}

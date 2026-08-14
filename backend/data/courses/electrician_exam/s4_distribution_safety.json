@@ -1,0 +1,836 @@
+{
+  "id": "s4_distribution_safety",
+  "title": "电工考证单元四：低压配电与电气安全作业",
+  "description": "低压断路器与熔断器、导线电缆选择、安全操作制度、电气火灾与灭火、触电预防综合",
+  "icon": "🔌",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s4a_breaker_fuse",
+      "title": "低压断路器与熔断器",
+      "description": "热磁脱扣、熔体选择、短路与过载保护",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "低压断路器",
+          "content": "低压断路器（自动空气开关）既能正常通断电路，又能在短路、过载、欠压等故障时自动跳闸，是低压配电主开关。它内部有热脱扣器（双金属片，过载保护）、电磁脱扣器（短路瞬时保护）、欠压脱扣器等，故障排除后需人工合闸。",
+          "id": "s4a_breaker_fuse_n0"
+        },
+        {
+          "type": "info",
+          "title": "熔断器",
+          "content": "熔断器是最简单的保护电器：熔体（熔丝/熔片）串联在电路中，电流超过规定值（短路或严重过载）时熔体自身发热熔断，切断电路。熔断器属「一次动作」元件，熔断后要更换同规格熔体，严禁用铜丝、铁丝代替熔体。",
+          "id": "s4a_breaker_fuse_n1"
+        },
+        {
+          "type": "info",
+          "title": "熔体的选择",
+          "content": "熔体额定电流按负载性质选择：照明等电阻负载，熔体额定电流 ≥ 负载电流即可；电动机等感性负载，启动电流大，熔体额定电流一般为电动机额定电流的 1.5～2.5 倍，避免正常启动时误熔断。",
+          "id": "s4a_breaker_fuse_n2"
+        },
+        {
+          "type": "info",
+          "title": "断路器与熔断器配合",
+          "content": "大电动机回路常采用断路器做总开关、熔断器做短路保护、热继电器做过载保护的配合。断路器与熔断器相比能频繁操作、可手动/自动复位，但不能像熔断器那样在极小短路电流下可靠分断，两者各有适用场合。",
+          "id": "s4a_breaker_fuse_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "低压断路器能在下列哪种故障时自动跳闸？",
+          "options": [
+            {
+              "id": "A",
+              "text": "仅短路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "短路、过载、欠压等故障",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "仅过载",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "任何故障都不能自动跳闸",
+              "is_correct": false
+            }
+          ],
+          "explanation": "断路器配热脱扣器（过载）、电磁脱扣器（短路）、欠压脱扣器等，短路、过载、失压欠压均能自动跳闸保护。",
+          "id": "s4a_breaker_fuse_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "熔断器熔断后，可以用铜丝或铁丝代替熔体继续使用。",
+          "correct_answer": false,
+          "explanation": "铜丝、铁丝熔点高、熔断电流大，短路时不能及时熔断，会失去保护造成设备烧毁甚至火灾。必须更换同规格熔体。",
+          "id": "s4a_breaker_fuse_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "为电动机回路选熔体，其额定电流一般取电动机额定电流的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.5 倍",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "恰好相等",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "1.5～2.5 倍",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "10 倍",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电动机启动电流大（4～7 倍额定），熔体取额定电流 1.5～2.5 倍，既能躲过正常启动又不失短路保护。",
+          "id": "s4a_breaker_fuse_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "断路器采用热脱扣器做 ____ 保护，电磁脱扣器做短路保护。",
+          "answer": "过载",
+          "acceptable_answers": [
+            "过载",
+            "过负荷",
+            "过载保护"
+          ],
+          "explanation": "热脱扣器（双金属片）对过载延时动作，电磁脱扣器对短路瞬时动作——二者合称热磁脱扣。",
+          "id": "s4a_breaker_fuse_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "照明（电阻性）负载回路选择熔体，原则是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "取负载电流的一半",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "必须取额定电流的 3 倍以上",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "越小越好，任何熔体都行",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "熔体额定电流略大于（不小于）负载工作电流即可",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电阻性负载无启动冲击，熔体额定电流略大于负载电流即可，太大失去保护、太小正常即熔断。",
+          "id": "s4a_breaker_fuse_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "断路器故障跳闸后必须排除故障才能重新合闸，且断路器可频繁操作。",
+          "correct_answer": true,
+          "explanation": "断路器动作后需查明并排除故障再合闸，否则会再次跳闸甚至扩大故障；它设计上允许频繁通断，是熔断器不具备的优点。",
+          "id": "s4a_breaker_fuse_n9"
+        }
+      ]
+    },
+    {
+      "id": "s4b_wire_cable",
+      "title": "导线与电缆的选择",
+      "description": "截面积与载流量、相零地线颜色、穿管要求",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "导线截面积的选择",
+          "content": "导线截面积按「载流量」选择：导体允许长期通过的最大电流取决于截面积、材质、绝缘和散热条件。选择原则是导线的安全载流量 ≥ 线路的最大计算电流；同时还要考虑电压损耗（长距离线路）、机械强度，最后按标准截面规格取整。",
+          "id": "s4b_wire_cable_n0"
+        },
+        {
+          "type": "info",
+          "title": "相线、零线、地线的颜色",
+          "content": "按规定用颜色区分导线的功能：相线（火线）常用黄、绿、红三色（L1、L2、L3 三相分别对应）；工作零线 N 用淡蓝色；保护零线/保护地线 PE 用黄绿双色。黄绿双色线严禁用作相线或零线，这是强制要求。",
+          "id": "s4b_wire_cable_n1"
+        },
+        {
+          "type": "info",
+          "title": "绝缘导线与穿管",
+          "content": "低压配电常用塑料绝缘导线（BV 型铜芯聚氯乙烯绝缘线）。绝缘导线明敷或暗敷，穿管布线时管内导线总截面积一般不超过管径的 40%，同一回路的相零线应穿在同一管内，且一根管内导线根数不宜过多，便于散热和穿线。",
+          "id": "s4b_wire_cable_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全载流量",
+          "content": "导线载流量与环境温度有关：温度越高，允许电流越小。多根导线并排敷设散热变差，也要降额。所以选择导线时还要查载流量表并按敷设方式、环境修正系数调整，不能只看截面。",
+          "id": "s4b_wire_cable_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "选择导线截面积的首要依据是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "安全载流量 ≥ 线路最大计算电流",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "导线越细越省钱，能用就行",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "导线越粗越美观",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只按机械强度选择",
+              "is_correct": false
+            }
+          ],
+          "explanation": "导线能安全长期承载的最大电流（载流量）必须不小于线路最大计算电流，再兼顾电压损耗和机械强度取标准截面。",
+          "id": "s4b_wire_cable_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "保护零线（PE）的标准颜色是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "淡蓝色",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "黄绿双色",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "黄色",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "黑色",
+              "is_correct": false
+            }
+          ],
+          "explanation": "PE 线用黄绿双色；工作零线 N 用淡蓝色；相线用黄绿红。黄绿双色线严禁用作相线或零线。",
+          "id": "s4b_wire_cable_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "环境温度越高，导线散热越好，安全载流量应相应增大。",
+          "correct_answer": false,
+          "explanation": "不对。安全载流量由导线允许温升决定：环境温度越高散热越差，同样的电流导线升温更高，必须降额使用。敷设方式（穿管、埋地）也一样，散热差都要降额。",
+          "id": "s4b_wire_cable_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "穿管敷设时，管内导线总截面积一般不应超过管内径截面积的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "90%",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "100%",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "40%",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "70%",
+              "is_correct": false
+            }
+          ],
+          "explanation": "管内导线总截面一般不超过管径的 40%，留出空间便于散热和穿线，也避免过紧损伤绝缘。",
+          "id": "s4b_wire_cable_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "三相相线 L1、L2、L3 的标准颜色依次是黄、____、红。",
+          "answer": "绿",
+          "acceptable_answers": [
+            "绿",
+            "绿色"
+          ],
+          "explanation": "三相相线颜色：L1 黄、L2 绿、L3 红；零线淡蓝，地线黄绿双色。",
+          "id": "s4b_wire_cable_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "同一回路的相线与零线应穿在同一根管内，便于检修并减少电磁干扰。",
+          "correct_answer": true,
+          "explanation": "同一回路的相零线同管穿行，一来检修时不会错乱，二来回路电流往返磁场相互抵消，减少对邻近线路的干扰。",
+          "id": "s4b_wire_cable_n9"
+        },
+        {
+          "type": "info",
+          "title": "负荷计算：需要系数法",
+          "content": "负荷计算是选择导线截面、断路器额定电流和变压器容量的依据。常用需要系数法：有功计算负荷 Pjs = Kx × Pe（Pe 为设备总装机容量，Kx 为需要系数，反映设备实际同时投入与负载的比例，取值 0~1）；再由 Pjs 求计算电流 Ijs——三相：Ijs = Pjs / (√3 × U × cosφ)（U=380V），单相：Ijs = Pjs / (U × cosφ)（U=220V）。算出的 Ijs 就是选导线、选开关的基准：导线安全载流量和断路器额定电流都必须 ≥ Ijs，还要校验电压损耗。",
+          "id": "s4b_wire_cable_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用需要系数法求有功计算负荷 Pjs，下列公式正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "Pjs = Kx × Pe（需要系数 × 设备总装机容量）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "Pjs = Pe / Kx",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "Pjs = Kx × U × I",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "Pjs = Pe × cosφ",
+              "is_correct": false
+            }
+          ],
+          "explanation": "需要系数法：Pjs = Kx × Pe。需要系数 Kx 表示设备不一定同时满载运行，取值 ≤1；求出的 Pjs 再除以电压和功率因数的乘积即得计算电流。",
+          "id": "s4b_wire_cable_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相 380V 电路，有功计算负荷 Pjs=20kW，功率因数 cosφ=0.8，则计算电流 Ijs 约为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "约 38A",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "约 30A",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "约 66A",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "约 114A",
+              "is_correct": false
+            }
+          ],
+          "explanation": "三相 Ijs = Pjs/(√3·U·cosφ) = 20000/(1.732×380×0.8) ≈ 38A。30A 是漏乘 cosφ；66A 是漏乘 √3；114A 是误用单相 220V 公式。三相计算务必带 √3。",
+          "id": "s4b_wire_cable_n12"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "某车间设备总装机容量 Pe=50kW，需要系数 Kx=0.6，则该车间有功计算负荷 Pjs 为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "30kW",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "50kW",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "83kW",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "60kW",
+              "is_correct": false
+            }
+          ],
+          "explanation": "Pjs = Kx × Pe = 0.6 × 50 = 30kW。需要系数 0.6 表示这些设备通常不会全部同时满载投入，所以计算负荷小于装机容量；若取 50kW（Kx=1）会造成导线和开关选得过大、浪费。",
+          "id": "s4b_wire_cable_n13"
+        }
+      ]
+    },
+    {
+      "id": "s4c_work_rules",
+      "title": "电工安全操作制度",
+      "description": "工作票操作票、停电验电挂接地线、标示牌遮栏",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "工作票与操作票",
+          "content": "在电气设备上工作必须执行工作票制度：工作票是准许在设备上工作的书面命令，写明工作任务、安全措施、工作负责人与许可人。倒闸操作（停电、送电）须执行操作票制度，按操作票逐项操作、唱票复诵，操作完一项打一项勾。",
+          "id": "s4c_work_rules_n0"
+        },
+        {
+          "type": "info",
+          "title": "停电—验电—接地",
+          "content": "高压设备检修必须遵守「停电—验电—装设接地线」的顺序：先断开电源并采取措施防止误送电（拉开隔离开关、悬挂标示牌），再用合格验电器验明确无电压，最后在检修设备两侧装设接地线，防止突然来电。",
+          "id": "s4c_work_rules_n1"
+        },
+        {
+          "type": "info",
+          "title": "标示牌与遮栏",
+          "content": "在断开的开关和刀闸操作把手上悬挂「禁止合闸，有人工作」标示牌，在带电设备周围装设遮栏并悬挂「止步，高压危险」标示牌，提醒人员保持距离。工作结束拆除接地线、恢复送电前，须清点人数、确认人员撤离、拆除临时遮栏和标示牌。",
+          "id": "s4c_work_rules_n2"
+        },
+        {
+          "type": "info",
+          "title": "低压操作与监护",
+          "content": "低压带电作业应设专人监护，使用有绝缘柄的工具，穿绝缘鞋、戴绝缘手套，人体不得同时接触两根线。在部分停电的盘柜内工作，对未停电设备要设明显标志和遮栏。严禁在运行中的设备上进行无人监护的作业。",
+          "id": "s4c_work_rules_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "在高压设备上检修前，正确的顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接装接地线",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "停电后立即开工，不必验电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "验电 — 停电 — 装接地线",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "停电 — 验电 — 装设接地线",
+              "is_correct": true
+            }
+          ],
+          "explanation": "必须先停电，再验明确无电压，然后装设接地线防止突然来电——顺序不可颠倒，缺一不可。",
+          "id": "s4c_work_rules_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "在断开的开关操作把手上应悬挂？",
+          "options": [
+            {
+              "id": "A",
+              "text": "「禁止合闸，有人工作」标示牌",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "什么也不挂",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "「在此工作」",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "「从此上下」",
+              "is_correct": false
+            }
+          ],
+          "explanation": "断开开关的操动机构上必须挂「禁止合闸，有人工作」牌，防止他人误合闸送电造成人身事故。",
+          "id": "s4c_work_rules_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "倒闸操作可以凭经验快速进行，不需要按操作票逐项核对。",
+          "correct_answer": false,
+          "explanation": "不对。倒闸操作必须执行操作票制度：逐项唱票复诵、操作一项核对一项勾一项，禁止跳项漏项。凭经验快操作极易漏挂接地线、带负荷拉刀闸，是电气事故的高发原因。",
+          "id": "s4c_work_rules_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "装设接地线的顺序是先装 ____ 端，后装导体端。",
+          "answer": "接地",
+          "acceptable_answers": [
+            "接地",
+            "接地端"
+          ],
+          "explanation": "装接地线先接接地端再接导体端，拆时先拆导体端再拆接地端，保证任何时刻接地线都先建立地电位，防止感应电触电。",
+          "id": "s4c_work_rules_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于低压带电作业，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "可以赤手操作",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "应设专人监护，用绝缘工具，人体不得同时接触两根线",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "不需要监护",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "可以在湿手状态下作业",
+              "is_correct": false
+            }
+          ],
+          "explanation": "低压带电作业须监护 + 绝缘工具 + 绝缘防护，湿手、赤手、无人监护都严禁。",
+          "id": "s4c_work_rules_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "检修工作结束、恢复送电前，应清点人数、确认人员全部撤离，并拆除临时遮栏和标示牌。",
+          "correct_answer": true,
+          "explanation": "送电前必须确认工作已结束、人员撤离、安全措施全部拆除，才能恢复送电，防止带人送电事故。",
+          "id": "s4c_work_rules_n9"
+        }
+      ]
+    },
+    {
+      "id": "s4d_fire_safety",
+      "title": "电气火灾与灭火",
+      "description": "先断电再灭火、干粉/二氧化碳灭火器、严禁泡沫水",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电气火灾的起因",
+          "content": "电气火灾多由短路、过载、接触不良（接头电阻过大发热）、线路老化、违规用电等引起。短路或过载时线路过热引燃绝缘和附近可燃物；接头松动、氧化使接触电阻增大，局部高温也易起火。",
+          "id": "s4d_fire_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "灭火首要原则：先断电",
+          "content": "电气设备或线路着火，首先应设法切断电源（拉下总闸或断开断路器），再用灭火器扑救。带电灭火有触电危险：用水或导电灭火剂直接喷向带电设备会造成触电和扩大短路。断电后按普通火灾处置。",
+          "id": "s4d_fire_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "灭火器的选择",
+          "content": "扑救电气火灾应使用不导电的灭火剂：二氧化碳灭火器、干粉灭火器（ABC 类通用）都适用。严禁使用泡沫灭火器和水——泡沫灭火剂导电，会使人触电并使故障扩大；水同样导电且可能引起油类飞溅。",
+          "id": "s4d_fire_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "带电灭火的特殊措施",
+          "content": "确需带电灭火时（无法及时断电），只能用干粉、二氧化碳等不导电灭火器，并保持安全距离（如 10kV 以下不小于 1m），操作人员须戴绝缘手套、穿绝缘靴；严禁把灭火剂直接喷向带电体或喷溅入电气设备内部。",
+          "id": "s4d_fire_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "扑救电气火灾，首先应该做的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "立即用水浇灭",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用泡沫灭火器直接喷",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "设法切断电源，再扑救",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "用身体扑打火苗",
+              "is_correct": false
+            }
+          ],
+          "explanation": "先断电再灭火：带电状态下用水、泡沫等导电灭火剂会造成触电；断电后按普通火灾处置，安全可控。",
+          "id": "s4d_fire_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "扑救带电电气火灾应使用哪种灭火器？",
+          "options": [
+            {
+              "id": "A",
+              "text": "水",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "沙土以外的任何灭火剂",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "泡沫灭火器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "干粉灭火器或二氧化碳灭火器",
+              "is_correct": true
+            }
+          ],
+          "explanation": "干粉和二氧化碳不导电，可用于带电扑救；泡沫和水导电，严禁用于电气火灾。",
+          "id": "s4d_fire_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "泡沫灭火剂不含水分、不导电，可用于扑救带电的电气设备火灾。",
+          "correct_answer": false,
+          "explanation": "不对。泡沫灭火剂含有水分、能导电，喷向带电设备会造成灭火人员触电，还会扩大短路故障。扑救带电设备火灾必须用干粉、二氧化碳等绝缘灭火剂。",
+          "id": "s4d_fire_safety_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "确需带电灭火时，人与带电体之间应保持安全距离，如 10kV 以下一般不小于 ____ 米。",
+          "answer": "1",
+          "acceptable_answers": [
+            "1",
+            "1m",
+            "1 米",
+            "一米"
+          ],
+          "explanation": "带电灭火用不导电灭火剂并保持距离，10kV 以下不小于 1m；距离不足会触电。",
+          "id": "s4d_fire_safety_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列哪项是电气火灾的常见直接原因？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接头接触不良、电阻过大局部过热",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "环境干燥",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "设备绝缘优良",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "线路空载运行",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接头松动氧化→接触电阻大→局部高温是常见起火源；短路、过载、老化同样易起火。",
+          "id": "s4d_fire_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电气线路短路或严重过载时，线路过热可引燃绝缘材料和附近可燃物造成火灾。",
+          "correct_answer": true,
+          "explanation": "短路或过载电流远超导线安全载流量，导线和绝缘急剧升温，达到燃点即起火——所以保护电器和正确选线是防火基础。",
+          "id": "s4d_fire_safety_n9"
+        }
+      ]
+    },
+    {
+      "id": "s4e_shock_prevention",
+      "title": "触电预防综合",
+      "description": "绝缘、屏护、间距、漏电保护四位一体",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "预防触电的四大措施",
+          "content": "直接接触触电（直接碰带电体）的防护是「绝缘、屏护、间距」：①绝缘——用绝缘材料把带电体包覆起来；②屏护——用遮栏、护罩、箱壳把带电体隔开；③间距——人与带电体保持安全距离。间接接触触电（设备漏电）的防护则靠保护接地/接零、漏电保护器。",
+          "id": "s4e_shock_prevention_n0"
+        },
+        {
+          "type": "info",
+          "title": "漏电保护器的作用",
+          "content": "漏电保护器（剩余电流动作保护器）是人身触电的最后一道防线：当人体触电或设备漏电使相线电流与零线电流出现差值（剩余电流）超过动作值时，迅速（<0.1s）跳闸断电，防止电击致死。住宅总开关普遍装设漏电保护。",
+          "id": "s4e_shock_prevention_n1"
+        },
+        {
+          "type": "info",
+          "title": "保护接零与保护接地",
+          "content": "在三相四线制（TN）系统中设备外壳接保护零线 PE（保护接零）；在三相五线制（TN-S）中 PE 与 N 分开。保护接零/接地 + 漏电保护器配合，才能在设备绝缘损坏漏电时可靠切断电源。PE 线严禁装熔断器、开关。",
+          "id": "s4e_shock_prevention_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全用电总原则",
+          "content": "安全用电总原则：不接触低压带电体、不靠近高压带电体；维修检修先断电、验电、挂警示；湿手不摸电器、不用湿布擦带电设备；合格电器、正确接线、安装漏电保护；发现有人触电先断电再施救。",
+          "id": "s4e_shock_prevention_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "防止直接接触触电的三项基本措施是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "短路、过载、欠压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "绝缘、屏护、间距",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "接地、接零、接地保护",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "串联、并联、混联",
+              "is_correct": false
+            }
+          ],
+          "explanation": "直接接触防护靠绝缘（包覆）、屏护（遮拦箱壳隔离）、间距（保持安全距离）；接地与漏保对付的是间接接触（设备漏电）。",
+          "id": "s4e_shock_prevention_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "漏电保护器的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把交流电变直流电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "降低线路电压",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "人体触电或设备漏电时迅速跳闸断电",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "代替所有接地保护",
+              "is_correct": false
+            }
+          ],
+          "explanation": "漏电保护器检测火零线电流差值，出现剩余电流即 <0.1s 跳闸，是人身触电的最后防线（但不能代替接地）。",
+          "id": "s4e_shock_prevention_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "保护零线 PE 上可以装设熔断器，熔断后设备仍能得到可靠保护。",
+          "correct_answer": false,
+          "explanation": "不对。PE 线上严禁装设熔断器和开关：一旦 PE 线熔断或断开，设备漏电时外壳长期带电却无法让保护动作，保护形同虚设。PE 线必须连续、可靠、不断开。",
+          "id": "s4e_shock_prevention_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "安全用电总原则之一：不接触低压带电体，不____高压带电体。",
+          "answer": "靠近",
+          "acceptable_answers": [
+            "靠近",
+            "接近",
+            "碰触"
+          ],
+          "explanation": "低压靠绝缘和间距防直接接触，高压则必须保持足够安全距离，不靠近高压带电体。",
+          "id": "s4e_shock_prevention_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "发现有人触电，施救的正确第一步是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "立即浇水冷却",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先拍照再处理",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "直接用手拉开触电者",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "迅速使触电者脱离电源（先断电）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "先断电、再施救，施救者也要防止自身触电；脱离电源后视情况做心肺复苏并呼救 120。",
+          "id": "s4e_shock_prevention_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "湿手不能触摸电器和开关，潮湿环境用电器更须注意绝缘与漏电保护。",
+          "correct_answer": true,
+          "explanation": "手湿时人体电阻骤降，同样电压下电流大增，触电更危险；潮湿环境应用防潮插座、安装漏电保护。",
+          "id": "s4e_shock_prevention_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "按我国低压配电标准（GB 50054 / IEC 60364 口径），“低压”通常指交流额定电压为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "36V 及以下",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "220V 及以下",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "1000V 及以下",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "10kV 及以下",
+              "is_correct": false
+            }
+          ],
+          "explanation": "我国低压配电（GB 50054 / IEC 60364-1）指交流额定电压 1000V 及以下、直流 1500V 及以下。注意“低压”阈值随语境而异：电业安全规程按对地电压 250V 划分高/低压，美国 DC 执照法甚至把低压定义为 49V 以下。考试按国家配电标准取 1000V。",
+          "id": "s4e_shock_prevention_n10"
+        }
+      ]
+    }
+  ]
+}

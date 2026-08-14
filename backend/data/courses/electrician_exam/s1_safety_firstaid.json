@@ -1,0 +1,746 @@
+{
+  "id": "s1_safety_firstaid",
+  "title": "电工考证单元一：触电急救与安全用电",
+  "description": "考证主线试点单元：触电机理与危害、脱离电源急救、心肺复苏 CPR、接地与漏电保护、安全工器具与安全距离",
+  "icon": "🚑",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s1a_shock_hazard",
+      "title": "触电的机理与危害",
+      "description": "电流大小决定伤害、致命路径、安全电压",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电流是伤害的直接因素",
+          "content": "触电伤害的严重程度主要取决于通过人体电流的大小，并与电流路径、持续时间、电流频率等因素共同作用。人体对不同电流的感知与耐受有一个阶梯：感知电流约 1mA（感到麻刺）；摆脱电流约 10mA 左右（肌肉能自行挣脱）；而电流达到 30mA 以上并持续，就会对心脏造成严重威胁，可能引发心室颤动，这是触电致死的直接原因。",
+          "id": "s1a_shock_hazard_n0"
+        },
+        {
+          "type": "info",
+          "title": "人体电阻会大变",
+          "content": "人体电阻不是固定值：干燥皮肤时电阻较高，约 1kΩ～10kΩ 甚至更高；皮肤潮湿、出汗、破损时电阻会骤降到几百欧姆。电阻变小意味着同样电压下流过人体的电流急剧增大——所以「电压高才危险」不够准确，潮湿环境下低电压也可能致命，这也是电气作业强调保持干燥绝缘的原因。",
+          "id": "s1a_shock_hazard_n1"
+        },
+        {
+          "type": "info",
+          "title": "最危险的电流路径",
+          "content": "同样的电流流过人体不同部位，后果大不一样：电流流经心脏时最容易引发心室颤动，最危险。典型致命路径如「左手—右手」「左手—双脚」，电流经过胸腔、穿过心脏。因此左手与右脚的触电姿势往往比单脚到另一脚（不经过心脏）严重得多，作业时也提倡「单手操作、双脚并拢」等减少心脏路径的规范。",
+          "id": "s1a_shock_hazard_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全电压与工频",
+          "content": "我国将安全特低电压（SELV）划分为 42V、36V、24V、12V、6V 五个等级，一般场所的安全电压为 36V，潮湿、狭窄或金属容器内作业使用更低的 12V。另外，工频 50Hz 交流电的频率正好落在对心脏伤害最大的区间，比高频交流电危险得多——这也是触电事故多为工频电所致的原因。",
+          "id": "s1a_shock_hazard_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "决定触电伤害严重程度的直接因素是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "仅看接触电压的高低",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "仅看人体电阻的大小",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "通过人体电流的大小（与路径、时间、频率共同作用）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "仅看鞋子的绝缘程度",
+              "is_correct": false
+            }
+          ],
+          "explanation": "伤害的直接因素是电流大小：感知电流约 1mA，摆脱电流约 10mA，30mA 以上持续即可能引发心室颤动。电压、电阻、路径、时间都通过改变或放大电流来起作用。",
+          "id": "s1a_shock_hazard_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "皮肤潮湿或破损时人体电阻会大幅升高，因此触电更安全。",
+          "correct_answer": false,
+          "explanation": "不对。皮肤潮湿、出汗或破损时人体电阻骤降，可能只有几百欧姆。电阻变小，同样电压下流过人体的电流激增，触电反而更危险，所以潮湿环境必须加倍小心。",
+          "id": "s1a_shock_hazard_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列哪种电流路径最危险？",
+          "options": [
+            {
+              "id": "A",
+              "text": "同一只脚的两个脚趾之间",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "右手到右脚（不经过心脏）",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "都同样危险",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "左手到右手（电流经过胸腔和心脏）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电流流经心脏时最易引发心室颤动。左手到右手使电流横穿胸腔经过心脏，是最危险的路径；作业中提倡单手操作以减少这类路径。",
+          "id": "s1a_shock_hazard_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "我国一般场所的安全电压为 ____ V（潮湿、狭窄或金属容器内用更低的 12V）。",
+          "answer": "36",
+          "acceptable_answers": [
+            "36",
+            "36V",
+            "36 V",
+            "三十六"
+          ],
+          "explanation": "安全特低电压分 42V/36V/24V/12V/6V 五级，一般场所取 36V，潮湿及金属容器内降至 12V。",
+          "id": "s1a_shock_hazard_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "人体同时接触两根相线（火线），承受约 380V 线电压，这种触电称为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "两相触电，比单相触电更危险",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "跨步电压触电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "剩余电荷触电",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "单相触电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "两相触电时人体同时接触两根火线，承受的是线电压 380V，电压高、电流大，比单相触电（220V）更危险。",
+          "id": "s1a_shock_hazard_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "工频 50Hz 交流电对人体的伤害比高频交流电更严重。",
+          "correct_answer": true,
+          "explanation": "50Hz 工频恰好落在对心脏伤害最大的频率区间，比高频交流电更危险。这也是触电事故多为工频电所致的原因。",
+          "id": "s1a_shock_hazard_n9"
+        }
+      ]
+    },
+    {
+      "id": "s1b_break_contact",
+      "title": "触电急救：脱离电源",
+      "description": "先断电再救人、正确脱离方法、高压触电处置",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "第一步：迅速脱离电源",
+          "content": "发现有人触电，急救的第一步永远是「迅速使触电者脱离电源」，原则是「先断电、再救人」。越早脱离电源，伤害越小。同时施救者要保护好自己，绝对不能让自己也成为触电者——只有切断或隔离电源，救人才能安全进行。",
+          "id": "s1b_break_contact_n0"
+        },
+        {
+          "type": "info",
+          "title": "低压触电的脱离方法",
+          "content": "低压触电时可按情况选择：①就近拉下开关、拔出插头，直接断电；②用干燥的木棒、竹竿、塑料棒等绝缘物挑开或拨开电线；③戴绝缘手套、垫干燥衣物后拉开触电者。严禁徒手直接拉触电者，也严禁用金属或潮湿物体去挑线。",
+          "id": "s1b_break_contact_n1"
+        },
+        {
+          "type": "info",
+          "title": "高压触电的处理",
+          "content": "高压设备附近有人触电时，不能贸然接近——高压电可能通过空气放电击伤施救者。正确做法是：立即通知供电部门停电，同时做好现场防护、防止他人靠近；确有必要时由受过训练的人员使用相应电压等级的绝缘工具操作。",
+          "id": "s1b_break_contact_n2"
+        },
+        {
+          "type": "info",
+          "title": "脱离后的处置与防坠落",
+          "content": "触电者脱离电源后，立即判断其状态：若神志清醒、有呼吸心跳，让其在安全处休息并送医检查；若呼吸心跳停止，立即进行心肺复苏并呼救 120。特别注意：若触电者在高处作业（梯子、脚手架、杆上），脱离电源瞬间可能因肌肉痉挛解除而坠落，必须先做好接护、防止二次伤害。",
+          "id": "s1b_break_contact_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "发现有人触电，首要动作是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "站在一旁等 120 到来",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "迅速使触电者脱离电源（先断电再救人）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "徒手把触电者拉离现场",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "直接开始心肺复苏",
+              "is_correct": false
+            }
+          ],
+          "explanation": "急救第一步永远是先断电、再救人。没有脱离电源就做其他操作，施救者也可能触电，且电流持续存在会加重伤害。",
+          "id": "s1b_break_contact_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "低压触电时，下列哪种脱离电源的方法是安全的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "徒手把触电者拉开",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用湿手去拉闸",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "用干燥的木棒挑开电线",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "用金属杆挑开电线",
+              "is_correct": false
+            }
+          ],
+          "explanation": "干燥木棒、竹竿是绝缘体，可用于挑开电线。徒手、湿手、金属杆都会让电流流经施救者，造成二次触电。",
+          "id": "s1b_break_contact_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "施救时绝不能徒手直接接触触电者身体，防止施救者一起触电。",
+          "correct_answer": true,
+          "explanation": "触电者身体带电，徒手接触会把电流引到自己身上。必须断电、或用绝缘物隔开、或戴绝缘手套后再施救。",
+          "id": "s1b_break_contact_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "高压设备旁有人触电，施救者应先通知 ____ 断电，不能贸然接近。",
+          "answer": "供电部门",
+          "acceptable_answers": [
+            "供电部门",
+            "电力部门",
+            "供电局",
+            "配电部门"
+          ],
+          "explanation": "高压电可能空气放电伤人，须由供电部门停电并由专业人员用相应电压等级的绝缘工具操作。",
+          "id": "s1b_break_contact_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "在梯子上高处触电，脱离电源瞬间最需要注意？",
+          "options": [
+            {
+              "id": "A",
+              "text": "防止电流烧毁梯子",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "防止触电者受凉",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "没有特别需要注意的",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "防止触电者因肌肉痉挛解除而坠落摔伤",
+              "is_correct": true
+            }
+          ],
+          "explanation": "高处作业时触电会使肌肉强直痉挛；断电脱离瞬间痉挛解除，人可能从高处坠落。必须先接护好，防止二次伤害。",
+          "id": "s1b_break_contact_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "只要触电者还有呼吸和心跳，就不需要送医院。",
+          "correct_answer": false,
+          "explanation": "触电可能造成潜在的心律紊乱等迟发伤害，即使当时呼吸心跳正常，也应让其在安全处休息并尽快送医检查。",
+          "id": "s1b_break_contact_n9"
+        }
+      ]
+    },
+    {
+      "id": "s1c_cpr",
+      "title": "心肺复苏 CPR",
+      "description": "黄金 4 分钟、胸外按压部位深度频率、30:2 比例",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "黄金 4 分钟",
+          "content": "心跳呼吸骤停后，脑组织对缺氧极其敏感：4 分钟内开始有效抢救，成活率最高，称为「黄金 4 分钟」。每延误 1 分钟，成功率就明显下降。所以发现有人倒地、呼之不应，要立即呼救并马上开始心肺复苏，不能干等急救车。",
+          "id": "s1c_cpr_n0"
+        },
+        {
+          "type": "info",
+          "title": "判断与呼救",
+          "content": "先判断意识：拍打双肩、大声呼喊，无反应；再判断呼吸：观察胸廓起伏 5～10 秒，没有或只有叹息样呼吸。确认无反应、无呼吸后，立即大声呼救（请人拨打 120 并取 AED），随即开始胸外按压。",
+          "id": "s1c_cpr_n1"
+        },
+        {
+          "type": "info",
+          "title": "胸外按压要领",
+          "content": "按压部位：两乳头连线中点的胸骨处（胸骨下 1/3）；按压深度：成人至少 5cm、约 5～6cm；按压频率：每分钟 100～120 次；双手十指相扣、掌根着力，垂直向下按压，每次按压后让胸廓充分回弹，尽量减少中断。",
+          "id": "s1c_cpr_n2"
+        },
+        {
+          "type": "info",
+          "title": "按压与通气比例、AED",
+          "content": "成人单人施救时，胸外按压与人工呼吸的比例为 30:2——先按 30 次，再开放气道做 2 次人工呼吸，如此循环。若现场有自动体外除颤器（AED），应尽快开机、按语音提示贴好电极片使用，AED 分析心律时会提示是否放电，此时所有人离开触电者。",
+          "id": "s1c_cpr_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "心脏骤停后抢救的「黄金时间」约为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "4 分钟",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "30 分钟",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "1 小时",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "15 分钟",
+              "is_correct": false
+            }
+          ],
+          "explanation": "脑组织对缺氧极敏感，骤停后 4 分钟内开始有效 CPR 成活率最高，称为黄金 4 分钟，不能干等急救车。",
+          "id": "s1c_cpr_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "成人胸外按压的正确部位是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "锁骨正下方",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "两乳头连线中点的胸骨处（胸骨下 1/3）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "心前区任意一点",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "腹部剑突处",
+              "is_correct": false
+            }
+          ],
+          "explanation": "按压部位为两乳头连线中点的胸骨处，即胸骨下 1/3；部位偏下易损伤内脏，偏上效果差。",
+          "id": "s1c_cpr_n5"
+        },
+        {
+          "type": "fill_blank",
+          "question": "成人胸外按压深度约 5～6 cm，按压频率为每分钟 ____ 次。",
+          "answer": "100-120",
+          "acceptable_answers": [
+            "100-120",
+            "100~120",
+            "100～120",
+            "100到120",
+            "110"
+          ],
+          "explanation": "成人按压频率 100～120 次/分，深度 5～6cm，每次按压后让胸廓充分回弹并尽量减少中断。",
+          "id": "s1c_cpr_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "成人单人施救时，胸外按压与人工呼吸的比例是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "15:1",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "5:1",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "30:2",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "2:30",
+              "is_correct": false
+            }
+          ],
+          "explanation": "成人单人 CPR 的比例为 30:2：先按 30 次，再开放气道做 2 次人工呼吸，如此循环。",
+          "id": "s1c_cpr_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于 CPR 与 AED 的使用，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "AED 到达前先暂停按压，等 AED 分析完再继续",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "AED 只适用于医生使用，普通人不可操作",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "做人工呼吸会延误抢救，应完全跳过",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "CPR 过程中尽量不中断按压；AED 到场应尽快按语音提示使用",
+              "is_correct": true
+            }
+          ],
+          "explanation": "持续按压保证血液灌注，AED 到场应尽快使用（AED 会语音提示操作，分析时暂离人体、必要时放电）。人工呼吸是 CPR 的必要组成，不应跳过。",
+          "id": "s1c_cpr_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "确认触电者无反应、无呼吸后，应先大声呼救（请人拨 120 并取 AED），再立即开始胸外按压。",
+          "correct_answer": true,
+          "explanation": "标准流程：判断无反应无呼吸 → 呼救（120 + AED）→ 立即胸外按压，30:2 循环，尽量减少中断。",
+          "id": "s1c_cpr_n9"
+        }
+      ]
+    },
+    {
+      "id": "s1d_grounding_rcd",
+      "title": "接地与漏电保护",
+      "description": "工作接地与保护接地、漏电保护器、PE 线",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "接地的分类",
+          "content": "接地分两类：工作接地——为保证电力系统正常运行而设置的接地，如变压器中性点（零线）的接地；保护接地——为保证人身安全，把正常情况下不带电的电气设备金属外壳（或金属构架）通过接地体与大地可靠连接，简称保护接地或 PE 接地。",
+          "id": "s1d_grounding_rcd_n0"
+        },
+        {
+          "type": "info",
+          "title": "保护接地的作用",
+          "content": "设备绝缘损坏时金属外壳带电，若无保护接地，人体接触外壳，电流经人体流入大地，造成触电。有了保护接地，外壳通过接地电阻与大地相连，漏电电流大部分经接地体泄放，外壳电位被限制在安全范围，流过人体的电流大大减小。接地电阻越小，保护效果越好。",
+          "id": "s1d_grounding_rcd_n1"
+        },
+        {
+          "type": "info",
+          "title": "漏电保护器（RCD）",
+          "content": "漏电保护器（剩余电流动作保护器）通过检测火线与零线电流的矢量差来判断是否漏电：正常工作时两者大小相等、方向相反、矢量和为零；发生漏电（电流经人体或设备外壳流走）时出现剩余电流，达到动作值即跳闸断电。用于人身保护的漏电保护器额定动作电流不大于 30mA、动作时间小于 0.1s。",
+          "id": "s1d_grounding_rcd_n2"
+        },
+        {
+          "type": "info",
+          "title": "PE 线与 TN-S 系统",
+          "content": "在三相五线制（TN-S）系统中，保护零线 PE 与工作零线 N 严格分开，设备外壳接 PE 线。PE 线上严禁装设开关和熔断器——若 PE 线上装了开关，一旦开关断开，保护就形同虚设。正确做法是 PE 线连续不断、始终与大地可靠相连。",
+          "id": "s1d_grounding_rcd_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电气设备金属外壳接地的目的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "保护接地：漏电时把外壳电位限制在安全范围，减小流过人体的电流",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "减小线路电压损耗",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "增加设备的输出功率",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "让设备外壳更美观",
+              "is_correct": false
+            }
+          ],
+          "explanation": "保护接地把漏电电流经接地体泄放，外壳电位被限制在安全范围，人体接触外壳时分流减小，防止触电。",
+          "id": "s1d_grounding_rcd_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "保护接地就是把正常情况下不带电的设备金属外壳通过接地体与大地可靠连接。",
+          "correct_answer": true,
+          "explanation": "保护接地的对象是正常情况下不带电、绝缘损坏时可能带电的金属外壳或构架，通过接地体与大地相连以保人身安全。",
+          "id": "s1d_grounding_rcd_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用于人身保护的漏电保护器，其额定动作电流一般为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "10A",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不大于 30mA",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "1A",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "5A",
+              "is_correct": false
+            }
+          ],
+          "explanation": "人身保护要求漏电保护器额定动作电流 ≤30mA、动作时间 <0.1s，既能保护人身又避免误动作。",
+          "id": "s1d_grounding_rcd_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "漏电保护器的动作时间应小于 ____ 秒。",
+          "answer": "0.1",
+          "acceptable_answers": [
+            "0.1",
+            "0.1s",
+            "0.1 s",
+            "0.1秒"
+          ],
+          "explanation": "用于人身保护的漏电保护器动作时间小于 0.1 秒，动作电流不大于 30mA。",
+          "id": "s1d_grounding_rcd_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于保护零线 PE 线，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "PE 线上可以装设熔断器",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "PE 线允许在使用中随意断开",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "PE 线上严禁装设开关和熔断器，必须连续可靠接地",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "PE 线不需要与大地相连",
+              "is_correct": false
+            }
+          ],
+          "explanation": "PE 线上装开关或熔断器会破坏保护连续性，一旦断开保护失效，所以严禁装设，PE 线必须连续并与大地可靠相连。",
+          "id": "s1d_grounding_rcd_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "在三相五线制 TN-S 系统中，保护零线 PE 与工作零线 N 可以合并为一根线使用。",
+          "correct_answer": false,
+          "explanation": "不对。TN-S 系统正是「三相五线制」，PE（保护零线）与 N（工作零线）从电源处就分开敷设、严格独立，设备外壳接 PE 线。合并为一根线是 TN-C 的 PEN 方式，会失去安全保护作用。",
+          "id": "s1d_grounding_rcd_n9"
+        }
+      ]
+    },
+    {
+      "id": "s1e_safe_tools",
+      "title": "安全工器具与安全距离",
+      "description": "验电笔正确用法、绝缘手套试验、安全距离",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "验电笔（试电笔）的正确用法",
+          "content": "验电笔使用前，必须先在有电的插座或导体上验证验电笔本身良好。使用时手指按住笔尾的金属笔夹（金属帽），笔尖接触被验导体，氖管亮说明带电。手指绝不能碰笔尖的金属部分，否则会触电；绝不能隔着绝缘层不接触笔夹，那样氖管不亮会误判。",
+          "id": "s1e_safe_tools_n0"
+        },
+        {
+          "type": "info",
+          "title": "绝缘手套与绝缘靴",
+          "content": "绝缘手套、绝缘靴是防止跨步电压和接触电压的辅助安全用具，必须定期做耐压试验、有合格的有效期；每次使用前要检查有无破损、老化、漏气，表面有无异物。注意：绝缘手套不能代替验电器，验电必须用验电器（或验电笔），两者作用不同。",
+          "id": "s1e_safe_tools_n1"
+        },
+        {
+          "type": "info",
+          "title": "安全距离",
+          "content": "人体与带电体之间必须保持安全距离：低压（380V 及以下）不小于 0.1m；10kV 不小于 0.7m；35kV 不小于 1.0m；110kV 不小于 1.5m（电压更高则距离更大，具体以规程为准）。在配电装置等场所还须装设遮栏并悬挂「止步，高压危险」等标示牌。",
+          "id": "s1e_safe_tools_n2"
+        },
+        {
+          "type": "info",
+          "title": "绝缘杆与检修安全",
+          "content": "绝缘杆（绝缘棒）是高压隔离开关操作等场合使用的绝缘操作工具，应按电压等级选用并经定期试验合格。高压设备检修必须严格执行「停电—验电—装设接地线—悬挂标示牌、装设遮栏」的顺序，验电确认无电、装设好接地线后才能开始工作。",
+          "id": "s1e_safe_tools_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "使用验电笔验电前，首先要做的操作是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接拿去验电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先把笔尖短路放电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "先检查笔杆是否够长",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先在有电的插座或导体上验证验电笔本身良好",
+              "is_correct": true
+            }
+          ],
+          "explanation": "验电笔可能损坏失效，必须先用已知有电处验证其良好，否则「验完显示没电」会造成误判和触电。",
+          "id": "s1e_safe_tools_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "绝缘手套只要外表看起来完好，就不需要定期做耐压试验。",
+          "correct_answer": false,
+          "explanation": "不对。绝缘手套是辅助安全用具，必须定期做耐压试验合格并在有效期内才能使用；每次使用前还要检查有无破损、老化、漏气，任何一处破损都可能造成触电。",
+          "id": "s1e_safe_tools_n5"
+        },
+        {
+          "type": "fill_blank",
+          "question": "在低压 380V 带电体附近作业，人体与带电体之间的安全距离不小于 ____ 米。",
+          "answer": "0.1",
+          "acceptable_answers": [
+            "0.1",
+            "0.1m",
+            "0.1米",
+            "0.1 米"
+          ],
+          "explanation": "低压（380V 及以下）安全距离不小于 0.1m；10kV 为 0.7m，35kV 为 1.0m，110kV 为 1.5m。",
+          "id": "s1e_safe_tools_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "验电笔（试电笔）的正确握法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "手指按住笔尾金属笔夹，笔尖接触被验导体",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "双手同时握住笔杆",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "手完全不接触笔的任何金属部分",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "手指捏住笔尖的金属部分",
+              "is_correct": false
+            }
+          ],
+          "explanation": "手指按笔尾金属笔夹（与笔内电路连通），笔尖触被测导体形成回路氖管才亮；捏笔尖会触电，不触笔夹则氖管不亮造成误判。",
+          "id": "s1e_safe_tools_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "绝缘手套能否代替验电器进行验电？",
+          "options": [
+            {
+              "id": "A",
+              "text": "手套越厚越能代替验电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不能，验电必须使用验电器（验电笔）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "能，绝缘手套可以兼作验电器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "低压时可以直接代替",
+              "is_correct": false
+            }
+          ],
+          "explanation": "绝缘手套是防护用具，不具验电功能；验电必须使用验电器/验电笔。两者作用不同，不能混用。",
+          "id": "s1e_safe_tools_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "高压设备检修必须按「停电—验电—装设接地线—挂标示牌、装遮栏」的顺序进行。",
+          "correct_answer": true,
+          "explanation": "这是高压检修的标准安全程序：先停电，再验电确认无电，装设接地线防止突然来电，最后挂标示牌、装遮栏警示他人，之后方可工作。",
+          "id": "s1e_safe_tools_n9"
+        }
+      ]
+    }
+  ]
+}

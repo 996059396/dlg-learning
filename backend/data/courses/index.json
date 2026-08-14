@@ -1,0 +1,225 @@
+[
+  {
+    "id": "electrician_prereq",
+    "title": "电工零基础前置课程",
+    "description": "从小学零基础起步，经初中、高中进阶，直达《初级电工理论》——0 基础也能一路学上去",
+    "icon": "🧒",
+    "color": "#4CAF50",
+    "units": [
+      {
+        "id": "e0_elementary",
+        "title": "前置单元一：小学零基础——电的启蒙",
+        "description": "面向小学零基础：用生活比喻认识电、电流、电压、电阻，建立安全的触电直觉，直到欧姆定律的定性直觉",
+        "lesson_count": 15,
+        "estimated_total_time": "83分钟"
+      },
+      {
+        "id": "e1_middle_school",
+        "title": "前置单元 B：初中物理基础",
+        "description": "电流电压电阻、欧姆定律、串并联规律、电功率、电表、伏安法、电磁、家庭电路、短路断路、单位换算",
+        "lesson_count": 15,
+        "estimated_total_time": "88分钟"
+      },
+      {
+        "id": "e2_high_school",
+        "title": "前置单元 C：高中进阶",
+        "description": "电场电势、电容电感、交流电、有效值相位、三角函数、复数、二极管三极管、运放、动态电路直觉",
+        "lesson_count": 15,
+        "estimated_total_time": "102分钟"
+      },
+      {
+        "id": "e3_transition",
+        "title": "前置单元四：衔接——面向《初级电工理论》",
+        "description": "面向衔接：邱关源《电路》记号、参考方向、KCL/KVL、方程组与克莱姆法则、戴维宁思想预告、万用表读表原理，直达《初级电工理论》u1 大门",
+        "lesson_count": 15,
+        "estimated_total_time": "103分钟"
+      }
+    ]
+  },
+  {
+    "id": "electrician_basics",
+    "title": "初级电工理论",
+    "description": "从零开始学习电工基础知识，掌握安全操作规范和常用工具使用",
+    "icon": "⚡",
+    "color": "#FF6B35",
+    "units": [
+      {
+        "id": "u1_meter_basics",
+        "title": "单元一：验电设备的使用——万用表",
+        "description": "掌握万用表基础测量与安全禁忌",
+        "lesson_count": 5,
+        "estimated_total_time": "12分钟"
+      },
+      {
+        "id": "u2_circuit_basics",
+        "title": "单元二：电路基础与欧姆定律",
+        "description": "学习电流、电压、电位区别，掌握欧姆定律与混联电路计算",
+        "lesson_count": 5,
+        "estimated_total_time": "10分钟"
+      },
+      {
+        "id": "u3_tools",
+        "title": "单元三：电工专用工具操作指南",
+        "description": "剥线钳、螺丝刀与大锤的精细分类与危险规避",
+        "lesson_count": 4,
+        "estimated_total_time": "10分钟"
+      },
+      {
+        "id": "u4_relays",
+        "title": "单元四：时间继电器与端子排",
+        "description": "通电延时与断电延时机制，及其八脚神秘接线法",
+        "lesson_count": 4,
+        "estimated_total_time": "12分钟"
+      },
+      {
+        "id": "u5_multimeter_advanced",
+        "title": "单元五：万用表高级实操（仿真训练）",
+        "description": "对照真实 DT9205Pro 万用表，进行档位选择、插孔连接、探针测量的全流程仿真训练",
+        "lesson_count": 6,
+        "estimated_total_time": "20分钟"
+      },
+      {
+        "id": "u6_circuit_theory",
+        "title": "单元六：电路理论进阶（石群电路）",
+        "description": "基于石群教授《电路》（邱关源第五版）——参考方向、电源禁忌、受控源、基尔霍夫定律",
+        "lesson_count": 8,
+        "estimated_total_time": "39分钟"
+      },
+      {
+        "id": "u7_circuit_analysis",
+        "title": "单元七：电路分析方法（石群电路II）",
+        "description": "等效变换、Y-Δ、电源互换、输入电阻、图论与支路电流法——邱关源第二三章精髓",
+        "lesson_count": 6,
+        "estimated_total_time": "42分钟"
+      },
+      {
+        "id": "u8_network_methods",
+        "title": "单元八：网络分析方法（微学习）",
+        "description": "回路电流法、节点电压法、叠加定理、齐性定理——小步快跑循序渐进",
+        "lesson_count": 75,
+        "estimated_total_time": "225分钟"
+      },
+      {
+        "id": "u9_theorems",
+        "title": "单元九：电路定理精讲（微学习）",
+        "description": "替代定理、戴维宁、诺顿、最大功率传输、互易对偶——一题一知识点",
+        "lesson_count": 86,
+        "estimated_total_time": "258分钟"
+      },
+      {
+        "id": "u10_opamp_dynamics",
+        "title": "单元十：运放与动态电路（微学习）",
+        "description": "虚短虚断、电容电感、一阶二阶电路、三要素法、阶跃冲激响应",
+        "lesson_count": 214,
+        "estimated_total_time": "642分钟"
+      },
+      {
+        "id": "u11_ac_analysis",
+        "title": "单元十一：正弦稳态分析（微学习）",
+        "description": "复数、相量法、阻抗导纳、功率因数、复功率、最大功率匹配",
+        "lesson_count": 165,
+        "estimated_total_time": "495分钟"
+      }
+    ]
+  },
+  {
+    "id": "electrician_exam",
+    "title": "电工考证主线：安全与急救",
+    "description": "面向电工考证的实践主线：从触电急救与安全用电起步，覆盖人体触电、心肺复苏、接地漏电保护、安全工器具——安全，是持证上岗的第一课",
+    "icon": "🚑",
+    "color": "#E53935",
+    "units": [
+      {
+        "id": "s1_safety_firstaid",
+        "title": "考证单元一：触电急救与安全用电",
+        "description": "触电机理与危害、脱离电源急救、心肺复苏 CPR、接地与漏电保护、安全工器具与安全距离",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s2_meters",
+        "title": "考证单元二：常用电工仪表与测量",
+        "description": "钳形电流表、兆欧表、万用表、电流表电压表接入、测量安全",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s3_motor_control",
+        "title": "考证单元三：电机控制与低压电器",
+        "description": "接触器、热继电器与时间继电器、点动与自锁、正反转互锁、星三角降压启动",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s4_distribution_safety",
+        "title": "考证单元四：低压配电与电气安全作业",
+        "description": "低压断路器与熔断器、导线电缆选择、安全操作制度、电气火灾与灭火、触电预防综合",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s5_lighting_install",
+        "title": "考证单元五：照明与电气安装",
+        "description": "照明光源、开关与插座安装、电能表与电功率、照明电路连接、电气安装验收",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s6_diagram_substation",
+        "title": "考证单元六：电气识图与变配电",
+        "description": "电气图形与文字符号、电路图分类、变压器、配电室与运行安全、考证综合复习",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s7_motor_basics",
+        "title": "考证单元七：三相异步电动机",
+        "description": "电动机结构、工作原理、额定值与铭牌、启动方式、常见故障与维护",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s8_grounding_lightning_cable",
+        "title": "考证单元八：接地、防雷与电力电缆",
+        "description": "低压配电系统类型、接地装置与接地电阻、防雷保护、电力电缆、保护配置综合",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s9_hv_substation",
+        "title": "考证单元九：高压变配电与继电保护",
+        "description": "高压开关设备、互感器、继电保护、变电站运行与倒闸、高压安全距离与操作",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s10_electronics",
+        "title": "考证单元十：电工电子技术基础",
+        "description": "二极管、整流与滤波、稳压管与三极管、常用电子元器件、电子电路应用与安全",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s11_vfd_plc",
+        "title": "考证单元十一：变频调速与PLC自动化基础",
+        "description": "变频器原理、变频调速应用、PLC 基础、传感器与执行器、自动化控制安全",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s12_lv_switchgear",
+        "title": "考证单元十二：低压成套柜与配电设备",
+        "description": "低压成套柜类型与结构、母线排、断路器与开关安装、配电柜运行维护、双电源与应急电源",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      },
+      {
+        "id": "s13_mock_exam",
+        "title": "考证单元十三：考证综合模拟考",
+        "description": "安全用电、仪表测量、电机控制、变配电综合复习与全真模拟测验",
+        "lesson_count": 5,
+        "estimated_total_time": "15分钟"
+      }
+    ]
+  }
+]

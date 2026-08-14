@@ -1,0 +1,813 @@
+{
+  "id": "s6_diagram_substation",
+  "title": "电工考证单元六：电气识图与变配电",
+  "description": "电气图形与文字符号、电路图分类、变压器、配电室与运行安全、考证综合复习",
+  "icon": "🗺️",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s6a_symbols",
+      "title": "电气图形与文字符号",
+      "description": "常用低压电器符号、文字符号 KM/SB/FR 等",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "图形符号与文字符号",
+          "content": "电路图用图形符号表示元器件，用文字符号标注其名称与类别。常用文字符号：KM 接触器、SB 按钮、FR 热继电器、QF 低压断路器、FU 熔断器、M 电动机、QS 隔离开关（刀开关）、KT 时间继电器、KA 中间继电器、HL 指示灯、L 火线、N 零线、PE 保护线。",
+          "id": "s6a_symbols_n0"
+        },
+        {
+          "type": "info",
+          "title": "触头符号的画法",
+          "content": "触头符号按「未动作（未通电/未受压）」的常态画出：常开触头画成断开的两点（一横断开），常闭触头画成闭合（两点相连）。线圈通电或机械受压后触头才动作。识图时先认准常态，再推动作后状态。",
+          "id": "s6a_symbols_n1"
+        },
+        {
+          "type": "info",
+          "title": "常开与常闭",
+          "content": "常开触头（NO）：常态断开，通电/动作后闭合，用于启动、自锁、信号。常闭触头（NC）：常态闭合，通电/动作后断开，用于停止、互锁、保护。同一个接触器 KM 有多个触头，图中用同一文字符号标注、属同一电器。",
+          "id": "s6a_symbols_n2"
+        },
+        {
+          "type": "info",
+          "title": "读图的配合关系",
+          "content": "同一电器的线圈和触头散布在图中不同位置，靠文字符号对应起来：控制电路（线圈回路）动作，主电路（主触头所在回路）随之通断。读图要领：先主电路、后控制电路；看线圈→找其触头→推动作结果。",
+          "id": "s6a_symbols_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "文字符号 KM 表示？",
+          "options": [
+            {
+              "id": "A",
+              "text": "按钮",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "熔断器",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电动机",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接触器",
+              "is_correct": true
+            }
+          ],
+          "explanation": "KM=接触器，SB=按钮，FR=热继电器，QF=断路器，FU=熔断器，M=电动机——考证必背的文字符号。",
+          "id": "s6a_symbols_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电路图中触头的状态，按什么状态画出？",
+          "options": [
+            {
+              "id": "A",
+              "text": "未动作（未通电、未受压）的常态",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "通电吸合后的状态",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "动作瞬间的状态",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "随机状态",
+              "is_correct": false
+            }
+          ],
+          "explanation": "触头一律按常态画：常开断开、常闭闭合。动作后的状态要靠理解电路推理得出。",
+          "id": "s6a_symbols_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "常开触头（NO）常态是闭合的，线圈通电或动作后才断开。",
+          "correct_answer": false,
+          "explanation": "不对。NO（Normally Open）常开：常态断开、动作后闭合；常态闭合、动作后断开的是 NC（Normally Closed）常闭。两者常态正好相反，读图时务必区分。",
+          "id": "s6a_symbols_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "文字符号 SB 表示 ____（电器）。",
+          "answer": "按钮",
+          "acceptable_answers": [
+            "按钮",
+            "按钮开关",
+            "启动按钮",
+            "停止按钮"
+          ],
+          "explanation": "SB=按钮（S 为开关类、B 为按钮），如启动按钮 SB1、停止按钮 SB2。",
+          "id": "s6a_symbols_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "同一接触器 KM 的线圈和触头在图中分散放置，依靠什么对应起来？",
+          "options": [
+            {
+              "id": "A",
+              "text": "相同的位置",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "相同的文字符号 KM",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "随机编号",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "相同的颜色",
+              "is_correct": false
+            }
+          ],
+          "explanation": "同一电器所有部分用同一文字符号标注，读图时按符号把它们联系起来。",
+          "id": "s6a_symbols_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "读电气原理图应「先主电路、后控制电路」，由线圈推其触头动作结果。",
+          "correct_answer": true,
+          "explanation": "控制电路动作→接触器吸合→主电路通断，是电动机控制图的读图主线。",
+          "id": "s6a_symbols_n9"
+        },
+        {
+          "type": "info",
+          "title": "符号标准依据与中英术语对照",
+          "content": "中国电气图标准：图形符号依据 GB/T 4728（《电气简图用图形符号》，等同采用 IEC 60617）；文字符号依据 GB/T 7159（参照 IEC 60750）。美国相应标准为 IEEE 315（旧 ANSI Y32.2），同类符号画法略有差异——考试一律按国标 GB。常用中英术语：常开触头 NO（Normally Open）、常闭触头 NC（Normally Closed）、线圈 coil、主触头 main contact、辅助触头 auxiliary contact、接触器 KM（contactor）、热继电器 FR（thermal overload relay）、时间继电器 KT（time relay）、熔断器 FU（fuse）、断路器 QF（circuit breaker）。识别进口设备图纸时，先看它按哪个标准绘制。",
+          "id": "s6a_symbols_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "我国电气图用图形符号的标准是？（考试依据）",
+          "options": [
+            {
+              "id": "A",
+              "text": "GB/T 4728（等同采用 IEC 60617）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "IEEE 315（ANSI Y32.2）",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "GB/T 7159",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "JIS C 0617",
+              "is_correct": false
+            }
+          ],
+          "explanation": "图形符号依据 GB/T 4728，等同采用 IEC 60617；GB/T 7159 是文字符号标准；IEEE 315/ANSI Y32.2 是美国标准。答题与绘制一律按国标 GB。",
+          "id": "s6a_symbols_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电气控制图中，文字符号 FR 与 KT 分别表示？",
+          "options": [
+            {
+              "id": "A",
+              "text": "热继电器与时间继电器",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "熔断器与接触器",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "频敏变阻器与转换开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "热继电器与电流继电器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "FR = 热继电器（thermal overload relay），KT = 时间继电器（time relay，K 为继电器类、T 表时间）。FU=熔断器、KM=接触器。这些符号在电机控制图里高频出现。",
+          "id": "s6a_symbols_n12"
+        }
+      ]
+    },
+    {
+      "id": "s6b_diagram_types",
+      "title": "电路图的分类",
+      "description": "原理图、接线图、布置图，主电路与控制电路",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "原理图（电路图）",
+          "content": "电气原理图按工作原理绘制，用图形符号表示电路，突出各元件的电气连接关系和控制逻辑，是读图、分析、设计的主要依据。它不按实际位置布置，同一电器的线圈和触头可分散在不同位置。",
+          "id": "s6b_diagram_types_n0"
+        },
+        {
+          "type": "info",
+          "title": "接线图",
+          "content": "接线图（安装接线图）按元件实际位置和走线方向绘制，标明端子编号、导线去向，供安装配线和检修使用。它体现的是「线怎么接」而不是「电路怎么工作」。",
+          "id": "s6b_diagram_types_n1"
+        },
+        {
+          "type": "info",
+          "title": "主电路与控制电路",
+          "content": "电动机控制原理图分两部分：主电路——电源经开关、熔断器、接触器主触头、热继电器发热元件到电动机，流过大电流；控制电路——按钮、接触器线圈、辅助触头、热继电器常闭触头等组成的回路，电流小。分析时先看主电路再跟控制电路。",
+          "id": "s6b_diagram_types_n2"
+        },
+        {
+          "type": "info",
+          "title": "布置图与其他图",
+          "content": "布置图表示设备、元器件在柜内/盘上的实际安装位置和间距。此外还有端子排图、互连图等。图纸类别不同用途不同：原理图供分析、接线图供安装、布置图供施工定位。",
+          "id": "s6b_diagram_types_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电气原理图的特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用于定位安装孔",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "按元件实际位置绘制",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "按工作原理绘制，突出电气连接与控制逻辑，不按实际位置",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "只画导线不画元件",
+              "is_correct": false
+            }
+          ],
+          "explanation": "原理图表达工作原理和控制逻辑，元件不按实际位置布置；安装位置看布置图、接线看接线图。",
+          "id": "s6b_diagram_types_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "供安装配线和检修查找「线怎么接」的图是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "原理图",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "布置图",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "系统框图",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接线图",
+              "is_correct": true
+            }
+          ],
+          "explanation": "接线图按实际位置和走线标注端子与导线去向，是安装和检修的依据。",
+          "id": "s6b_diagram_types_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电动机控制电路的主电路流过大电流，控制电路电流较小。",
+          "correct_answer": true,
+          "explanation": "主电路（电源→主触头→电机）承载工作电流；控制电路只带线圈等小功率负载，用小电流控制大电流。",
+          "id": "s6b_diagram_types_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列哪项属于主电路的元件？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接触器主触头、热继电器发热元件、熔断器",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "启动按钮",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "接触器线圈",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "停止按钮",
+              "is_correct": false
+            }
+          ],
+          "explanation": "主电路串联主触头、发热元件、熔断器等承载主电流的元件；按钮、线圈、辅助触头属控制电路。",
+          "id": "s6b_diagram_types_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "表示元器件在配电柜内实际安装位置和间距的图称为 ____ 图。",
+          "answer": "布置",
+          "acceptable_answers": [
+            "布置",
+            "布置图",
+            "设备布置"
+          ],
+          "explanation": "布置图给出设备元器件的实际安装定位；原理图表达逻辑、接线图标明接线。",
+          "id": "s6b_diagram_types_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "同一电器的线圈与触头在原理图中必须画在一起，不能分散到不同位置。",
+          "correct_answer": false,
+          "explanation": "不对。原理图按电路逻辑展开、不按实际位置，同一接触器 KM 的线圈、主触头、辅助触头可以分散在图面各处，靠相同的文字符号 KM 相互对应，读图时按符号找齐。",
+          "id": "s6b_diagram_types_n9"
+        }
+      ]
+    },
+    {
+      "id": "s6c_transformer",
+      "title": "变压器",
+      "description": "变压原理、匝数比、三相变压器",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "变压器的原理",
+          "content": "变压器由铁芯和套在铁芯上的两个（或多组）绕组组成。一次绕组接交流电源，铁芯中产生交变磁通，磁通同时穿过二次绕组，在二次绕组中感应出电动势——这就是电磁感应原理。它只能变换交流电压，不能变换直流。",
+          "id": "s6c_transformer_n0"
+        },
+        {
+          "type": "info",
+          "title": "电压与匝数的关系",
+          "content": "一次、二次电压之比等于匝数之比：U1/U2 = N1/N2（变比 k = N1/N2）。N2>N1 是升压，N2<N1 是降压。理想变压器忽略损耗时一次、二次功率相等：U1·I1 = U2·I2，所以升压的同时电流必然减小，电压与电流成反比。",
+          "id": "s6c_transformer_n1"
+        },
+        {
+          "type": "info",
+          "title": "三相变压器",
+          "content": "三相变压器（或三只单相变压器组成三相组）用于三相电路变换，一次/二次绕组分别有星形（Y）和三角形（Δ）两种接法，构成 Y/Y、Y/Δ 等连接组别。配电变压器一般把 10kV 高压降为 400V/230V 低压供用户使用。",
+          "id": "s6c_transformer_n2"
+        },
+        {
+          "type": "info",
+          "title": "运行注意事项",
+          "content": "变压器运行中注意：冷却方式（油浸自冷、干式）、温升不得超过规定、油位/油温正常、不得长期过载运行、发生异常声响或冒烟立即停电检查。配电变压器中性点接地（工作接地），低压侧配漏电保护与过流保护。",
+          "id": "s6c_transformer_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "变压器变换电压的原理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "静电屏蔽",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电磁感应（交变磁通在一次二次绕组间耦合）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "热电效应",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "整流滤波",
+              "is_correct": false
+            }
+          ],
+          "explanation": "一次绕组通交流产生交变磁通，磁通耦合二次绕组感应电动势——电磁感应原理，只能变换交流。",
+          "id": "s6c_transformer_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "变压器一、二次电压之比等于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "频率之比",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电流之比",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "匝数之比 N1/N2",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "功率之比",
+              "is_correct": false
+            }
+          ],
+          "explanation": "U1/U2 = N1/N2 = 变比 k。升压则匝数多、电流小；降压则反之，功率守恒。",
+          "id": "s6c_transformer_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "变压器既能变换交流电压，也能变换直流电压。",
+          "correct_answer": false,
+          "explanation": "变压器靠交变磁通感应工作，直流不产生交变磁通、无法变压，直流输入时二次侧无感应输出。",
+          "id": "s6c_transformer_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "升压变压器中，二次电压升高，则二次电流？",
+          "options": [
+            {
+              "id": "A",
+              "text": "同样增大",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不变",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "变为零",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "相应减小（功率守恒 U1I1=U2I2）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "理想变压器输入输出功率相等，电压升则电流降——升压变压器二次侧电压高、电流小。",
+          "id": "s6c_transformer_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "配电变压器一般把 10kV 高压降为 ____ V/230V 低压供用户使用。",
+          "answer": "400",
+          "acceptable_answers": [
+            "400",
+            "400V",
+            "380",
+            "380V",
+            "400/230"
+          ],
+          "explanation": "常见三相配电变压器输出 400V（线电压，三相）供三相设备，230V（相电压）供单相照明，即 380/220 系。",
+          "id": "s6c_transformer_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "变压器运行中应监视油位、油温，发生异常声响或冒烟应停电检查。",
+          "correct_answer": true,
+          "explanation": "变压器过热、放电、内部故障会有异常声响、油温升高甚至冒烟，须立即停电检查处理。",
+          "id": "s6c_transformer_n9"
+        }
+      ]
+    },
+    {
+      "id": "s6d_substation_safety",
+      "title": "配电室与运行安全",
+      "description": "五防、验电操作、运行制度、操作监护",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "配电室的五防",
+          "content": "高压开关柜「五防」：①防止误分、误合断路器；②防止带负荷拉合隔离开关；③防止带电挂接地线（挂接地线时未停电）；④防止带接地线合闸（送电时接地线未拆除）；⑤防止误入带电间隔。五防靠闭锁装置（机械联锁+电气联锁）保证。",
+          "id": "s6d_substation_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "运行值班制度",
+          "content": "配电室应设专职或兼职值班电工，运行值班要做到：定时巡视检查仪表指示、设备声响、油位油温、有无异味异响；记录运行数据；发现异常立即报告并采取安全措施；非值班人员不得擅自进入配电室。",
+          "id": "s6d_substation_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "倒闸操作",
+          "content": "倒闸操作（停送电、切换运行方式）必须执行操作票，两人操作：一人操作、一人监护，唱票复诵、逐项打勾。停电操作顺序：先断开断路器，再拉隔离开关（先负荷侧后电源侧）；送电相反：先合隔离开关，后合断路器。",
+          "id": "s6d_substation_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "验电与接地",
+          "content": "检修前必须用相应电压等级的合格验电器验明无电，装设接地线，悬挂标示牌、装设遮栏。验电时先在有电设备上试验验电器良好。禁止用低压验电笔验高压电，禁止约时停送电。",
+          "id": "s6d_substation_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "高压开关柜「五防」之一「防止带负荷拉合隔离开关」的含义是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "开关有负荷电流时不得操作隔离开关，先断断路器",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "隔离开关可以带负荷拉合",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "任何时候都不能动隔离开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只防误合不防误分",
+              "is_correct": false
+            }
+          ],
+          "explanation": "隔离开关无灭弧能力，带负荷操作会产生电弧短路，必须先断开断路器再拉隔离开关。",
+          "id": "s6d_substation_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "倒闸操作停电的正确顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "随意操作",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先断断路器，再拉隔离开关",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "先合隔离开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先拉隔离开关，再断断路器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "停电先断开断路器（带灭弧、可断负荷），再拉隔离开关（此时已无电流）；送电顺序相反。",
+          "id": "s6d_substation_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "倒闸操作可以由一人独立完成，不需要监护和唱票复诵。",
+          "correct_answer": false,
+          "explanation": "不对。倒闸操作必须两人进行：一人操作、一人监护，唱票复诵、逐项核对打勾，防止误操作造成带负荷拉刀闸、带电挂接地线等恶性事故，单人操作是严重违章。",
+          "id": "s6d_substation_safety_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "验电前应先在 ____ 设备上试验验电器良好，再用它验电。",
+          "answer": "有电",
+          "acceptable_answers": [
+            "有电",
+            "带电",
+            "带电体",
+            "已带电"
+          ],
+          "explanation": "验电器可能损坏，必须先在有电设备上验证良好，否则「验无电」是误判，可能带电作业。",
+          "id": "s6d_substation_safety_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于配电室运行，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "发现异常不处理继续运行",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "任何人都可随时进入配电室",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "值班电工应定时巡视、记录运行数据，异常及时报告处理",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "巡检不需要记录",
+              "is_correct": false
+            }
+          ],
+          "explanation": "配电室须由专业人员值守，定时巡视记录，发现异常立即处置，非值班人员不得擅自进入。",
+          "id": "s6d_substation_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "严禁约时停送电：停送电必须按操作指令和操作票执行。",
+          "correct_answer": true,
+          "explanation": "约时停送电是重大违章，时间偏差可能造成有人仍在检修就送电，必须按程序执行。",
+          "id": "s6d_substation_safety_n9"
+        }
+      ]
+    },
+    {
+      "id": "s6e_exam_review",
+      "title": "考证综合复习",
+      "description": "安全用电/仪表/电机控制/照明综合题",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "综合复习要领",
+          "content": "电工考证理论综合覆盖：安全规程（触电急救、安全距离、操作制度）、常用仪表（钳形表、摇表、万用表使用）、低压电器与电机控制（接触器、热继、自锁、互锁、星三角）、照明与配电（开关插座、电能表、断路器）、识图（文字符号、主/控制电路）。复习以安全为主线，操作细节优先。",
+          "id": "s6e_exam_review_n0"
+        },
+        {
+          "type": "info",
+          "title": "高频考点",
+          "content": "高频考点集中在：触电急救「先断电再救人」、安全电压 36V/12V、漏电保护 ≤30mA/0.1s、绝缘电阻 ≥0.5MΩ、开关控火线、插座左零右火上地、PE 线禁装熔断开关、摇表 120 转/分、电流表串联电压表并联、接触器自锁互锁、星三角 1/3、变比公式、电功率 P=UI。",
+          "id": "s6e_exam_review_n1"
+        },
+        {
+          "type": "info",
+          "title": "易错点提醒",
+          "content": "易错点：①熔断器严禁铜丝代替；②兆欧表严禁带电测量；③电流互感器二次严禁开路；④钳形表只钳一根线；⑤不能用泡沫灭火器灭电气火；⑥热继是过载保护、熔断器是短路保护；⑦按钮不能直接控制主电路大电流；⑧验电必须用验电器而非绝缘手套。",
+          "id": "s6e_exam_review_n2"
+        },
+        {
+          "type": "info",
+          "title": "应试技巧",
+          "content": "应试技巧：先易后难；判断题找绝对化表述（「任何」「一定」「只要…就」往往错误）；选择题用排除法；涉及数字的安全参数要记牢（36V、12V、30mA、0.1s、0.5MΩ、120转、1.3m、0.3m）。",
+          "id": "s6e_exam_review_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于安全用电的做法，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用铜丝代替熔丝继续送电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "湿手操作开关",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "带电检修不做任何防护",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "发现有人触电先断电再施救，电气火灾先断电再灭火",
+              "is_correct": true
+            }
+          ],
+          "explanation": "先断电再救人/灭火是安全第一原则；铜丝代熔丝、湿手操作、无防护带电作业都是严重违章。",
+          "id": "s6e_exam_review_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "「左零右火上接地」描述的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "单相三孔插座的接线",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "三相电动机的接线",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "变压器的接线",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电能表的接线",
+              "is_correct": false
+            }
+          ],
+          "explanation": "面对插座左孔零线、右孔火线、上孔保护地线，是考证高频考点。",
+          "id": "s6e_exam_review_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "热继电器用于短路保护，熔断器用于过载保护。",
+          "correct_answer": false,
+          "explanation": "正好相反：热继电器（双金属片）做过载保护，熔断器（熔体）做短路保护——分工易记反，特别注意。",
+          "id": "s6e_exam_review_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量某支路电流，应把电流表？",
+          "options": [
+            {
+              "id": "A",
+              "text": "跨接电源两端",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "串联接入该支路",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "不接入直接读数",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "并联在该支路两端",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电流表内阻小须串联；电压表内阻大须并联——接入方式与内阻特性是对偶记忆点。",
+          "id": "s6e_exam_review_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "成人胸外按压与人工呼吸的比例为 ____ : 2。",
+          "answer": "30",
+          "acceptable_answers": [
+            "30",
+            "30:2",
+            "三十"
+          ],
+          "explanation": "成人单人 CPR 比例 30:2：先按 30 次再做 2 次人工呼吸。",
+          "id": "s6e_exam_review_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "兆欧表测量前，被测设备必须先？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用万用表先测一遍电压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "带电运行保持热态",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "停电、验电并充分放电",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "接上负载",
+              "is_correct": false
+            }
+          ],
+          "explanation": "兆欧表输出高电压，带电测量会触电并损坏设备；大电容设备测后还要放电。",
+          "id": "s6e_exam_review_n9"
+        },
+        {
+          "type": "true_false",
+          "question": "星三角降压启动时启动电流降为直接启动的 1/3，但启动转矩同样降为 1/3。",
+          "correct_answer": true,
+          "explanation": "星形相电压降为 1/√3，电流降为 1/3、转矩(∝U²)降为 1/3——所以只适合空载或轻载启动。",
+          "id": "s6e_exam_review_n10"
+        }
+      ]
+    }
+  ]
+}

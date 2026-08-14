@@ -1,0 +1,721 @@
+{
+  "id": "s9_hv_substation",
+  "title": "电工考证单元九：高压变配电与继电保护",
+  "description": "高压开关设备、互感器、继电保护、变电站运行与倒闸、高压安全距离与操作",
+  "icon": "🏗️",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s9a_hv_equipment",
+      "title": "高压开关设备",
+      "description": "高压断路器、隔离开关、负荷开关、熔断器",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "高压断路器",
+          "content": "高压断路器是高压回路最重要的开关设备，能接通和分断正常工作电流，还能在短路故障时自动切断巨大的短路电流（有灭弧装置）。常见有真空断路器、SF6（六氟化硫）断路器、少油断路器。真空断路器无油无气、维护少，应用最广。",
+          "id": "s9a_hv_equipment_n0"
+        },
+        {
+          "type": "info",
+          "title": "隔离开关",
+          "content": "隔离开关没有灭弧能力，只能隔离电源、建立明显断开点，供检修时保证安全，严禁带负荷拉合。它和断路器配合使用：停送电必须先断断路器、再拉隔离开关（先拉负荷侧后拉电源侧）。",
+          "id": "s9a_hv_equipment_n1"
+        },
+        {
+          "type": "info",
+          "title": "负荷开关与高压熔断器",
+          "content": "负荷开关能通断正常负荷电流，但不能切断短路电流，须与高压熔断器配合使用：短路时由熔断器熔断保护。高压熔断器（如 RN、RW 型）用于变压器、互感器等设备保护，熔断电流与整定要匹配。",
+          "id": "s9a_hv_equipment_n2"
+        },
+        {
+          "type": "info",
+          "title": "操作顺序与机械联锁",
+          "content": "高压开关柜设机械联锁（五防）保证操作顺序：必须先断断路器后拉隔离开关，送电相反。违反顺序带负荷拉合隔离开关会产生强烈电弧，酿成短路事故。",
+          "id": "s9a_hv_equipment_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "既能通断正常工作电流，又能在短路时自动切断短路电流的高压开关是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "隔离开关",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "高压断路器",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "负荷开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "高压熔断器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "高压断路器有灭弧装置，可切断短路电流；隔离开关无灭弧、负荷开关只能断正常负荷电流。",
+          "id": "s9a_hv_equipment_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "隔离开关的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "切断短路电流",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "通断正常工作电流",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "隔离电源、建立明显断开点供检修",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "测量电压",
+              "is_correct": false
+            }
+          ],
+          "explanation": "隔离开关无灭弧装置，只能隔离电源建立明显断点，严禁带负荷拉合。",
+          "id": "s9a_hv_equipment_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "停高压电时，可以先拉隔离开关再断断路器，只要操作快就安全。",
+          "correct_answer": false,
+          "explanation": "不对。隔离开关没有灭弧能力，必须先断开断路器切断负荷电流，再拉开隔离开关隔离电源；带负荷拉隔离开关会产生强烈电弧，造成相间短路和人身伤害。",
+          "id": "s9a_hv_equipment_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "高压开关柜通过机械联锁（____ 防）保证不得带负荷拉合隔离开关。",
+          "answer": "五",
+          "acceptable_answers": [
+            "五",
+            "5",
+            "五防",
+            "五防装置"
+          ],
+          "explanation": "开关柜五防联锁之一即「防止带负荷拉合隔离开关」，靠机械+电气联锁强制操作顺序。",
+          "id": "s9a_hv_equipment_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "负荷开关与高压熔断器配合使用时，短路故障由谁保护？",
+          "options": [
+            {
+              "id": "A",
+              "text": "两者一起切断",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "隔离开关切断",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "负荷开关切断",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "高压熔断器熔断切断",
+              "is_correct": true
+            }
+          ],
+          "explanation": "负荷开关无切断短路电流的能力，短路时由串联的高压熔断器熔断保护。",
+          "id": "s9a_hv_equipment_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "带负荷拉隔离开关会产生强烈电弧，可能造成相间短路和人身伤害。",
+          "correct_answer": true,
+          "explanation": "隔离开关无灭弧装置，带负荷拉合时电流拉弧不灭，酿成短路、烧毁设备甚至伤人的恶性事故。",
+          "id": "s9a_hv_equipment_n9"
+        }
+      ]
+    },
+    {
+      "id": "s9b_transformers",
+      "title": "互感器",
+      "description": "电流互感器与电压互感器、二次侧禁忌",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "互感器的作用",
+          "content": "互感器把高电压、大电流按比例变换成仪表、继电器、保护装置能直接承受的低电压（100V）和小电流（5A/1A），既扩大仪表量程，又使二次设备与高压主回路电气隔离，保证操作人员和仪表安全。",
+          "id": "s9b_transformers_n0"
+        },
+        {
+          "type": "info",
+          "title": "电流互感器（CT）",
+          "content": "电流互感器一次绕组串在主回路（或穿心式让主导线穿过铁芯），二次绕组接电流表/继电器。一次电流大、匝数少，二次匝数多。变比如 100/5A。**二次侧严禁开路**：开路时二次感应出危险高压，可能击穿绝缘、损坏设备并危及人身。",
+          "id": "s9b_transformers_n1"
+        },
+        {
+          "type": "info",
+          "title": "电压互感器（PT）",
+          "content": "电压互感器一次绕组并联在主回路两端，二次绕组接电压表/继电器，变比如 10kV/100V。**二次侧严禁短路**：短路时二次电流剧增，可能烧毁互感器。二次侧必须装熔断器保护并可靠接地。",
+          "id": "s9b_transformers_n2"
+        },
+        {
+          "type": "info",
+          "title": "互感器的二次侧接地",
+          "content": "互感器二次侧一端必须接地（保护接地），防止一次高压因绝缘损坏窜入二次侧危及人身和设备。同时注意 CT 二次侧在工作时不得开路、PT 二次侧不得短路，这是高压测量检修的铁律。",
+          "id": "s9b_transformers_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电流互感器二次侧（接仪表侧）严禁？",
+          "options": [
+            {
+              "id": "A",
+              "text": "开路",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "串联电表",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "短路",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接地",
+              "is_correct": false
+            }
+          ],
+          "explanation": "CT 二次开路时，一次电流全部成为励磁电流、铁芯饱和，二次感应出危险高压，损坏绝缘危及人身。",
+          "id": "s9b_transformers_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电压互感器二次侧严禁？",
+          "options": [
+            {
+              "id": "A",
+              "text": "开路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "短路",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "接地",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "并联电压表",
+              "is_correct": false
+            }
+          ],
+          "explanation": "PT 二次短路时流过巨大短路电流，烧毁互感器。二次侧应装熔断器保护。",
+          "id": "s9b_transformers_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "互感器的二次侧一端必须接地，防止一次高压窜入二次侧危及人身。",
+          "correct_answer": true,
+          "explanation": "一次绝缘损坏时高压可能窜到二次，二次侧保护接地可把故障电压泄放，保护人和二次设备。",
+          "id": "s9b_transformers_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电流互感器一次绕组与主回路的连接方式是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "并联在主回路两端",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "悬浮不接",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "串联在主回路中",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "跨接在相间",
+              "is_correct": false
+            }
+          ],
+          "explanation": "CT 一次绕组串联（或穿心式让主导线穿过）被测回路，测的是电流；PT 一次并联测的是电压——接线方式对偶。",
+          "id": "s9b_transformers_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "电压互感器二次侧的额定电压一般为 ____ V。",
+          "answer": "100",
+          "acceptable_answers": [
+            "100",
+            "100V",
+            "100 V",
+            "一百"
+          ],
+          "explanation": "PT 二次额定电压标准为 100V（线间），对应一次额定电压；CT 二次额定电流为 5A 或 1A。",
+          "id": "s9b_transformers_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电压互感器二次侧可以长时间短路运行，不会损坏互感器。",
+          "correct_answer": false,
+          "explanation": "不对。电压互感器二次侧短路是严重故障：二次电流剧增会烧毁互感器。因此二次侧必须装设熔断器保护，一旦短路及时熔断，保护互感器和二次回路。",
+          "id": "s9b_transformers_n9"
+        }
+      ]
+    },
+    {
+      "id": "s9c_relay",
+      "title": "继电保护",
+      "description": "过流、速断、差动、瓦斯保护原理",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "继电保护的任务",
+          "content": "继电保护的任务是：在电力系统发生故障（短路、接地、过载）或异常运行时，自动、快速、有选择地切除故障元件，并发出信号，防止故障扩大，保证无故障部分继续运行。要求：可靠性、选择性、快速性、灵敏性。",
+          "id": "s9c_relay_n0"
+        },
+        {
+          "type": "info",
+          "title": "电流保护",
+          "content": "电流保护利用短路时电流剧增的特点：电流速断保护——按躲过最大短路电流整定，瞬时动作、保护范围小（本线路的一部分）；定时限/反时限过流保护——电流超过整定值经延时动作，保护本线路全长并作为相邻线路后备。",
+          "id": "s9c_relay_n1"
+        },
+        {
+          "type": "info",
+          "title": "差动保护",
+          "content": "差动保护比较被保护元件（变压器、线路、母线）两侧电流：正常时两侧电流大小相近、差流≈0；内部故障时两侧电流不平衡、差流增大，达到整定值即跳闸。它是变压器、大机组的主保护，瞬时、灵敏。",
+          "id": "s9c_relay_n2"
+        },
+        {
+          "type": "info",
+          "title": "变压器保护配置",
+          "content": "变压器主保护：瓦斯保护（油箱内部故障，气体/油流动作）和差动保护（内部电气故障）；后备保护：过流保护、过负荷保护（发信号）、温度保护。重瓦斯、差动动作跳闸，轻瓦斯、过负荷发信号。",
+          "id": "s9c_relay_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "继电保护的基本要求是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "只快不选",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "随便动作",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "越跳越好的越级性",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "可靠性、选择性、快速性、灵敏性",
+              "is_correct": true
+            }
+          ],
+          "explanation": "四性要求：可靠不误动不拒动、有选择只切故障区、动作快限故障损害、对故障灵敏可靠响应。",
+          "id": "s9c_relay_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "瞬时动作、保护范围是本线路一部分的电流保护是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电流速断保护",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "瓦斯保护",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "过电流保护",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "差动保护",
+              "is_correct": false
+            }
+          ],
+          "explanation": "速断按躲过最大短路电流整定，瞬时动作但只保护线路首段；线路后段靠带延时的过流保护。",
+          "id": "s9c_relay_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "瓦斯保护主要针对变压器外部引线短路故障，靠检测电流突增动作。",
+          "correct_answer": false,
+          "explanation": "不对。瓦斯保护针对油箱内部故障——故障产生气体或油流冲击使继电器动作；检测电流突增的是过流保护，差动保护则比较变压器两侧电流、靠差流增大动作，两者的保护对象和原理完全不同。",
+          "id": "s9c_relay_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "差动保护比较变压器两侧电流的原理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "正常时差流最大",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "内部故障时两侧电流不平衡、差流增大即动作",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "外部故障时差流最大",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "永远不动作",
+              "is_correct": false
+            }
+          ],
+          "explanation": "正常运行/外部故障时两侧电流按变比平衡、差流≈0；内部故障差流增大超整定值即瞬时跳闸。",
+          "id": "s9c_relay_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "变压器保护中，专门反映油箱内部故障的保护叫 ____ 保护。",
+          "answer": "瓦斯",
+          "acceptable_answers": [
+            "瓦斯",
+            "气体",
+            "瓦斯（气体）"
+          ],
+          "explanation": "瓦斯保护检测油箱内气体/油流，是变压器内部故障的主要保护之一。",
+          "id": "s9c_relay_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "过电流保护带延时动作，保护本线路全长并可兼作相邻线路的后备保护。",
+          "correct_answer": true,
+          "explanation": "过流保护整定值较低、带时限，既能切除本线路过流故障，又因时限配合可为下级提供后备。",
+          "id": "s9c_relay_n9"
+        }
+      ]
+    },
+    {
+      "id": "s9d_substation_ops",
+      "title": "变电站运行与倒闸",
+      "description": "运行制度、巡视检查、倒闸操作",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "运行值班制度",
+          "content": "变电站（配电室）由取得相应资格的电工值守，值班做到：按时巡视设备（断路器、变压器、母线、仪表、信号）、记录运行参数（电压、电流、负荷、温度）、发现异常立即处理或报告，交接班要当面交清运行方式和注意事项。",
+          "id": "s9d_substation_ops_n0"
+        },
+        {
+          "type": "info",
+          "title": "巡视检查内容",
+          "content": "巡视看：设备有无异常声响、异味、过热变色、渗漏油、绝缘子破损、导线弧垂异常；仪表指示是否正常；保护信号灯、告警是否动作；站内有无易燃易爆、无关人员进入。雨天雾天雷雨前后要增加特巡。",
+          "id": "s9d_substation_ops_n1"
+        },
+        {
+          "type": "info",
+          "title": "倒闸操作",
+          "content": "倒闸操作是改变运行方式的操作（停送电、切换母线、投退保护），必须按操作票进行、两人执行（操作+监护）、唱票复诵、逐项打勾。操作前核对设备双重名称，操作后检查确认。",
+          "id": "s9d_substation_ops_n2"
+        },
+        {
+          "type": "info",
+          "title": "停送电原则",
+          "content": "停电原则：先断负荷侧、后断电源侧；先断断路器、后拉隔离开关；先停低压、后停高压（对用户而言先断下级）。送电相反：先合电源侧、后合负荷侧；先合隔离开关、后合断路器。",
+          "id": "s9d_substation_ops_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "倒闸操作必须执行的制度是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "凭记忆随意操作",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "一人操作即可",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "按操作票两人执行，唱票复诵、逐项打勾",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "约时送电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "操作票+双人监护+唱票复诵是倒闸操作的铁律，防止误操作造成带负荷拉刀闸、带电挂接地线。",
+          "id": "s9d_substation_ops_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "停电操作的正确顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接拉隔离开关",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "同时进行",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "先拉隔离开关，后断断路器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先断断路器，后拉隔离开关",
+              "is_correct": true
+            }
+          ],
+          "explanation": "先断断路器切除负荷与短路电流，再拉隔离开关建立明显断点，严禁带负荷拉隔离开关。",
+          "id": "s9d_substation_ops_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "雷雨天气前后不需要增加巡视，按正常周期巡视即可。",
+          "correct_answer": false,
+          "explanation": "不对。雷雨天气前后及恶劣天气应增加特殊巡视：雷雨后可能发生闪络、断线、绝缘受潮等隐患，需特巡及时发现并处理，等正常周期巡视往往就晚了。",
+          "id": "s9d_substation_ops_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "交接班时，交班人应向接班人交代清楚的内容包括？",
+          "options": [
+            {
+              "id": "A",
+              "text": "当前运行方式、设备状态、异常情况及注意事项",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "只交代天气",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "无关的私人事务",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "什么都不用说",
+              "is_correct": false
+            }
+          ],
+          "explanation": "交接班当面交清运行方式、设备状态和注意事项，保证运行连续性、防止漏项。",
+          "id": "s9d_substation_ops_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "倒闸操作实行双人制：一人 ____、一人监护。",
+          "answer": "操作",
+          "acceptable_answers": [
+            "操作",
+            "执行"
+          ],
+          "explanation": "一人操作、一人监护，监护人在旁监督操作过程并唱票复诵，防止误操作。",
+          "id": "s9d_substation_ops_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "巡视中发现设备异常时，应先自行判断能否处理，重大异常立即报告并按规程处理。",
+          "correct_answer": true,
+          "explanation": "小异常可按规定处理，重大异常（冒烟、异响、渗漏、表计异常）须立即报告，防止故障扩大。",
+          "id": "s9d_substation_ops_n9"
+        }
+      ]
+    },
+    {
+      "id": "s9e_hv_safety",
+      "title": "高压安全距离与操作",
+      "description": "安全距离表、验电、放电、绝缘工具",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "安全距离",
+          "content": "人体与高压带电体必须保持安全距离：10kV 及以下 0.7m；35kV 1.0m；110kV 1.5m；220kV 3.0m（各规程数值略有差异，以规程为准）。电压越高距离要求越大。无遮栏时人员（含手持工具）不得越过安全距离。",
+          "id": "s9e_hv_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "验电",
+          "content": "高压验电必须使用相应电压等级、经试验合格的验电器，验电前先在有电设备上验证验电器良好。验电顺序：先验近处后验远处、先验下层后验上层。高压验电要戴绝缘手套，穿绝缘鞋。",
+          "id": "s9e_hv_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "放电与接地",
+          "content": "检修停电设备，对可能带有感应电压或剩余电荷的设备（电缆、电容器、大电机）必须先放电，再装设接地线。装接地线先接接地端、后接导体端，三相都要装设（三相短路接地）。",
+          "id": "s9e_hv_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "绝缘操作工具",
+          "content": "高压操作使用绝缘杆（令克棒）、绝缘手套、绝缘靴等，必须定期做耐压试验且在有效期内，使用前检查外观完好。操作隔离开关等用绝缘杆，人体与带电体保持安全距离。",
+          "id": "s9e_hv_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "人体与 10kV 及以下高压带电体的安全距离不小于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.1m",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "0.7m",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "5m",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "10m",
+              "is_correct": false
+            }
+          ],
+          "explanation": "安全距离按电压分级：10kV 及以下 0.7m、35kV 1.0m、110kV 1.5m、220kV 3.0m。",
+          "id": "s9e_hv_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "高压验电前，第一步是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接验电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用手摸一下试试",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "先在有电设备上验证验电器良好",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "先放电再验电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "验电器可能损坏失效，必须先在有电处验证其良好，否则「验无电」是误判，可能误入带电间隔。",
+          "id": "s9e_hv_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "装设接地线时应先接导体端，后接接地端。",
+          "correct_answer": false,
+          "explanation": "不对。装设接地线的顺序是先接接地端、后接导体端，让接地线先建立地电位，防止感应电触电；拆除时顺序相反，先拆导体端、后拆接地端，保证拆除过程中始终有保护。",
+          "id": "s9e_hv_safety_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "对停电的电缆、电容器等检修前，除了验电还必须？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用兆欧表加压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "喷水降温",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "直接开工",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "充分放电（消除剩余电荷）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电缆、电容器等存储大量电荷，停电后仍带电，必须先放电再检修，否则会触电。",
+          "id": "s9e_hv_safety_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "操作高压隔离开关应使用经试验合格的 ____ 杆，人体与带电体保持安全距离。",
+          "answer": "绝缘",
+          "acceptable_answers": [
+            "绝缘",
+            "绝缘棒",
+            "令克棒",
+            "绝缘操作杆"
+          ],
+          "explanation": "高压操作用绝缘杆（令克棒），绝缘等级与电压匹配、定期耐压试验合格。",
+          "id": "s9e_hv_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "绝缘手套、绝缘靴必须定期做耐压试验合格并在有效期内，使用前检查无破损漏气。",
+          "correct_answer": true,
+          "explanation": "绝缘工器具到期不试验、破损漏气会失去绝缘性能，是高压作业的重大隐患。",
+          "id": "s9e_hv_safety_n9"
+        }
+      ]
+    }
+  ]
+}

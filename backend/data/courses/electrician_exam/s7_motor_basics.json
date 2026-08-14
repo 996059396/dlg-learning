@@ -1,0 +1,722 @@
+{
+  "id": "s7_motor_basics",
+  "title": "电工考证单元七：三相异步电动机",
+  "description": "电动机结构、工作原理、额定值与铭牌、启动方式、常见故障与维护",
+  "icon": "🔩",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s7a_motor_structure",
+      "title": "电动机的结构",
+      "description": "定子、转子、鼠笼式与绕线式",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "三相异步电动机的组成",
+          "content": "三相异步电动机由定子和转子两大部分组成。定子包括定子铁芯（硅钢片叠压）和三相定子绕组，通入三相交流电后产生旋转磁场；转子放在定子内，在旋转磁场作用下转动输出转矩。定子与转子之间有气隙。",
+          "id": "s7a_motor_structure_n0"
+        },
+        {
+          "type": "info",
+          "title": "鼠笼式转子",
+          "content": "鼠笼式转子的绕组像松鼠笼子：槽内嵌入铝条或铜条，两端用端环短接。结构简单、坚固耐用、价格低、维修方便，是应用最广的电动机，缺点是启动转矩较小、调速困难。",
+          "id": "s7a_motor_structure_n1"
+        },
+        {
+          "type": "info",
+          "title": "绕线式转子",
+          "content": "绕线式转子绕组与定子绕组相似，是三相绕组，经集电环（滑环）和电刷引出，可外接电阻。通过串接转子电阻能改善启动性能（增大启动转矩）和调速，用于起重、卷扬等要求启动转矩大的场合，但结构复杂、维护成本高。",
+          "id": "s7a_motor_structure_n2"
+        },
+        {
+          "type": "info",
+          "title": "其他部件",
+          "content": "电动机还有端盖、轴承（支承转子）、风扇（冷却）、接线盒（引出三相绕组端头，可接 Y 或 Δ）、铭牌等部件。轴承是易损件，缺油或损坏会造成转子扫膛、发热、异响。",
+          "id": "s7a_motor_structure_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相异步电动机定子绕组通入三相交流电后，产生？",
+          "options": [
+            {
+              "id": "A",
+              "text": "恒定直流磁场",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "交变电场",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "不产生磁场",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "旋转磁场",
+              "is_correct": true
+            }
+          ],
+          "explanation": "三相绕组在空间上相差 120° 电角度，通三相对称电流即产生随时间旋转的旋转磁场，驱动转子转动。",
+          "id": "s7a_motor_structure_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "鼠笼式转子与绕线式转子的主要区别是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "鼠笼式结构简单坚固，绕线式可外接电阻改善启动调速",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "鼠笼式不能转动",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "绕线式没有铁芯",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "两者完全相同",
+              "is_correct": false
+            }
+          ],
+          "explanation": "鼠笼式转子用铝/铜条+端环短接，结构简单；绕线式转子经集电环电刷外接电阻，可改善启动与调速，用于大启动转矩场合。",
+          "id": "s7a_motor_structure_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "绕线式异步电动机结构简单、成本低，是应用最广的电动机类型。",
+          "correct_answer": false,
+          "explanation": "不对。应用最广的是鼠笼式——转子绕组是铸铝鼠笼条，结构简单坚固、免维护；绕线式带集电环和电刷，结构复杂成本高，仅用于需改善启动或调速的场合。",
+          "id": "s7a_motor_structure_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "绕线式转子的三相绕组经 ____ 和电刷引出，可外接电阻。",
+          "answer": "集电环",
+          "acceptable_answers": [
+            "集电环",
+            "滑环",
+            "集电环（滑环）"
+          ],
+          "explanation": "绕线式转子绕组端头接集电环（滑环），经电刷把外接电阻串入转子回路。",
+          "id": "s7a_motor_structure_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电动机中支撑转子、属易损件的部件是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接线盒",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "轴承",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "铭牌",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "风扇罩",
+              "is_correct": false
+            }
+          ],
+          "explanation": "轴承支承转子旋转，缺油、磨损会导致发热、异响、甚至转子扫膛，需定期检查润滑更换。",
+          "id": "s7a_motor_structure_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "定子铁芯用硅钢片叠压是为了减少铁芯中的涡流损耗和磁滞损耗。",
+          "correct_answer": true,
+          "explanation": "硅钢片叠压、片间绝缘，能显著减小涡流和磁滞损耗，降低铁芯发热、提高效率。",
+          "id": "s7a_motor_structure_n9"
+        }
+      ]
+    },
+    {
+      "id": "s7b_motor_principle",
+      "title": "电动机的工作原理",
+      "description": "旋转磁场、同步转速、转差率",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "旋转磁场与转子转动",
+          "content": "定子三相绕组通三相交流电产生旋转磁场，转速为同步转速 n₁ = 60f/p（f 为电源频率 50Hz，p 为磁极对数）。旋转磁场切割转子导体，在转子中感应出电流；载流转子导体在磁场中受电磁力，带动转子沿磁场方向转动。",
+          "id": "s7b_motor_principle_n0"
+        },
+        {
+          "type": "info",
+          "title": "异步的含义",
+          "content": "转子转速 n 必须略低于同步转速 n₁：若转子转速等于同步转速，磁场与转子相对静止，转子中不再感应电流、没有转矩，电机无法维持。所以 n < n₁，转子永远「追不上」磁场，这就是「异步」的由来。",
+          "id": "s7b_motor_principle_n1"
+        },
+        {
+          "type": "info",
+          "title": "转差率",
+          "content": "转差率 s = (n₁ − n)/n₁，是异步电动机的重要参数。启动瞬间转子静止（n=0），s=1；空载时 n 接近 n₁，s 很小（约 0.005～0.05）；额定负载时 s 约 2%～5%。转差率越大，转子感应电流越大。",
+          "id": "s7b_motor_principle_n2"
+        },
+        {
+          "type": "info",
+          "title": "转速与磁极对数",
+          "content": "同步转速 n₁ = 60f/p：p=1（两极）时 n₁=3000 r/min；p=2（四极）时 n₁=1500 r/min；p=3 时 n₁=1000 r/min。所以四极电动机的额定转速接近 1500（约 1440 左右）。改变极对数 p 可改变转速（变极调速）。",
+          "id": "s7b_motor_principle_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相异步电动机的同步转速 n₁ 的计算公式是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "n₁ = p/60f",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "n₁ = 60p/f",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "n₁ = 60f/p",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "n₁ = f/60p",
+              "is_correct": false
+            }
+          ],
+          "explanation": "同步转速 = 60×频率÷磁极对数。f=50Hz、p=2 时 n₁=1500 r/min，四极电机额定转速略低于 1500。",
+          "id": "s7b_motor_principle_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "为什么转子转速必须低于同步转速？",
+          "options": [
+            {
+              "id": "A",
+              "text": "转速相等会超速损坏电机",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "转速必须等于同步转速",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "转速越低越好",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "转速相等时磁场与转子相对静止，无感应电流就无转矩",
+              "is_correct": true
+            }
+          ],
+          "explanation": "异步电机靠磁场与转子的相对运动感应电流产生转矩。转速等于同步转速时相对静止、无感应、无转矩，故 n<n₁。",
+          "id": "s7b_motor_principle_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "转差率 s = (n₁ − n)/n₁，启动瞬间 s=0，空载时 s 接近 1。",
+          "correct_answer": false,
+          "explanation": "不对。启动瞬间转子静止 n=0，转差率 s=1；空载时转子接近同步转速，s 很小（约 0.005~0.05）；额定负载时 s≈2%~5%。把启动和空载的 s 记反，转差率就算错了。",
+          "id": "s7b_motor_principle_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "四极（p=2）三相异步电动机的同步转速约为 ____ r/min。",
+          "answer": "1500",
+          "acceptable_answers": [
+            "1500",
+            "1500r",
+            "1500 r/min",
+            "1500转"
+          ],
+          "explanation": "n₁=60f/p=60×50/2=1500 r/min，四极电机额定转速略低于此（约 1440）。",
+          "id": "s7b_motor_principle_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "「异步」的由来是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "转子转速永远略低于同步转速",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "转子和磁场转速完全相同",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "转子转速永远高于同步转速",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "与转速无关",
+              "is_correct": false
+            }
+          ],
+          "explanation": "转子靠与磁场的相对运动感应电流，必须略低于同步转速运转，故称异步电动机。",
+          "id": "s7b_motor_principle_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "改变定子绕组的磁极对数 p 可以改变同步转速，从而实现变极调速。",
+          "correct_answer": true,
+          "explanation": "n₁=60f/p，改变 p 即改变同步转速。多速电机（如双速）就是通过改接绕组改变极对数实现变速。",
+          "id": "s7b_motor_principle_n9"
+        }
+      ]
+    },
+    {
+      "id": "s7c_motor_ratings",
+      "title": "电动机的额定值与铭牌",
+      "description": "额定功率电压电流转速、接法、温升",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "铭牌上的主要参数",
+          "content": "电动机铭牌标注：额定功率（kW，轴上输出的机械功率）、额定电压、额定电流、额定转速、接法（Y 或 Δ）、频率（50Hz）、绝缘等级、温升、防护等级（IP 代码）等。选型与检修都要以铭牌为准。",
+          "id": "s7c_motor_ratings_n0"
+        },
+        {
+          "type": "info",
+          "title": "额定值与接法",
+          "content": "额定电压与接法配套：常见小功率电机铭牌标「380V，Δ 接法」或「380V，Y 接法」。也有「380/660V，Δ/Y」双电压电机，两种接法对应不同电源电压，必须按铭牌接线，接错会烧毁（Δ 误接 Y 电压不足、Y 误接 Δ 过压烧毁）。",
+          "id": "s7c_motor_ratings_n1"
+        },
+        {
+          "type": "info",
+          "title": "额定电流与功率",
+          "content": "额定电流是电机在额定状态下长期运行的线电流，选熔断器、接触器、导线都以它为据。额定功率 P = √3·U·I·cosφ·η（η 为效率）。约可粗算：三相 380V 电机每千瓦约 2A 电流。",
+          "id": "s7c_motor_ratings_n2"
+        },
+        {
+          "type": "info",
+          "title": "温升与绝缘等级",
+          "content": "温升是电机允许的最高温度与环境的差值，与绝缘等级对应（A、E、B、F、H 级，耐温依次 105、120、130、155、180℃）。电机运行时温度不得超过绝缘等级允许值，否则加速绝缘老化、缩短寿命。",
+          "id": "s7c_motor_ratings_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "铭牌上的额定功率指的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电机的最大瞬时功率",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电机轴上输出的机械功率",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "铜损加铁损",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电机从电网吸收的电功率",
+              "is_correct": false
+            }
+          ],
+          "explanation": "额定功率是轴上输出的机械功率（kW），略小于吸收的电功率（两者差即损耗）。",
+          "id": "s7c_motor_ratings_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电机铭牌标「380V，Δ 接法」，若误接成 Y 接法会？",
+          "options": [
+            {
+              "id": "A",
+              "text": "转速升高",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "过压烧毁",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "每相电压降为 1/√3，出力不足、启动困难",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "没有影响",
+              "is_correct": false
+            }
+          ],
+          "explanation": "Δ 接法每相承受 380V，误接 Y 后每相只有 220V，转矩(∝U²)降到 1/3，带不动负载，空载转速仍接近但启动转矩不足。",
+          "id": "s7c_motor_ratings_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "将正常应接 Δ 的电机误接成 Y，每相电压升高 √3 倍，容易烧毁电机。",
+          "correct_answer": false,
+          "explanation": "不对。Δ 误接成 Y 时每相电压降为原来的 1/√3，绕组电压不足、电机出力下降带不动负载；反过来 Y 误接成 Δ 才使每相电压升为 √3 倍、电流过大而烧毁。",
+          "id": "s7c_motor_ratings_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "三相 380V 异步电动机的额定电流粗略估算：每千瓦约 ____ A。",
+          "answer": "2",
+          "acceptable_answers": [
+            "2",
+            "2A",
+            "2 A",
+            "两"
+          ],
+          "explanation": "I≈P/(√3·U·cosφ·η)≈P/(1.73×0.38×0.8×0.85)≈2.2×P，工程上常按每 kW 约 2A 估算。",
+          "id": "s7c_motor_ratings_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "绝缘等级 B 级电机允许的最高工作温度约为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "105℃",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "180℃",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "90℃",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "130℃",
+              "is_correct": true
+            }
+          ],
+          "explanation": "绝缘等级 A/E/B/F/H 对应允许温度 105/120/130/155/180℃。B 级为 130℃。",
+          "id": "s7c_motor_ratings_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电机长时间超温运行会加速绝缘老化、缩短寿命，因此要监视运行温度不超过绝缘等级允许值。",
+          "correct_answer": true,
+          "explanation": "绝缘材料高温下加速老化变脆，每超温约 8~10℃寿命减半，所以必须控制温升在允许范围内。",
+          "id": "s7c_motor_ratings_n9"
+        }
+      ]
+    },
+    {
+      "id": "s7d_motor_starting",
+      "title": "电动机的启动",
+      "description": "全压启动、星三角、自耦降压、软启动",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "全压（直接）启动",
+          "content": "全压启动最简单：合闸直接加额定电压。小容量电机（一般 7.5kW 以下）常用直接启动。启动电流为额定电流的 4～7 倍，若电源容量足够、压降在允许范围即可直接启动。",
+          "id": "s7d_motor_starting_n0"
+        },
+        {
+          "type": "info",
+          "title": "星三角降压启动",
+          "content": "Δ 接法运行的电机启动时先接 Y：启动电流降为直接启动的 1/3，启动转矩也降为 1/3。启动到接近额定转速后切换回 Δ 正常运行。适用于空载或轻载启动的中等容量电机。",
+          "id": "s7d_motor_starting_n1"
+        },
+        {
+          "type": "info",
+          "title": "自耦降压启动",
+          "content": "自耦变压器降压启动：利用自耦变压器的抽头（常见 80%、65% 抽头）给电机降压供电，启动后再切到全压。启动电流和转矩都按电压比平方下降，可调挡选择抽头，适用于较大容量或较重负载的场合，但设备较贵。",
+          "id": "s7d_motor_starting_n2"
+        },
+        {
+          "type": "info",
+          "title": "软启动",
+          "content": "软启动器用晶闸管控制电压逐渐上升，实现平滑启动，启动电流可控、无冲击、可调启动时间，还能用于停机。变频启动不仅能降压降速，还能平滑调速，但成本最高。",
+          "id": "s7d_motor_starting_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "直接（全压）启动时，启动电流约为额定电流的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "4～7 倍",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "1 倍",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "10 倍以上",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "0.5 倍",
+              "is_correct": false
+            }
+          ],
+          "explanation": "全压启动瞬间启动电流可达额定电流 4~7 倍，电源容量不足时须降压启动。",
+          "id": "s7d_motor_starting_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "星三角降压启动相比直接启动，启动电流降为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1/√2",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "1/3",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "不变",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "1/2",
+              "is_correct": false
+            }
+          ],
+          "explanation": "Y 启动线电流降为 Δ 直接启动的 1/3（启动转矩同样 1/3），适合空载轻载启动。",
+          "id": "s7d_motor_starting_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "自耦变压器降压启动时，启动转矩随启动电压按正比降低（电压比 k 倍，转矩就是 k 倍）。",
+          "correct_answer": false,
+          "explanation": "不对。电压降为原来的 k 倍时，启动电流和转矩都按电压比的平方关系降为 k² 倍（转矩 ∝ 电压²）。若只降为 k 倍，会高估启动能力，带负载启动就可能失败。",
+          "id": "s7d_motor_starting_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于启动方式，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "软启动不能调节启动时间",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "任何电机都必须降压启动",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "小容量电机（如 7.5kW 以下）且电源允许时可直接全压启动",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "星三角启动适合重载启动",
+              "is_correct": false
+            }
+          ],
+          "explanation": "容量小、电源够时直接启动最经济；星三角转矩只有 1/3 不适合重载；软启动可调时间电压平滑启动。",
+          "id": "s7d_motor_starting_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "自耦降压启动器的常见抽头电压为 65% 和 ____%（额定电压的百分比）。",
+          "answer": "80",
+          "acceptable_answers": [
+            "80",
+            "80%",
+            "百分之八十"
+          ],
+          "explanation": "自耦变压器常见 65% 和 80% 两挡抽头，选高挡转矩大、低挡电流小。",
+          "id": "s7d_motor_starting_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "软启动器通过晶闸管使电压逐渐上升，可实现启动电流可控、无冲击的平滑启动。",
+          "correct_answer": true,
+          "explanation": "软启动器调压斜坡启动，限制启动电流、减少机械冲击，还可实现软停车。",
+          "id": "s7d_motor_starting_n9"
+        }
+      ]
+    },
+    {
+      "id": "s7e_motor_faults",
+      "title": "电动机常见故障与维护",
+      "description": "不能启动、过载烧毁、异响、维护保养",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "通电后不能启动",
+          "content": "电动机通电不转，先检查电源：有无电压、三相是否缺相、熔断器/断路器是否断开、接线是否松脱；再查控制电路：接触器是否吸合、热继电器是否已动作未复位；最后查电机本身：绕组是否断线、短路，是否卡死。",
+          "id": "s7e_motor_faults_n0"
+        },
+        {
+          "type": "info",
+          "title": "缺相运行的危害",
+          "content": "三相电机缺相（一相断）仍可能转动，但电流大增、发热严重，很快烧毁绕组——缺相是电机烧毁的主要原因之一。因此要装断相保护（或热继+断相保护继电器），三相电流不平衡异常时及时停。",
+          "id": "s7e_motor_faults_n1"
+        },
+        {
+          "type": "info",
+          "title": "过载与堵转",
+          "content": "长期过载、频繁启动、机械卡死（堵转）都会使电流超过额定值，热继电器应动作保护；若热继电器整定偏大或失灵，电机持续过热最终烧毁绝缘。维护中要检查负载是否匹配、机械转动是否灵活。",
+          "id": "s7e_motor_faults_n2"
+        },
+        {
+          "type": "info",
+          "title": "维护保养要点",
+          "content": "定期维护：清洁通风道、检查轴承润滑（按期换油）、测量绝缘电阻（≥0.5MΩ 才合格，低于应烘干）、检查接线端子紧固、监听运转声音、监测温升振动。绝缘电阻测试前先停电放电。",
+          "id": "s7e_motor_faults_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相电机缺相运行（一相断线仍转）的主要危害是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "转速升高一倍",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "没有任何危害",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电压自动升高",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电流增大、严重发热，很快烧毁绕组",
+              "is_correct": true
+            }
+          ],
+          "explanation": "缺相时绕组电流急剧增大、温升骤升，短时间即过热烧毁，须装断相保护并检查三相电流。",
+          "id": "s7e_motor_faults_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电机通电不转，正确的检查顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "先查电源与控制回路，再查电机本体",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "先拆电机",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "直接换新电机",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先加大保险",
+              "is_correct": false
+            }
+          ],
+          "explanation": "由外到内排查：电源是否缺相→控制是否动作→电机本体绕组/机械，避免盲目拆装。",
+          "id": "s7e_motor_faults_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "热继电器整定值调得越大，对电动机的过载保护越有利。",
+          "correct_answer": false,
+          "explanation": "不对。热继电器整定值偏大或失灵，电机过载时热继电器不动作、电机得不到保护而烧毁。整定值必须按电机额定电流正确设置，并定期校验，整定越大保护越迟钝。",
+          "id": "s7e_motor_faults_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "用兆欧表测电机绕组对地绝缘电阻，一般应不小于 ____ MΩ 才认为合格。",
+          "answer": "0.5",
+          "acceptable_answers": [
+            "0.5",
+            "0.5MΩ",
+            "0.5 MΩ",
+            "零点五"
+          ],
+          "explanation": "低压电机绝缘电阻一般要求 ≥0.5MΩ，低于此值应查明原因（受潮、老化、击穿）并处理。",
+          "id": "s7e_motor_faults_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电机轴承缺油或磨损，可能出现的现象是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电压自动升高",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "运转异响、振动、温升升高",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "没有影响",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "转速自动加快",
+              "is_correct": false
+            }
+          ],
+          "explanation": "轴承故障表现为异响、振动、局部过热，严重时转子扫膛损坏，须按期润滑和更换。",
+          "id": "s7e_motor_faults_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "测量电机绝缘电阻前，必须先停电、验电并放电，严禁带电测量。",
+          "correct_answer": true,
+          "explanation": "兆欧表输出高电压，带电测量会触电并损坏电机；大电容绕组测后也要放电。",
+          "id": "s7e_motor_faults_n9"
+        }
+      ]
+    }
+  ]
+}

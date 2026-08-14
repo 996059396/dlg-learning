@@ -1,0 +1,38 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+# ── Build output ──────────────────────────────────────────────
+frontend/dist/
+
+# ── Runtime data & secrets (SQLite DBs contain password hashes) ──
+*.db
+*.db-shm
+*.db-wal
+backend/models/data/*.db*
+
+# ── Environment / tokens ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Content intermediate / source material (not redistributed) ──
+parser/chunks/
+shiqun_*.txt
+
+# ── Dev dumps & screenshots ───────────────────────────────────
+**/*_dump*.txt
+screenshots/
+万用表图片/
+
+# ── OS / IDE junk ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

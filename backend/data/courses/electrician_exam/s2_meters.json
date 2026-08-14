@@ -1,0 +1,745 @@
+{
+  "id": "s2_meters",
+  "title": "电工考证单元二：常用电工仪表与测量",
+  "description": "钳形电流表、兆欧表（摇表）、万用表、电流表电压表的正确接入、测量作业安全",
+  "icon": "📐",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s2a_clamp_meter",
+      "title": "钳形电流表",
+      "description": "不断线测电流、单根钳入、量程选择",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "钳形电流表的作用",
+          "content": "钳形电流表由电流互感器和电流表组成：测量时张开钳口、卡入被测导线，无需断开线路就能读出导线电流，特别适合不停电检查设备运行电流。它比普通电流表方便，因为普通电流表测量必须把表串联进电路、先断开线路，而钳形表把导线从钳口穿过即可。",
+          "id": "s2a_clamp_meter_n0"
+        },
+        {
+          "type": "info",
+          "title": "只能钳住一根线",
+          "content": "用钳形表测电流，钳口必须只钳住一根载流导线。若同时钳住火线和零线两根线，两者的电流大小相等、方向相反、矢量和为零，读数会变成零（或很小）——这恰恰是「单相回路两根线电流相消」的体现。测三相设备时，钳住一相就是该相电流。",
+          "id": "s2a_clamp_meter_n1"
+        },
+        {
+          "type": "info",
+          "title": "量程与测量技巧",
+          "content": "测量前先选择较大量程，再根据读数往小调整，避免一开始量程过小烧表。换挡必须在钳口离开导线后进行，严禁带电换挡。测较小的电流时，可以把导线在钳口上绕几圈，读得的数值除以圈数就是实际电流。",
+          "id": "s2a_clamp_meter_n2"
+        },
+        {
+          "type": "info",
+          "title": "使用安全",
+          "content": "测量时应使被测导线位于钳口中央，钳口合严。不能用钳形表测裸导线——裸导线多为高压，且钳口不绝缘，容易造成触电或相间短路。测量时要与带电体保持安全距离，戴绝缘手套、穿绝缘鞋，有人监护。",
+          "id": "s2a_clamp_meter_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "钳形电流表的最大优点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "能测量任意大小的电流",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "精度比所有电流表都高",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "无需断开线路即可测量导线电流",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "可以测量电缆绝缘电阻",
+              "is_correct": false
+            }
+          ],
+          "explanation": "钳形表基于电流互感器原理，把载流导线卡入钳口即可读数，不需停电、不断线，这是它相对普通电流表的最大优势。",
+          "id": "s2a_clamp_meter_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用钳形表测单相回路的电流，若同时钳住火线和零线，读数会？",
+          "options": [
+            {
+              "id": "A",
+              "text": "等于火线电流的 2 倍",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "等于零线电流的 2 倍",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "等于两线电流之和",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接近零（两线电流大小相等方向相反，矢量和为零）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "单相回路中火线与零线电流大小相等、方向相反，同时钳住矢量和为零，读数为零——所以必须只钳一根线。",
+          "id": "s2a_clamp_meter_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "用钳形表测小电流时，将导线在钳口上绕几圈，读得的数值就是实际电流，无需换算。",
+          "correct_answer": false,
+          "explanation": "不对。导线在钳口绕 n 圈相当于电流互感器一次侧匝数增加 n 倍，读数被放大 n 倍，实际电流 = 读数 ÷ 圈数。不做除法，测出的电流就偏大 n 倍。",
+          "id": "s2a_clamp_meter_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于钳形表的使用，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "测量前先选较大量程，换挡时钳口离开导线，严禁带电换挡",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "可以在测量过程中直接旋动档位开关",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "可以直接测量裸露的高压导线",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "钳住两根导线一起测，读数更准",
+              "is_correct": false
+            }
+          ],
+          "explanation": "量程先大后小防烧表；换挡必须让钳口离开导线，带电换挡会产生电弧伤人。钳双线读数相消、裸线有触电危险，都不可取。",
+          "id": "s2a_clamp_meter_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "用钳形表测电流时，被测导线应尽量位于钳口的 ____ 位置。",
+          "answer": "中央",
+          "acceptable_answers": [
+            "中央",
+            "中间",
+            "正中"
+          ],
+          "explanation": "导线放在钳口中央可使磁通对称、测量误差最小；放偏了会引入较大误差。",
+          "id": "s2a_clamp_meter_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "可以用钳形电流表去测量设备外壳是否漏电（把火线、零线同时钳住看读数是否为零来判断）。",
+          "correct_answer": true,
+          "explanation": "正常时火零线电流相消读数≈0；若设备漏电，漏电流经接地线流走，火线与零线电流不再相等，两者钳住读数就不为零——这正是钳形表查漏电的常用方法。",
+          "id": "s2a_clamp_meter_n9"
+        }
+      ]
+    },
+    {
+      "id": "s2b_megohmmeter",
+      "title": "兆欧表（摇表）",
+      "description": "测绝缘电阻、120 转/分、先放电再测",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "兆欧表的用途",
+          "content": "兆欧表（俗称摇表）用于测量电气设备、线路的绝缘电阻，判断绝缘是否老化、受潮或击穿。它内部由手摇发电机提供高电压（常见 500V、1000V、2500V 等档位），比万用表电阻挡的电压高得多，所以能真正考核绝缘在高电压下的状态。",
+          "id": "s2b_megohmmeter_n0"
+        },
+        {
+          "type": "info",
+          "title": "接线方法 L/E/G",
+          "content": "兆欧表有三个接线柱：L（线路）、E（接地）、G（屏蔽）。测线路对地绝缘：L 接被测线路，E 接地。测电缆绝缘：L 接芯线、E 接电缆金属外皮，电缆芯线与外皮间的绝缘层接 G（屏蔽端），以消除表面漏电流对测量的影响。",
+          "id": "s2b_megohmmeter_n1"
+        },
+        {
+          "type": "info",
+          "title": "操作要领",
+          "content": "摇测前必须先将被测设备停电、验电、放电（对大电容设备更须充分放电）。摇动发电机手柄，转速约 120 转/分（约每秒 2 转），保持匀速摇 1 分钟左右，待指针稳定后读数。使用前先做开路试验（未接线摇表，指针应指向 ∞）和短路试验（两测试线短接，指针应指向 0），验证摇表良好。",
+          "id": "s2b_megohmmeter_n2"
+        },
+        {
+          "type": "info",
+          "title": "严禁带电测量",
+          "content": "兆欧表输出电压高达数百至数千伏，绝不能在设备带电时测量——既会触电，也会把高电压加在被测设备上造成损坏。测量大容量电容或长电缆后，被测设备上会积存电荷，必须再次放电后才能触摸。",
+          "id": "s2b_megohmmeter_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "兆欧表主要用来测量？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电能消耗",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电气设备和线路的绝缘电阻",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "负载电流",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "交流电压",
+              "is_correct": false
+            }
+          ],
+          "explanation": "兆欧表由手摇发电机提供数百至数千伏的高电压，专门用于测绝缘电阻，判断绝缘老化、受潮、击穿。",
+          "id": "s2b_megohmmeter_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "使用兆欧表前不需要做开路、短路试验，直接测量就能保证读数准确。",
+          "correct_answer": false,
+          "explanation": "不对。使用前必须先做开路试验（指针应指∞）和短路试验（指针应指 0），两个试验都正常说明摇表本身良好；否则测出的绝缘电阻数值不可信，会误判线路绝缘状态。",
+          "id": "s2b_megohmmeter_n5"
+        },
+        {
+          "type": "fill_blank",
+          "question": "摇测绝缘电阻时，摇动发电机手柄的转速应约为每分钟 ____ 转。",
+          "answer": "120",
+          "acceptable_answers": [
+            "120",
+            "120转",
+            "120 转",
+            "120r",
+            "120 r/min"
+          ],
+          "explanation": "手摇发电机转速约 120 转/分（每秒 2 转），匀速摇动 1 分钟、指针稳定后读数；转速过快或过慢都会影响输出电压的稳定。",
+          "id": "s2b_megohmmeter_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "摇测电缆绝缘时，屏蔽端 G 应接在？",
+          "options": [
+            {
+              "id": "A",
+              "text": "金属外皮",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "大地",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "芯线绝缘层（屏蔽环），消除表面漏电流影响",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "不需要接 G",
+              "is_correct": false
+            }
+          ],
+          "explanation": "L 接芯线、E 接金属外皮，G 接芯线绝缘表面（屏蔽环）。G 把表面漏电流旁路，使读数只反映绝缘本体的电阻，更准确。",
+          "id": "s2b_megohmmeter_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于兆欧表使用，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "可以在设备带电运行时直接测量",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "测完后可直接用手触摸被测设备",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "可以用兆欧表测普通电压",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "被测设备必须停电、验电并充分放电后才能测量",
+              "is_correct": true
+            }
+          ],
+          "explanation": "兆欧表输出高电压，带电测量会触电并损坏设备；测大电容/电缆后必须先放电再触摸，以防剩余电荷伤人。",
+          "id": "s2b_megohmmeter_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "低压线路和设备的绝缘电阻一般应不小于 0.5MΩ，小于该值说明绝缘可能受潮或老化。",
+          "correct_answer": true,
+          "explanation": "这是低压电气工程通用的判定标准：绝缘电阻 ≥0.5MΩ 为合格（相对地、相间）。低于此值须查明原因（受潮、老化、击穿）。",
+          "id": "s2b_megohmmeter_n9"
+        }
+      ]
+    },
+    {
+      "id": "s2c_multimeter",
+      "title": "万用表",
+      "description": "电阻挡不能带电测、欧姆调零、表笔插孔",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "万用表的功能与表笔",
+          "content": "万用表是电工最常用的仪表，可测交直流电压、直流电流和电阻。表笔接法：黑表笔插 COM（公共）孔，红表笔测电压电阻时插 VΩ 孔，测大电流时插 A/mA 孔。测量前先看清所选档位是否正确，避免用错档位损坏仪表。",
+          "id": "s2c_multimeter_n0"
+        },
+        {
+          "type": "info",
+          "title": "电阻挡严禁带电测量",
+          "content": "测电阻时表内电池通过被测电阻形成回路，若被测元件仍带电，外部电压会叠加进表内回路——既测不准，还可能烧毁表头。所以测电阻前必须先切断被测电路电源，并至少让被测电阻的一端与电路脱离，避免与其他支路并联造成读数错误。",
+          "id": "s2c_multimeter_n1"
+        },
+        {
+          "type": "info",
+          "title": "欧姆调零与量程选择",
+          "content": "每次更换电阻挡位后，都要把两表笔短接，旋动欧姆调零旋钮使指针指 0，再开始测量。测电压、电流时，量程先选大于被测值的档位，再逐步减小到合适档位，使指针落在刻度盘的后 1/3～2/3 区域，读数最准确。",
+          "id": "s2c_multimeter_n2"
+        },
+        {
+          "type": "info",
+          "title": "读数与安全",
+          "content": "电阻刻度线是反方向的（左端为 ∞、右端为 0），读数 = 表盘指示值 × 倍率（如 ×1k）。测量时要拿表笔的绝缘部位，不能触碰表笔的金属头；测较高电压时更须注意，并先估测电压大小、选好量程再测。",
+          "id": "s2c_multimeter_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用万用表测电阻前，首要的操作是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "切断被测电路电源，并让被测电阻一端脱离电路",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "先把档位打到交流电压挡",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "把表笔插到电流插孔",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "直接在带电状态下测量",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电阻挡内部有电池，带电测量会把外部电压叠加进表内回路，测不准还可能烧表；被测电阻与电路并联时读数也会偏低。",
+          "id": "s2c_multimeter_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "更换电阻挡位后无需重新调零，直接测量即可保证读数准确。",
+          "correct_answer": false,
+          "explanation": "不对。欧姆挡使用前必须短接表笔进行调零使指针指 0，换挡后也要重新调零（电池电压会变化）。不调零直接测，指针偏转会偏移，读数误差很大。",
+          "id": "s2c_multimeter_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "万用表测电阻时，黑表笔插 COM 孔，红表笔应插？",
+          "options": [
+            {
+              "id": "A",
+              "text": "任意孔都可以",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "VΩ 孔（测电压、电阻）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "A 大电流孔",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "COM 孔旁的空孔",
+              "is_correct": false
+            }
+          ],
+          "explanation": "红笔测电压、电阻插 VΩ 孔；测大电流才插 A/mA 孔。插错孔测电压会把大电流引入表头造成烧表。",
+          "id": "s2c_multimeter_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "万用表电阻刻度的特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "正向刻度：左端为 0、右端为 ∞",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "均匀刻度，直接读数",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "反向刻度：左端为 ∞、右端为 0，读数 = 指示值 × 倍率",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "与电压刻度完全相同",
+              "is_correct": false
+            }
+          ],
+          "explanation": "欧姆刻度反方向且不均匀：指针偏转越大电阻越小。读数须乘倍率（×1、×10、×100、×1k 等）。",
+          "id": "s2c_multimeter_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测电压电流时，量程应先选 ____ 于被测值的档位，再逐步调整。",
+          "answer": "大于",
+          "acceptable_answers": [
+            "大于",
+            "大",
+            "大於"
+          ],
+          "explanation": "先选较大量程保护表头，再逐步降到合适档位，避免量程过小造成指针打表或烧表。",
+          "id": "s2c_multimeter_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "测量时手应拿表笔的绝缘手柄部位，不能触碰表笔金属部分，测较高电压时更须注意。",
+          "correct_answer": true,
+          "explanation": "表笔金属头是带电端，触碰会造成触电。测量高压还要戴绝缘手套，并与带电体保持安全距离。",
+          "id": "s2c_multimeter_n9"
+        }
+      ]
+    },
+    {
+      "id": "s2d_meter_hookup",
+      "title": "电流表与电压表的接入",
+      "description": "电流表串联、电压表并联、量程与极性",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电流表要串联",
+          "content": "电流表用来测电流，必须串联接入被测支路，让被测电流全部流过电流表。为此电流表内阻很小（理想为零）。正因为内阻小，绝不能把电流表并联接到电源或负载两端——并联时几乎等于短路，会流过巨大电流把电流表烧毁。",
+          "id": "s2d_meter_hookup_n0"
+        },
+        {
+          "type": "info",
+          "title": "电压表要并联",
+          "content": "电压表用来测电压，必须并联在被测元件两端。电压表内阻很大（理想为无穷大），并联后几乎不分走电流，不影响原电路工作。绝不能把电压表串联接入电路——串联后它分走绝大部分电压，读数错误，也测不出任何支路电流。",
+          "id": "s2d_meter_hookup_n1"
+        },
+        {
+          "type": "info",
+          "title": "量程选择",
+          "content": "电流表量程应大于被测电流，电压表量程应大于被测电压。量程选小了，测量时指针会打满甚至烧表；选大了读数精度差。测电流前如无法估计，可从大量程逐步往下调。",
+          "id": "s2d_meter_hookup_n2"
+        },
+        {
+          "type": "info",
+          "title": "直流表的极性",
+          "content": "直流电流表和电压表都有正负极性：电流应从「+」接线柱流入、从「−」接线柱流出；电压表「+」端接高电位端、「−」端接低电位端。极性接反时指针反偏，可能损坏表头。交流表无极性要求。",
+          "id": "s2d_meter_hookup_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量某支路电流，电流表应如何接入？",
+          "options": [
+            {
+              "id": "A",
+              "text": "并联接入该支路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "跨接在支路两端",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "任意接入都可以",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "串联接入该支路",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电流表内阻极小，串联时被测电流全部流过它；若并联相当于短路，会流过巨大电流烧表。",
+          "id": "s2d_meter_hookup_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量某元件两端电压，电压表应如何接入？",
+          "options": [
+            {
+              "id": "A",
+              "text": "并联在被测元件两端",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "并联在电源两端",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "只要接上就行，位置无所谓",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "串联进该支路",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电压表内阻极大，并联在元件两端几乎不分流、不影响电路。串联则因内阻大分走绝大部分电压，测量无效。",
+          "id": "s2d_meter_hookup_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电流表内阻应尽量小（理想为零），电压表内阻应尽量大（理想为无穷大）。",
+          "correct_answer": true,
+          "explanation": "电流表串联、内阻小才不产生压降、不影响支路电流；电压表并联、内阻大才不分流、不改变被测电压。这是两种表接入方式不同的根本原因。",
+          "id": "s2d_meter_hookup_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "量程选择的原则是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "量程与测量无关",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "表量程应大于被测值，选小了会烧表或打表",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "量程越小越精确，直接选最小档",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "量程越大越好，永远用最大档",
+              "is_correct": false
+            }
+          ],
+          "explanation": "量程必须大于被测值，否则过载烧表；量程太大精度差。选档原则：大于被测值的前提下尽量选小一档以提高精度。",
+          "id": "s2d_meter_hookup_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "直流电流表中，电流应从 ____（+/−）接线柱流入。",
+          "answer": "+",
+          "acceptable_answers": [
+            "+",
+            "正",
+            "正极",
+            "加号"
+          ],
+          "explanation": "直流表极性：电流从「+」接线柱流入、从「−」流出，接反指针反偏会损坏表头。",
+          "id": "s2d_meter_hookup_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用万用表的电流挡去并联测电压，会？",
+          "options": [
+            {
+              "id": "A",
+              "text": "正常测出电压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "读数偏小但可接受",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电流挡内阻极小，等于短路，可能烧表和引起短路事故",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "仪表自动保护，无任何影响",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电流挡（特别是大电流挡）内阻近乎为零，并联到电源上等于直接短路，瞬间流过巨大电流，烧毁仪表并可能造成事故——测量前务必核对档位。",
+          "id": "s2d_meter_hookup_n9"
+        }
+      ]
+    },
+    {
+      "id": "s2e_measure_safety",
+      "title": "测量作业安全",
+      "description": "验电、单手操作、先断电再撤表笔",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "测量前的准备",
+          "content": "测量前先检查仪表、表笔、绝缘完好，量程档位选择正确。对被测对象先验电、了解其电压等级，佩戴必要的防护用品（绝缘手套、绝缘鞋），测量场所地面应垫绝缘垫。切不可在情况不明时贸然下笔。",
+          "id": "s2e_measure_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "单手操作原则",
+          "content": "在带电设备上测量时提倡单手操作：一只手拿表笔，另一只手远离被测设备或放入衣袋。单手操作能避免两手跨接形成「左手—右手」经过心脏的致命电流路径，即使发生触电也不致电流流过心脏。",
+          "id": "s2e_measure_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "测量中的注意点",
+          "content": "测量电流必须用电流表串联，绝不能把电压挡当电流挡用。测电压时先接好表笔再接触被测点，测量高压时两人配合、一人监护。表笔金属部分不得外露过多，手只能握绝缘手柄。",
+          "id": "s2e_measure_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "测量结束的顺序",
+          "content": "测量结束后，先切断电源、再撤下表笔：表笔仍搭在带电体上时去拔，易使两支表笔相碰或被金属机壳短接产生电弧、火花；先断电使整个测量回路不带电，再撤表笔最安全。对有大电容的设备，测完要放电。收好仪表时把档位拨到交流电压最高挡或 OFF 挡，避免下次误用。",
+          "id": "s2e_measure_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "在带电设备上测量时提倡单手操作，根本原因是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "单手读数更准确",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "方便拿记录本",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "让操作看起来更专业",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "避免两手跨接形成经过心脏的致命电流路径",
+              "is_correct": true
+            }
+          ],
+          "explanation": "两手同时接触不同电位点，电流可能横穿胸腔经过心脏，是最危险的触电路径。单手操作（另一手远离或入袋）即使触电也不经心脏。",
+          "id": "s2e_measure_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量结束时正确的操作顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "先切断电源，再撤表笔",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "同时进行，顺序无所谓",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "表笔留在带电体上直接走开",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先撤下表笔，再切断电源",
+              "is_correct": false
+            }
+          ],
+          "explanation": "先切断电源，再撤表笔：表笔仍搭在带电体上时去拔表笔，易使两支表笔相碰或被金属机壳短接产生电弧、火花；先断电使整个测量回路不带电，再撤表笔最安全。",
+          "id": "s2e_measure_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "测量前应先对被测对象验电、了解电压等级，并佩戴绝缘手套、穿绝缘鞋等防护用品。",
+          "correct_answer": true,
+          "explanation": "情况不明先验电确认是否带电、电压多高，据此选择仪表量程与防护等级。这是测量作业的第一道安全防线。",
+          "id": "s2e_measure_safety_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测量结束后，应把万用表档位拨到交流电压最高挡或 ____ 挡，防止下次误用。",
+          "answer": "OFF",
+          "acceptable_answers": [
+            "OFF",
+            "关",
+            "关闭",
+            "off",
+            "停止"
+          ],
+          "explanation": "仪表长期不用或使用完毕拨到 OFF 挡（或交流电压最高挡），防止下次开机时档位错误烧表。",
+          "id": "s2e_measure_safety_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量大容量电容后，正确做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电容无电，无需处理",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先放电再触摸或拆线",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "直接用手触摸",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "用短导线反复短接放电再测量",
+              "is_correct": false
+            }
+          ],
+          "explanation": "大容量电容即使断电也存有大量电荷，直接触摸会触电。应先放电（用带电阻的放电棒或经短接充分放电）后再操作。",
+          "id": "s2e_measure_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "把万用表电压挡误当电流挡串联进电路测量，会因为量程设计而无任何后果。",
+          "correct_answer": false,
+          "explanation": "电压挡内阻很大，串联进电路会分走绝大部分电压、使电路几乎无法工作，读数也完全错误；必须正确选挡，测电流用电流挡并串联。",
+          "id": "s2e_measure_safety_n9"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,509 @@
+#!/usr/bin/env node
+// API contract test suite — self-contained.
+// Boots its own server on an isolated DB (DLG_DB_PATH) and verifies the CURRENT
+// contract: JWT session auth, public course catalog, server-side grading,
+// economy (server-priced spend, idempotent rewards), leaderboard, mistakes.
+import { spawn } from 'node:child_process';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { createRequire } from 'node:module';
+const req = createRequire(import.meta.url);
+const Database = req(path.join(import.meta.dirname, 'backend', 'node_modules', 'better-sqlite3'));
+
+const PORT = 3998;
+const BASE = `http://localhost:${PORT}/api`;
+const DB_PATH = path.join(mkdtempSync(path.join(tmpdir(), 'dlg-api-')), 'test.db');
+
+let passed = 0;
+let failed = 0;
+let token = null;
+let userId = null;
+const errors = [];
+
+const auth = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` });
+
+async function jreq(method, url, body, headers = {}) {
+  const res = await fetch(`${BASE}${url}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
+}
+
+async function test(name, fn) {
+  try {
+    await fn();
+    passed++;
+    console.log(`  ✅ ${name}`);
+  } catch (e) {
+    failed++;
+    const msg = `  ❌ ${name}: ${e.message}`;
+    console.log(msg);
+    errors.push(msg);
+  }
+}
+
+// Build an answer entry for every gradeable node — SIMULATING THE REAL FRONTEND:
+// answers are keyed by the stable node.id (primary) plus the ABSOLUTE node
+// position in lesson.nodes (what LessonPlayer actually sends). wrongQ is the
+// 0-based index within the questionNodes sequence (-1 = all right).
+function buildAnswers(lesson, wrongQ = -1) {
+  const answers = [];
+  const questionNodes = lesson.nodes.filter(n => n.type !== 'info');
+  questionNodes.forEach((node, q) => {
+    const nodeIndex = lesson.nodes.indexOf(node); // absolute index, as the client sends
+    // Interactive sims are serialized exactly as the real frontend does; the
+    // server re-grades them structurally (no client claim to trust).
+    if (node.type === 'simulation_probe') {
+      const cp = node.correct_probes || {};
+      answers.push({ nodeId: node.id, nodeIndex, userAnswer: `红:${cp.red},黑:${cp.black}`, correct: true });
+      return;
+    }
+    if (node.type === 'multimeter_challenge') {
+      const cs = node.correct_setup || {};
+      const hs = node.target?.hotspots || {};
+      const label = (k) => (Array.isArray(hs) ? hs.find(h => h?.id === k)?.label : hs[k]?.label) || k;
+      answers.push({
+        nodeId: node.id, nodeIndex,
+        userAnswer: `档位:${cs.dial}, 红:${cs.red_port}→${label(cs.red_touch)}, 黑:${cs.black_port}→${label(cs.black_touch)}`,
+        correct: true,
+      });
+      return;
+    }
+    if (node.type === 'simulation_danger') {
+      answers.push({ nodeId: node.id, nodeIndex, userAnswer: '安全操作', correct: true });
+      return;
+    }
+    let userAnswer;
+    const wrong = q === wrongQ;
+    switch (node.type) {
+      case 'multiple_choice': {
+        const correct = node.options.find(o => o.is_correct);
+        const other = node.options.find(o => !o.is_correct);
+        userAnswer = wrong && other ? other.text : correct.text;
+        break;
+      }
+      case 'true_false':
+        userAnswer = wrong ? (node.correct_answer ? '错误' : '正确') : (node.correct_answer ? '正确' : '错误');
+        break;
+      case 'fill_blank':
+        userAnswer = wrong ? '__错误答案__' : (node.answer || node.acceptable_answers?.[0] || '');
+        break;
+      case 'simulation_dial': {
+        const correct = node.dial_options.find(o => o.is_correct);
+        const other = node.dial_options.find(o => !o.is_correct);
+        userAnswer = wrong && other ? other.label : correct.label;
+        break;
+      }
+      case 'simulation_danger':
+        userAnswer = '安全操作（先换表笔再测量）';
+        break;
+      case 'sort':
+        // Real frontend serialization (LessonPlayer SortQuestion): items joined by ','.
+        userAnswer = node.correct_order.map(id => node.items.find(x => x.id === id)?.text).filter(Boolean).join(',');
+        break;
+      case 'match':
+        // Real frontend serialization (LessonPlayer MatchQuestion): "left=right" pairs.
+        userAnswer = node.pairs.map(p => `${p.left}=${p.right}`).join(', ');
+        break;
+      case 'drag_drop':
+        userAnswer = node.target_zone?.label || '';
+        break;
+      default:
+        userAnswer = '';
+    }
+    answers.push({ nodeId: node.id, nodeIndex, userAnswer });
+  });
+  return answers;
+}
+
+const server = spawn('node', ['server.js'], {
+  cwd: path.join(import.meta.dirname, 'backend'),
+  env: { ...process.env, PORT: String(PORT), DLG_DB_PATH: DB_PATH },
+  stdio: 'pipe',
+});
+server.stderr.on('data', d => { if (String(d).includes('Error')) console.error('[server]', String(d)); });
+
+function waitForServer(attempts = 40) {
+  return new Promise((resolve, reject) => {
+    const tryOnce = async (n) => {
+      try {
+        const res = await fetch(`${BASE}/health`);
+        if (res.ok) return resolve();
+      } catch {}
+      if (n <= 0) return reject(new Error('server did not start'));
+      setTimeout(() => tryOnce(n - 1), 250);
+    };
+    tryOnce(attempts);
+  });
+}
+
+async function run() {
+  await waitForServer();
+  console.log('\n🧪 DLG Learning System - API Contract Test Suite\n');
+  console.log('═'.repeat(50));
+
+  // ─── Auth & User ───
+  console.log('\n📋 Auth & User');
+  await test('401 without token on /auth/me', async () => {
+    const { status } = await jreq('GET', '/auth/me');
+    if (status !== 401) throw new Error(`expected 401, got ${status}`);
+  });
+
+  await test('POST /auth/register requires password (400 without / short)', async () => {
+    const noPw = await jreq('POST', '/auth/register', { username: '无密码用户' });
+    if (noPw.status !== 400) throw new Error(`expected 400, got ${noPw.status}`);
+    const shortPw = await jreq('POST', '/auth/register', { username: '短密码用户', password: '123' });
+    if (shortPw.status !== 400) throw new Error(`expected 400 for short password, got ${shortPw.status}`);
+  });
+
+  let username;
+  await test('POST /auth/register returns user + session token', async () => {
+    const { status, data } = await jreq('POST', '/auth/register', { username: '测试学员', password: 'test123456' });
+    if (status !== 200 || !data.token) throw new Error(`register failed: ${status}`);
+    if (!data.user?.id) throw new Error('no user.id');
+    token = data.token;
+    userId = data.user.id;
+    username = data.user.username;
+  });
+
+  await test('GET /auth/me with token returns same user', async () => {
+    const { status, data } = await jreq('GET', '/auth/me', null, auth());
+    if (status !== 200 || data.id !== userId) throw new Error('user mismatch');
+  });
+
+  await test('POST /auth/logout revokes session', async () => {
+    const { status } = await jreq('POST', '/auth/logout', null, auth());
+    if (status !== 200) throw new Error(`logout failed: ${status}`);
+    const after = await jreq('GET', '/auth/me', null, auth());
+    if (after.status !== 401) throw new Error('token still valid after logout');
+  });
+
+  // Register a second user for the remaining authed tests (session revoked above).
+  await test('re-register (fresh session) for subsequent tests', async () => {
+    const { data } = await jreq('POST', '/auth/register', { username: `学员${Date.now() % 100000}`, password: 'pw123456' });
+    token = data.token;
+    userId = data.user.id;
+  });
+
+  // Sliding renewal: an active session that is about to expire must be extended
+  // to ~30 days again on use — otherwise a learner returning after >30 days is
+  // silently logged out with their progress stranded (the old data-loss path).
+  await test('session sliding renewal extends a nearly-expired session', async () => {
+    const db = new Database(DB_PATH);
+    db.pragma('busy_timeout = 5000');
+    const hash = crypto.createHash('sha256').update(token).digest('hex');
+    // Force this session to be valid-but-dying (10 minutes left).
+    db.prepare('UPDATE sessions SET expires_at = ? WHERE token_hash = ?')
+      .run(new Date(Date.now() + 10 * 60 * 1000).toISOString(), hash);
+    const me = await jreq('GET', '/auth/me', null, auth());
+    if (me.status !== 200) throw new Error(`/auth/me failed: ${me.status}`);
+    const row = db.prepare('SELECT expires_at FROM sessions WHERE token_hash = ?').get(hash);
+    db.close();
+    const renewed = new Date(row.expires_at).getTime();
+    if (renewed < Date.now() + 29 * 24 * 3600 * 1000) {
+      throw new Error(`session not renewed: expires_at=${row.expires_at}`);
+    }
+  });
+
+  // ─── Courses (public) ───
+  console.log('\n📋 Courses');
+  await test('GET /courses returns course list with both courses', async () => {
+    const { data } = await jreq('GET', '/courses');
+    if (!Array.isArray(data) || data.length === 0) throw new Error('empty course list');
+    if (!data.some(c => c.id === 'electrician_basics')) throw new Error('electrician_basics missing');
+    if (!data.some(c => c.id === 'electrician_prereq')) throw new Error('electrician_prereq missing');
+  });
+
+  let unitLessons;
+  await test('GET /courses/:id/units/:uid returns unit with lessons', async () => {
+    const { status, data } = await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics');
+    if (status !== 200 || !Array.isArray(data.lessons) || data.lessons.length < 5)
+      throw new Error(`expected >=5 lessons, got ${data.lessons?.length}`);
+    unitLessons = data.lessons;
+  });
+
+  const l1 = unitLessons.find(l => l.id === 'l1_intro');
+  const l2 = unitLessons.find(l => l.id === 'l2_battery');
+  await test('GET lesson: l1_intro returns question nodes', async () => {
+    const { data } = await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro');
+    if (!Array.isArray(data.nodes) || data.nodes.length === 0) throw new Error('no nodes');
+  });
+
+  // ─── Game Mechanics ───
+  console.log('\n📋 Game Mechanics');
+  await test('GET /game/state (fresh) → hearts 5, coins 500', async () => {
+    const { status, data } = await jreq('GET', '/game/state', null, auth());
+    if (status !== 200 || data.hearts !== 5 || data.coins !== 500)
+      throw new Error(`expected hearts=5 coins=500, got ${data.hearts}/${data.coins}`);
+  });
+
+  await test('POST /game/use-heart → 4 hearts', async () => {
+    const { data } = await jreq('POST', '/game/use-heart', {}, auth());
+    if (data.hearts !== 4) throw new Error(`got ${data.hearts}`);
+  });
+
+  await test('POST /game/restore-heart → 5, then immediate repeat → 429 cooldown', async () => {
+    const first = await jreq('POST', '/game/restore-heart', { amount: 1 }, auth());
+    if (first.status !== 200 || first.data.hearts !== 5)
+      throw new Error(`expected 200/hearts=5, got ${first.status}/${first.data?.hearts}`);
+    // Cooldown gate: hammering restore-heart can no longer farm free hearts.
+    const second = await jreq('POST', '/game/restore-heart', { amount: 1 }, auth());
+    if (second.status !== 429) throw new Error(`expected 429 cooldown, got ${second.status}`);
+  });
+
+  // Server pricing: client sends amount:1 but freeze_block costs 200.
+  await test('POST /game/spend-coins uses SERVER price (500 → 300)', async () => {
+    const { status, data } = await jreq('POST', '/game/spend-coins', { itemId: 'freeze_block', amount: 1 }, auth());
+    if (status !== 200 || data.coins !== 300) throw new Error(`expected 300, got ${data.coins}`);
+  });
+
+  await test('POST /game/spend-coins second purchase (300 → 100)', async () => {
+    const { data } = await jreq('POST', '/game/spend-coins', { itemId: 'freeze_block' }, auth());
+    if (data.coins !== 100) throw new Error(`expected 100, got ${data.coins}`);
+  });
+
+  await test('POST /game/spend-coins insufficient → 400', async () => {
+    const { status } = await jreq('POST', '/game/spend-coins', { itemId: 'freeze_block' }, auth());
+    if (status !== 400) throw new Error(`expected 400, got ${status}`);
+  });
+
+  await test('POST /game/spend-coins unknown item → 400', async () => {
+    const { status } = await jreq('POST', '/game/spend-coins', { itemId: 'not_a_real_item' }, auth());
+    if (status !== 400) throw new Error(`expected 400, got ${status}`);
+  });
+
+  await test('POST /game/checkin increments streak', async () => {
+    const { data } = await jreq('POST', '/game/checkin', null, auth());
+    if (!data || data.streak < 1) throw new Error(`streak=${data?.streak}`);
+  });
+
+  await test('GET /game/mistakes initially empty', async () => {
+    const { status, data } = await jreq('GET', '/game/mistakes', null, auth());
+    if (status !== 200 || !Array.isArray(data.mistakes) || data.mistakes.length !== 0)
+      throw new Error('expected empty mistakes');
+  });
+
+  await test('GET /game/leaderboard/bronze returns entries array', async () => {
+    const { status, data } = await jreq('GET', '/game/leaderboard/bronze', null, auth());
+    if (status !== 200 || !Array.isArray(data.entries) || data.entries.length === 0)
+      throw new Error('expected entries array');
+  });
+
+  // ─── Path traversal hardening (C3: loadUnit whitelist) ───
+  console.log('\n📋 Path Traversal');
+  await test('traversal in courseId/unitId/lessonId rejected (404, not file content)', async () => {
+    const attempts = [
+      '/courses/..%2f..%2fpackage',
+      '/courses/electrician_basics/units/..%2f..%2fpackage',
+      '/courses/electrician_basics/units/u1_meter_basics/lessons/..%2f..%2fpackage',
+      '/courses/..%2F..%2F..%2Fetc%2Fpasswd',
+      '/courses/electrician_basics/units/%2e%2e/lessons/x',
+    ];
+    for (const url of attempts) {
+      const { status } = await jreq('GET', url);
+      if (status !== 404) throw new Error(`${url} → ${status}, expected 404`);
+    }
+    // Unknown-but-shaped ids also 404 (whitelist enforced).
+    const { status } = await jreq('GET', '/courses/electrician_basics/units/not_a_unit/lessons/x');
+    if (status !== 404) throw new Error(`unknown unit → ${status}, expected 404`);
+  });
+
+  // ─── Lesson Completion (server-side grading) ───
+  console.log('\n📋 Lesson Completion');
+  await test('complete l1_intro all-correct → accuracy 100, xp +15, coins +5', async () => {
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro')).data;
+    const { status, data } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro/complete',
+      { answers: buildAnswers(lesson) }, auth()
+    );
+    if (status !== 200) throw new Error(`complete failed ${status}: ${JSON.stringify(data)}`);
+    if (data.accuracy !== 100) throw new Error(`accuracy=${data.accuracy}`);
+    if (!data.rewards || data.rewards.xpEarned !== 15) throw new Error(`xp=${data.rewards?.xpEarned}`);
+    if (data.rewards.coinsEarned !== 5) throw new Error(`coins=${data.rewards?.coinsEarned}`);
+  });
+
+  await test('complete l1_intro again (repeat) → review bonus, no coins', async () => {
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro')).data;
+    const { data } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro/complete',
+      { answers: buildAnswers(lesson) }, auth()
+    );
+    if (!data.rewards.repeat) throw new Error('not marked repeat');
+    // xp 可能被首次 100% 触发的 30% 概率翻倍(2.0x)，故允许 {2,4}
+    if (![2, 4].includes(data.rewards.xpEarned)) throw new Error(`repeat xp=${data.rewards.xpEarned}`);
+    if (data.rewards.coinsEarned !== 0) throw new Error(`repeat coins=${data.rewards.coinsEarned}`);
+  });
+
+  await test('complete l2_battery with one wrong → mistakes recorded, accuracy < 100', async () => {
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery')).data;
+    const { status, data } = await jreq(
+      'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: buildAnswers(lesson, 0) }, auth()
+    );
+    if (status !== 200) throw new Error(`complete failed: ${JSON.stringify(data)}`);
+    if (data.accuracy >= 100) throw new Error(`accuracy=${data.accuracy}, expected < 100`);
+    if (!data.mistakesCount || data.mistakesCount < 1) throw new Error('no mistakes recorded');
+  });
+
+  await test('mistakes now appear in review queue', async () => {
+    const { data } = await jreq('GET', '/game/mistakes', null, auth());
+    if (!Array.isArray(data.mistakes) || data.mistakes.length < 1) throw new Error('expected >= 1 mistake');
+  });
+
+  // ─── P0 D Telemetry: node_results written in grading txn ───
+  await test('node_results recorded for correct AND wrong nodes (p-value source)', async () => {
+    const db = new Database(DB_PATH);
+    db.pragma('busy_timeout = 5000');
+    // l1_intro was completed all-correct; l2_battery with one wrong. Both should
+    // have node_results rows — including the correct ones (previously discarded).
+    const l1 = db.prepare(`
+      SELECT COUNT(*) c, SUM(correct) correct
+      FROM node_results WHERE lesson_id = 'electrician_basics/u1_meter_basics/l1_intro' AND user_id = ?
+    `).get(userId);
+    if (!l1.c || l1.c < 1) throw new Error(`l1_intro: no node_results rows`);
+    if (l1.correct !== l1.c) throw new Error(`l1_intro: correct=${l1.correct}/${l1.c}, expected all correct`);
+    const l2 = db.prepare(`
+      SELECT COUNT(*) c, SUM(correct) correct
+      FROM node_results WHERE lesson_id = 'electrician_basics/u1_meter_basics/l2_battery' AND user_id = ?
+    `).get(userId);
+    if (!l2.c || l2.c < 1) throw new Error(`l2_battery: no node_results rows`);
+    if (l2.correct >= l2.c) throw new Error(`l2_battery: expected >= 1 wrong, got ${l2.correct}/${l2.c}`);
+    // getNodeStats aggregate returns a per-node difficulty view
+    const stats = db.prepare(`
+      SELECT node_id, ROUND(100.0*SUM(correct)/COUNT(*),1) pct
+      FROM node_results WHERE lesson_id = ? GROUP BY node_id
+    `).all('electrician_basics/u1_meter_basics/l2_battery');
+    if (!stats.some(s => Number(s.pct) < 100)) throw new Error('expected a node with pct < 100');
+    db.close();
+  });
+
+  // ─── P0 F SM-2 closed loop hardening ───
+  await test('orphaned mistake card is dismissed (not rescheduled forever)', async () => {
+    const db = new Database(DB_PATH);
+    db.pragma('busy_timeout = 5000');
+    // Insert a mistake pointing to a node that no longer exists in course data.
+    db.prepare(`
+      INSERT INTO mistakes (user_id, lesson_id, node_id, node_index, question_text, user_answer, correct_answer,
+        next_review_date, easiness, interval_days, review_count, mastered)
+      VALUES (?, 'electrician_basics/u1_meter_basics/l2_battery', 'node_that_no_longer_exists', 999,
+        '这个节点已不存在', '旧答案', '正确答案', ?, 2.5, 0, 0, 0)
+    `).run(userId, '2026-08-14');
+    const orphan = db.prepare('SELECT id FROM mistakes WHERE node_id = ?').get('node_that_no_longer_exists');
+    db.close();
+    if (!orphan) throw new Error('failed to seed orphan mistake');
+    const { status, data } = await jreq('POST', '/game/mistakes/review',
+      { mistakeId: orphan.id, userAnswer: '随便什么答案' }, auth());
+    if (status !== 200) throw new Error(`review failed: ${status}`);
+    if (!data.dismissed) throw new Error('orphan card not dismissed');
+    if (!data.mistake.mastered) throw new Error('orphan card not marked mastered');
+    const db2 = new Database(DB_PATH);
+    const mastered = db2.prepare('SELECT mastered FROM mistakes WHERE id = ?').get(orphan.id);
+    db2.close();
+    if (mastered.mastered !== 1) throw new Error('orphan card not mastered in DB');
+  });
+
+  await test('practice-heal caps at 20 credits, surplus stays unclaimed', async () => {
+    const db = new Database(DB_PATH);
+    db.pragma('busy_timeout = 5000');
+    // Seed 25 unclaimed credits with unique fake mistake_ids.
+    const ins = db.prepare('INSERT OR IGNORE INTO review_credit (user_id, mistake_id) VALUES (?, ?)');
+    for (let i = 0; i < 25; i++) ins.run(userId, 900000 + i);
+    const seeded = db.prepare('SELECT COUNT(*) c FROM review_credit WHERE user_id = ? AND claimed = 0').get(userId).c;
+    if (seeded < 25) throw new Error(`seeded ${seeded} credits, expected 25`);
+    db.close();
+    const { status, data } = await jreq('POST', '/game/practice-heal', {}, auth());
+    if (status !== 200) throw new Error(`practice-heal failed: ${status}`);
+    if (data.coinsEarned !== 200) throw new Error(`coinsEarned=${data.coinsEarned}, expected 200 (20x10)`);
+    const db2 = new Database(DB_PATH);
+    const remaining = db2.prepare('SELECT COUNT(*) c FROM review_credit WHERE user_id = ? AND claimed = 0').get(userId).c;
+    db2.close();
+    if (remaining < 5) throw new Error(`expected >= 5 credits to remain unclaimed, got ${remaining}`);
+  });
+
+  // ─── Progress (was shadowed by /:courseId — route must be registered first) ───
+  console.log('\n📋 Progress');
+  await test('GET /courses/progress requires auth (401)', async () => {
+    const { status } = await jreq('GET', '/courses/progress');
+    if (status !== 401) throw new Error(`expected 401, got ${status}`);
+  });
+
+  await test('GET /courses/progress returns completed lessons', async () => {
+    const { status, data } = await jreq('GET', '/courses/progress', null, auth());
+    if (status !== 200) throw new Error(`expected 200, got ${status}`);
+    if (!Array.isArray(data) || data.length === 0) throw new Error('expected progress rows');
+    const l1 = data.find(p => p.lesson_id === 'electrician_basics/u1_meter_basics/l1_intro');
+    if (!l1 || l1.completed !== 1) throw new Error('l1_intro not marked completed');
+  });
+
+  // ─── Mock exam engine (P1) ───
+  let examToken = null;
+  {
+    const { data } = await jreq('POST', '/auth/register', { username: `考生${Date.now() % 100000}`, password: 'exam123456' });
+    examToken = data.token;
+    if (!examToken) throw new Error('exam user register failed');
+    const examAuth = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${examToken}` });
+    const examAuthHeaders = examAuth();
+
+    await test('POST /exam/start returns 100 questions (60/30/10) with no answer leak', async () => {
+      const { status, data } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
+      if (status !== 200) throw new Error(`expected 200, got ${status}: ${JSON.stringify(data).slice(0,120)}`);
+      if (data.total !== 100) throw new Error(`expected 100 questions, got ${data.total}`);
+      const byType = {};
+      for (const q of data.questions) byType[q.type] = (byType[q.type] || 0) + 1;
+      if (byType.true_false !== 60 || byType.multiple_choice !== 30 || byType.multi_select !== 10)
+        throw new Error(`composition wrong: ${JSON.stringify(byType)}`);
+      const leaked = data.questions.some(q =>
+        q.correct_answer !== undefined || q.explanation !== undefined ||
+        (q.options || []).some(o => o.is_correct !== undefined));
+      if (leaked) throw new Error('sanitized questions leaked correct answers');
+    });
+
+    await test('POST /exam/submit all-wrong → low score, not passed, mistakes ingested', async () => {
+      const { data: start } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
+      const answers = start.questions.map(q => ({ index: q.index, userAnswer: '绝不会是正确答案的乱填串' }));
+      const { status, data } = await jreq('POST', '/exam/submit', { sessionId: start.sessionId, answers }, examAuthHeaders);
+      if (status !== 200) throw new Error(`submit expected 200, got ${status}`);
+      if (data.score >= 80 || data.passed) throw new Error(`expected fail, got score=${data.score} passed=${data.passed}`);
+      const m = await jreq('GET', '/game/mistakes/due-count', null, examAuthHeaders);
+      if (!(m.data.dueCount > 0)) throw new Error(`expected mistakes ingested, got ${m.data.dueCount}`);
+    });
+
+    await test('POST /exam/submit re-submit same session → 409', async () => {
+      const { data: start } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
+      const answers = start.questions.map(q => ({ index: q.index, userAnswer: '错' }));
+      await jreq('POST', '/exam/submit', { sessionId: start.sessionId, answers }, examAuthHeaders);
+      const again = await jreq('POST', '/exam/submit', { sessionId: start.sessionId, answers }, examAuthHeaders);
+      if (again.status !== 409) throw new Error(`expected 409 on re-submit, got ${again.status}`);
+    });
+
+    await test('POST /exam/start again expires the old active session (409 on old submit)', async () => {
+      const { data: s1 } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
+      const { data: s2 } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
+      if (!s1.sessionId || !s2.sessionId) throw new Error('missing session ids');
+      const answers = s1.questions.map(q => ({ index: q.index, userAnswer: '错' }));
+      const old = await jreq('POST', '/exam/submit', { sessionId: s1.sessionId, answers }, examAuthHeaders);
+      if (old.status !== 409) throw new Error(`expected old session expired → 409, got ${old.status}`);
+    });
+  }
+
+  // ─── Summary ───
+  console.log('\n' + '═'.repeat(50));
+  console.log(`\n📊 Results: ${passed} passed, ${failed} failed out of ${passed + failed} tests\n`);
+  if (errors.length > 0) {
+    console.log('Failures:');
+    errors.forEach(e => console.log(e));
+  }
+
+  server.kill();
+  return failed === 0;
+}
+
+run().then(success => {
+  if (!success) process.exit(1);
+  process.exit(0);
+});

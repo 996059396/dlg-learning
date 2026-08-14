@@ -1,0 +1,980 @@
+{
+  "id": "s3_motor_control",
+  "title": "电工考证单元三：电机控制与低压电器",
+  "description": "接触器、热继电器与时间继电器、点动与自锁控制、正反转控制、星三角降压启动",
+  "icon": "⚙️",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s3a_contactor",
+      "title": "接触器",
+      "description": "主触头与辅助触头、线圈、灭弧装置",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "接触器的作用",
+          "content": "接触器是用小电流控制大电流通断的自动电器，是电动机控制电路的核心元件。它靠电磁线圈通电产生吸力吸合主触头，从而接通或分断电动机主电路；控制线圈回路只要很小的电流，就能通断主回路很大的电流，实现远距离控制与自动控制。",
+          "id": "s3a_contactor_n0"
+        },
+        {
+          "type": "info",
+          "title": "主触头与辅助触头",
+          "content": "接触器有主触头和辅助触头两类：主触头串在主电路里，触点大、能通断大电流，一般有三对（三相各一对）；辅助触头容量小（一般 5A），用于控制电路，常开、常闭都有，承担自锁、互锁、信号指示等任务。",
+          "id": "s3a_contactor_n1"
+        },
+        {
+          "type": "info",
+          "title": "灭弧装置",
+          "content": "接触器分断大电流电路时，触头间会产生电弧。电弧会烧蚀触头、延缓分断。交流接触器采用灭弧栅（金属栅片把电弧分割冷却）或灭弧罩等灭弧装置快速熄灭电弧，保护触头、提高分断能力。",
+          "id": "s3a_contactor_n2"
+        },
+        {
+          "type": "info",
+          "title": "线圈与常见类型",
+          "content": "接触器线圈有交流和直流之分，标注的额定电压常见 220V、380V、36V 等，必须与所接控制电源电压一致，电压过低吸合不牢、过高会烧线圈。电动机控制中常用 CJ 系列交流接触器，按主触头额定电流选型。",
+          "id": "s3a_contactor_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "接触器的核心作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把交流电变成直流电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "放大电压信号",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "用小电流控制大电流电路的通断",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "测量线路电流",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接触器通过小功率线圈控制大功率主回路通断，是自动控制电动机等设备的执行元件，可实现远距离、频繁通断。",
+          "id": "s3a_contactor_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "接触器主触头与辅助触头的区别是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "主触头在控制回路，辅助触头在主电路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "两者完全一样，只是位置不同",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "主触头只能断开不能接通",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "主触头通断主电路大电流，辅助触头用于控制回路（自锁、互锁、指示）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "主触头容量大、接主电路通断大电流；辅助触头容量小（常开常闭都有）、接控制电路实现自锁互锁等逻辑功能。",
+          "id": "s3a_contactor_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "接触器线圈的额定电压必须与所接控制电源电压一致，电压过低会吸合不牢，过高会烧毁线圈。",
+          "correct_answer": true,
+          "explanation": "线圈电压要匹配控制电源：低了吸力不足、衔铁吸合不牢甚至抖动，高了电流过大发热烧毁。",
+          "id": "s3a_contactor_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "交流接触器分断大电流时，依靠 ____ 装置快速熄灭触头间的电弧。",
+          "answer": "灭弧",
+          "acceptable_answers": [
+            "灭弧",
+            "灭弧栅",
+            "灭弧罩",
+            "灭弧装置"
+          ],
+          "explanation": "灭弧栅片把电弧分割冷却、灭弧罩隔离弧光，能快速熄弧、保护触头，提高分断能力。",
+          "id": "s3a_contactor_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "接触器通电吸合后，若控制线圈断电，接触器的状态是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "触头释放，主电路分断",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "主触头保持，辅助触头释放",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "产生自保持",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "触头保持吸合，不会自动释放",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接触器没有机械保持机构：线圈断电即失去吸力，触头在复位弹簧作用下释放、主电路分断。它本身无记忆，自锁要靠外部电路。",
+          "id": "s3a_contactor_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "接触器只有常开主触头，辅助触头只能用作常开。",
+          "correct_answer": false,
+          "explanation": "辅助触头有常开和常闭两种，分别用于自锁（并联启动按钮）和互锁、停车、指示等逻辑；主触头是常开三对。",
+          "id": "s3a_contactor_n9"
+        },
+        {
+          "type": "info",
+          "title": "接触器的使用类别（AC-1~AC-4）",
+          "content": "接触器的使用类别按负载性质划分（IEC 60947-4-1）：AC-1 用于纯阻性负载（电热等），电流小、触头负担轻；AC-3 用于鼠笼电动机的起动和运转中切断，是电机控制最常用的类别；AC-4 用于点动、堵转等频繁通断，触头电寿命急剧下降。选电机接触器必须按 AC-3 类别选，绝不能按 AC-1 的阻性额定电流选，否则起动大电流会烧蚀触头。",
+          "id": "s3a_contactor_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "为三相鼠笼电动机选接触器，应按哪个使用类别选型？",
+          "options": [
+            {
+              "id": "A",
+              "text": "AC-1（阻性负载）",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "AC-3（鼠笼电动机起动与运转中切断）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "AC-4（点动/堵转）",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "AC-1 与 AC-4 皆可",
+              "is_correct": false
+            }
+          ],
+          "explanation": "AC-3 覆盖鼠笼电动机的起动（数倍大电流）与运转中切断，是电机控制的标准使用类别。AC-1 额定电流不含起动冲击，按它选会偏小；AC-4 仅用于点动/堵转等极端频繁通断场合。",
+          "id": "s3a_contactor_n11"
+        },
+        {
+          "type": "true_false",
+          "question": "接触器按 AC-1 的阻性负载额定电流来选型控制电动机，也能可靠工作。",
+          "correct_answer": false,
+          "explanation": "错误。AC-1 额定电流不含电动机起动时的数倍冲击电流，按它选型会偏小，起动大电流会烧蚀触头甚至粘连。电机控制必须按 AC-3 类别选。",
+          "id": "s3a_contactor_n12"
+        },
+        {
+          "type": "info",
+          "title": "星三角降压起动接触器选型（0.58Ie / 0.34Ie）",
+          "content": "星三角（Y-Δ）降压起动时，电机绕组先在星形接法下以 58%（1/√3）电压起动，转速到 80% 额定后再切为三角形全压运行。接触器选型（NHP 手册，起动时间<20s、≤12次/h）：主接触器 K1M 与三角接触器 K2M 各按 0.58×Ie 选（三角形运行时每相绕组电流为额定线电流的 1/√3≈0.58）；封星接触器 K3M 只流过星形起动电流，按 0.34×Ie 选。热继电器按 0.58×Ie 整定。",
+          "id": "s3a_contactor_n13"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "某电动机额定电流 Ie=40A，用星三角降压起动。主接触器 K1M（和三角接触器 K2M）的额定电流至少应按多大选？",
+          "options": [
+            {
+              "id": "A",
+              "text": "按 40A（1.0×Ie）选",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "按约 23A（0.58×Ie）选",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "按约 14A（0.34×Ie）选",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "按 20A（0.5×Ie）选",
+              "is_correct": false
+            }
+          ],
+          "explanation": "主接触器 K1M 与三角接触器 K2M 各按 0.58×Ie 选：0.58×40≈23A。0.34×Ie 是封星接触器 K3M 的选型值，0.5×Ie 无依据。",
+          "id": "s3a_contactor_n14"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "星三角降压起动中，封星接触器 K3M（星形接法接触器）的额定电流应按电动机额定电流 Ie 的多少选取？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1.0×Ie（与主接触器相同）",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "0.58×Ie",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "0.34×Ie",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "0.25×Ie",
+              "is_correct": false
+            }
+          ],
+          "explanation": "封星接触器 K3M 只承载星形接法时的起动电流（约为额定线电流的 1/3，留裕量取 0.34×Ie），比 0.58×Ie 的主/三角接触器小，选型时不要一刀切按 1.0×Ie 选。",
+          "id": "s3a_contactor_n15"
+        }
+      ]
+    },
+    {
+      "id": "s3b_relays",
+      "title": "热继电器与时间继电器",
+      "description": "双金属片过载保护、整定电流、延时动作",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "热继电器的作用",
+          "content": "热继电器用于电动机的过载保护：电动机长期过载、电流超过额定值时，热继电器经一定延时后动作，切断控制电路，使接触器释放、电动机停转。它利用电流热效应（双金属片受热弯曲）实现保护，与熔断器（短路保护）各司其职。",
+          "id": "s3b_relays_n0"
+        },
+        {
+          "type": "info",
+          "title": "双金属片原理",
+          "content": "热继电器核心是双金属片：由两种热膨胀系数不同的金属片贴合而成，受热后向膨胀系数小的一侧弯曲。过载电流流过发热元件使双金属片弯曲到一定程度，推动脱扣机构使常闭触头分断，从而断开控制回路。电流越大弯曲越快，保护动作越及时。",
+          "id": "s3b_relays_n1"
+        },
+        {
+          "type": "info",
+          "title": "整定电流",
+          "content": "热继电器上有一个整定电流旋钮，应整定在电动机额定电流附近（一般整定为额定电流的 1～1.1 倍）。整定电流调大了，过载时不动作用等于失效；调小了，正常运行时也会误动作。热继电器动作后需手动复位（或自动复位）后才能重新启动。",
+          "id": "s3b_relays_n2"
+        },
+        {
+          "type": "info",
+          "title": "时间继电器",
+          "content": "时间继电器是能延时动作的继电器：线圈通电（或断电）后，触头要经过整定时间才动作或复位。常见有通电延时和断电延时两种类型，广泛应用于星三角降压启动、顺序控制、自动控制等需要时间配合的场合。",
+          "id": "s3b_relays_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "热继电器主要保护电动机免于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "缺相导致的相电压升高",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "长期过载（电流超过额定值但未短路）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "瞬间短路",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电源电压过高烧毁线圈",
+              "is_correct": false
+            }
+          ],
+          "explanation": "热继电器利用双金属片热效应实现过载保护，动作有延时、允许短时过载；短路保护由熔断器/断路器承担。",
+          "id": "s3b_relays_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "热继电器过载动作的原理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电磁线圈直接吸引触头",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "弹簧突然断裂",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "双金属片受热弯曲，推动脱扣机构使常闭触头分断",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "绝缘电阻下降报警",
+              "is_correct": false
+            }
+          ],
+          "explanation": "过载电流经发热元件加热双金属片，膨胀系数差异使片弯曲，推动脱扣机构使常闭触头分断，切断接触器线圈回路。",
+          "id": "s3b_relays_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "热继电器动作后不需要冷却，电动机可以立即重新启动。",
+          "correct_answer": false,
+          "explanation": "不对。热继电器靠双金属片热变形动作，动作后必须等双金属片冷却复位（或手动复位），常闭触头才重新闭合、接触器线圈回路才接通，电动机才能重新启动。",
+          "id": "s3b_relays_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "热继电器整定电流一般整定为电动机额定电流的 ____ 倍左右。",
+          "answer": "1",
+          "acceptable_answers": [
+            "1",
+            "1.05",
+            "1.1",
+            "1～1.1",
+            "1-1.1",
+            "一"
+          ],
+          "explanation": "整定电流一般取额定电流的 1～1.1 倍：调大了过载不动作失去保护，调小了正常运行就误动。",
+          "id": "s3b_relays_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于热继电器与熔断器的分工，正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "熔断器管过载，热继电器管短路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "两者都只能管短路",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "热继电器可以代替熔断器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "热继电器管过载保护，熔断器管短路保护",
+              "is_correct": true
+            }
+          ],
+          "explanation": "热继电器动作有延时、保护长期过载；熔断器在短路电流下快速熔断、保护短路。二者配合构成完整的电动机保护。",
+          "id": "s3b_relays_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "时间继电器分为通电延时和断电延时两种类型，用于需要时间配合的控制场合。",
+          "correct_answer": true,
+          "explanation": "通电延时型线圈通电后延时动作，断电延时型线圈断电后延时复位。星三角启动、顺序控制等都靠它实现时间配合。",
+          "id": "s3b_relays_n9"
+        }
+      ]
+    },
+    {
+      "id": "s3c_self_lock",
+      "title": "点动与自锁控制",
+      "description": "启动停止按钮、自锁触头、点动与连续运转",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "按钮的作用",
+          "content": "按钮是短时手动操作的控制电器，有常开和常闭触点：按下时常开闭合、常闭分断，松开后复位。启动按钮（常开）用于发出启动信号，停止按钮（常闭）用于发出停止信号。按钮只能短时接通，不能长期承载电流，所以不能直接串联在主电路。",
+          "id": "s3c_self_lock_n0"
+        },
+        {
+          "type": "info",
+          "title": "点动控制",
+          "content": "点动控制就是「按下运转、松开停转」：启动按钮直接串在接触器线圈回路中，按下按钮线圈通电、接触器吸合、电动机运转，松开按钮线圈断电、电动机停转。常用于电动葫芦点动升降、机床刀架快移等短时调整场合。",
+          "id": "s3c_self_lock_n1"
+        },
+        {
+          "type": "info",
+          "title": "自锁（自保持）",
+          "content": "连续运转需要在松开启动按钮后接触器仍保持吸合，方法是把接触器自身的常开辅助触头并联在启动按钮两端——启动按钮按下吸合后，辅助触头闭合「把启动按钮短路」，即使松开按钮线圈仍通电，这叫自锁。",
+          "id": "s3c_self_lock_n2"
+        },
+        {
+          "type": "info",
+          "title": "停止与完整电路",
+          "content": "停止按钮（常闭）串在接触器线圈回路中，按下时线圈回路断开、接触器释放、电动机停转。典型电路为：停止按钮 —启动按钮（并联自锁触头）— 线圈 — 热继电器常闭触头。其中热继电器常闭串入，过载时自动切断。",
+          "id": "s3c_self_lock_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "点动控制的特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "按下运转、松开停转",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "松开后继续运转",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "必须用两只按钮才能启动",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "按下启动后持续运转",
+              "is_correct": false
+            }
+          ],
+          "explanation": "点动时启动按钮直接控制线圈通断，按钮松开线圈即断电、电机停转，适用于短时点动调整。",
+          "id": "s3c_self_lock_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "实现连续运转（自锁）的关键元件是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把停止按钮也并联进回路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "把接触器自身常开辅助触头并联在启动按钮两端",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "在启动按钮上串联一个电阻",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "加大接触器线圈电压",
+              "is_correct": false
+            }
+          ],
+          "explanation": "常开辅助触头并联启动按钮：吸合后辅助触头闭合自锁，松开按钮线圈仍保持通电，电机连续运转。",
+          "id": "s3c_self_lock_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "自锁触头串联在启动按钮两端，因此启动后松开启动按钮，接触器立即释放。",
+          "correct_answer": false,
+          "explanation": "不对。自锁触头必须并联在启动按钮两端：接触器吸合后其辅助触头闭合，把启动按钮旁路，线圈经自锁触头继续通电——这才叫自锁/自保持。串联的话松开按钮线圈即失电，电机立即停。",
+          "id": "s3c_self_lock_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "停止按钮应串接在接触器的 ____ 回路中（主/控制）。",
+          "answer": "控制",
+          "acceptable_answers": [
+            "控制",
+            "控制回路",
+            "控制电路",
+            "线圈"
+          ],
+          "explanation": "停止按钮（常闭）串在控制回路（线圈回路）中，按下即断开线圈、接触器释放、电动机停转。",
+          "id": "s3c_self_lock_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "热继电器的常闭触头在电动机控制电路中串在？",
+          "options": [
+            {
+              "id": "A",
+              "text": "主电路直接串联",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "与启动按钮并联",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "接触器线圈控制回路，过载时断开使电动机停转",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "指示灯回路，不影响运行",
+              "is_correct": false
+            }
+          ],
+          "explanation": "热继电器常闭触头串在控制回路：过载动作后常闭断开，切断接触器线圈、电动机停转并防止重启。",
+          "id": "s3c_self_lock_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "按钮只能短时承载电流，不能长时间直接串联在主电路中控制大电流。",
+          "correct_answer": true,
+          "explanation": "按钮触点容量小、只用于控制回路，主电路的通断由接触器完成；按钮直接通断大电流会烧毁触点。",
+          "id": "s3c_self_lock_n9"
+        },
+        {
+          "type": "true_false",
+          "question": "三线控制（起动/停止按钮+自锁）的电动机，停电后恢复供电不会自行启动，必须再次按起动按钮。",
+          "correct_answer": true,
+          "explanation": "正确。三线控制是欠压保护（LVP）：断电时接触器释放、自锁解除，来电后不会自行启动，须操作员再次按起动按钮，防止设备突然启动伤人。这是三线控制优于两线控制的安全特点。",
+          "id": "s3c_self_lock_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "两线控制（欠压释放 LVR）的特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "断电后必须按停止按钮才能停机",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "断电自停，恢复供电后若控制开关仍闭合则自行启动",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "必须有两只按钮，缺一不可",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只能控制阻性负载",
+              "is_correct": false
+            }
+          ],
+          "explanation": "两线控制是欠压释放（LVR）：控制回路只有一个保持闭合的开关（如转换开关、常闭自锁），断电即释放停机；恢复供电时若开关仍闭合，设备会自行启动。因此对不允许来电自启的设备须改用三线控制（LVP）。",
+          "id": "s3c_self_lock_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "自锁控制电路：按下起动按钮 SB1，接触器 KM 线圈得电，KM 主触头与常开辅助触头同时闭合；松开 SB1 后靠 KM 常开辅助触头维持线圈回路。若 KM 的自锁辅助触头烧毁不能闭合，电路会怎样？",
+          "options": [
+            {
+              "id": "A",
+              "text": "按下起动按钮电动机运转，松开即停，退化为点动",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电动机完全无法启动",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电动机启动后无法停止",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "按下时不转，松开后反而连续运转",
+              "is_correct": false
+            }
+          ],
+          "explanation": "自锁 = KM 常开辅助触头并联在起动按钮两端，松开按钮后由它维持线圈得电。该触头失效 → 松开按钮线圈失电 → 电动机即停，电路退化为点动控制。读图时先找并联在起动按钮两端的那个辅助触头，它就是自锁触头。",
+          "id": "s3c_self_lock_n12"
+        }
+      ]
+    },
+    {
+      "id": "s3d_reversing",
+      "title": "正反转控制",
+      "description": "换相原理、互锁、双重互锁",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "换相原理",
+          "content": "三相异步电动机的转向由三相电源的相序决定：把任意两相（如 U、V）对调，旋转磁场方向反转，电动机就反转。正反转控制用两只接触器 KM1（正转）、KM2（反转）实现，KM2 把两相电源交叉接入电动机。",
+          "id": "s3d_reversing_n0"
+        },
+        {
+          "type": "info",
+          "title": "互锁的必要性",
+          "content": "若 KM1、KM2 同时吸合，两相电源会被直接短接，造成相间短路烧毁设备。因此两只接触器必须互锁：KM1 的常闭辅助触头串入 KM2 线圈回路，KM2 的常闭辅助触头串入 KM1 线圈回路——一只吸合就断开另一只的线圈回路。",
+          "id": "s3d_reversing_n1"
+        },
+        {
+          "type": "info",
+          "title": "按钮互锁",
+          "content": "除接触器触头互锁外，还常采用按钮互锁：正转按钮的常闭触点串入反转回路、反转按钮的常闭触点串入正转回路。按正转时先断开反转回路，按反转时先断开正转回路，避免操作失误造成两接触器同时通电。",
+          "id": "s3d_reversing_n2"
+        },
+        {
+          "type": "info",
+          "title": "双重互锁",
+          "content": "生产中多用「接触器触头互锁 + 按钮互锁」的双重互锁电路：既防止两只接触器同时吸合，又能在不按停止按钮的情况下直接切换正反转。切换时必须先按反转按钮，其常闭先断正转、常开再合反转，正反转有短暂时序保证安全。",
+          "id": "s3d_reversing_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "使三相异步电动机反转的方法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "把三相电源全部调换",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "降低电源频率",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "调高电源电压",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "对调三相电源中的任意两相",
+              "is_correct": true
+            }
+          ],
+          "explanation": "旋转磁场方向由相序决定，对调任意两相（如 U、V）即反转；三相对调等于没换，不变。",
+          "id": "s3d_reversing_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "正反转控制中两只接触器必须互锁，因为若同时吸合会？",
+          "options": [
+            {
+              "id": "A",
+              "text": "造成两相电源直接短路，烧毁设备",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电动机停转但无危害",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电源电压升高",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电动机转速加倍",
+              "is_correct": false
+            }
+          ],
+          "explanation": "KM1、KM2 同时吸合使换相的两相被短接，形成相间短路，瞬间产生巨大短路电流，损坏接触器和线路。",
+          "id": "s3d_reversing_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "互锁的实现是把一只接触器的常开辅助触头并联在另一只接触器的线圈回路两端。",
+          "correct_answer": false,
+          "explanation": "不对。互锁是把一只接触器的常闭辅助触头串入另一只接触器的线圈回路：任一接触器吸合，其常闭辅助触头断开，把对方线圈回路切断，两接触器物理上不可能同时吸合。并联常开恰恰会促进同时吸合，完全错误。",
+          "id": "s3d_reversing_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "生产中最常用的是接触器触头互锁加 ____ 互锁组成的双重互锁电路。",
+          "answer": "按钮",
+          "acceptable_answers": [
+            "按钮",
+            "按钮互锁"
+          ],
+          "explanation": "双重互锁 = 接触器常闭触头互锁 + 启动按钮常闭触点互锁，既防同时吸合，又可不停机直接换向。",
+          "id": "s3d_reversing_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "双重互锁电路中，运行时直接从正转切换为反转，正确的操作是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "先拆下电源线再换接",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "直接按反转启动按钮即可切换",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "必须先按停止按钮再按反转按钮",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "断电再通电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "按钮互锁保证直接按反转按钮时，其常闭先断开正转回路、常开再接通反转回路，安全换向，不必先按停止。",
+          "id": "s3d_reversing_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "按钮互锁的原理：正转按钮的常闭触点串入反转回路，反转按钮的常闭触点串入正转回路。",
+          "correct_answer": true,
+          "explanation": "按某方向按钮时，其常闭先断开对方回路，防止两方向同时通电，再合自己回路完成启动——按钮互锁。",
+          "id": "s3d_reversing_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "正反转互锁电路：把正转接触器 KM1 的常闭辅助触头串在反转接触器 KM2 的线圈回路中。若检修时误用跨接线把该常闭触头两端短接，会出现什么后果？",
+          "options": [
+            {
+              "id": "A",
+              "text": "互锁仍然有效，不影响安全",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "正转时误按反转按钮，KM2 得电，KM1 与 KM2 同时吸合造成主电路短路",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "正转接触器无法吸合，电动机只能反转",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "反转接触器永远无法吸合",
+              "is_correct": false
+            }
+          ],
+          "explanation": "串入对方线圈回路的常闭辅助触头就是互锁触头：KM1 吸合 → 其常闭触头断开 → KM2 回路被切断。短接它 = 解除互锁，正转时按反转按钮 KM2 会得电，两接触器同时吸合，主电路发生换相短路。读图时认清串在对方线圈回路里的常闭触头。",
+          "id": "s3d_reversing_n10"
+        }
+      ]
+    },
+    {
+      "id": "s3e_star_delta",
+      "title": "星三角降压启动",
+      "description": "Y-Δ 转换、启动电流降至 1/3、时间继电器控制",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "为什么要降压启动",
+          "content": "三相异步电动机直接全压启动时，启动电流可达额定电流的 4～7 倍。对容量较大的电动机，过大的启动电流会引起电网电压明显下降，影响其他用电设备，还会冲击电动机和传动机构。因此大电动机常采用降压启动，先低压启动、再转全压运行。",
+          "id": "s3e_star_delta_n0"
+        },
+        {
+          "type": "info",
+          "title": "星三角降压启动的原理",
+          "content": "正常运行时定子绕组接成三角形（Δ）的电动机，启动时先接成星形（Y）。星形接法每相绕组承受的电压是线电压的 1/√3，启动电流和启动转矩都降为三角形接法的 1/3。启动完成后通过切换改回三角形接法正常运行。",
+          "id": "s3e_star_delta_n1"
+        },
+        {
+          "type": "info",
+          "title": "切换用时间继电器",
+          "content": "Y-Δ 转换常用时间继电器自动完成：启动时接触器 KM（电源）+ KMY（星形）吸合，延时到整定时间后，时间继电器动作使 KMY 释放、KMΔ 吸合，绕组由星形换成三角形。切换必须等电机转速接近额定值，过早切换会冲击。",
+          "id": "s3e_star_delta_n2"
+        },
+        {
+          "type": "info",
+          "title": "适用范围",
+          "content": "星三角降压启动只适用于正常运行时定子绕组为三角形接法（Δ 接法）的电动机，且降压启动时启动转矩也降为 1/3，所以只适用于空载或轻载启动的场合，重载启动时转矩不足无法起动。",
+          "id": "s3e_star_delta_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相异步电动机直接全压启动时，启动电流约为额定电流的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1.2 倍",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "2 倍",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "4～7 倍",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "10 倍以上",
+              "is_correct": false
+            }
+          ],
+          "explanation": "直接全压启动电流可达额定电流 4～7 倍，容量大的电动机须降压启动以减小对电网的冲击。",
+          "id": "s3e_star_delta_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "星三角降压启动中，星形接法启动电流约为三角形接法的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1/√3",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "1/2",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "相同",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "1/3",
+              "is_correct": true
+            }
+          ],
+          "explanation": "星形时每相电压为线电压的 1/√3，相电流降为 1/√3；而线电流（电源电流）进一步降为 Δ 接法的 1/3。启动转矩同样降为 1/3。",
+          "id": "s3e_star_delta_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "星三角降压启动时，启动转矩降为直接启动时的 1/√3 倍。",
+          "correct_answer": false,
+          "explanation": "不对。转矩与电压的平方成正比：星形连接每相电压降为线电压的 1/√3，转矩降为 (1/√3)² = 1/3，而不是 1/√3。转矩只剩 1/3，所以只适合空载或轻载启动。",
+          "id": "s3e_star_delta_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "星三角降压启动中，自动完成 Y→Δ 切换的电器是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "时间继电器",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "熔断器",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "行程开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "热继电器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "时间继电器按整定延时，先保持星形启动，到整定时间后动作，控制接触器把绕组切换为三角形正常运行。",
+          "id": "s3e_star_delta_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "星三角降压启动只适用于正常运行时定子绕组为 ____ 形接法的电动机。",
+          "answer": "三角",
+          "acceptable_answers": [
+            "三角",
+            "三角形",
+            "Δ",
+            "三角型"
+          ],
+          "explanation": "只有 Δ 接法电动机才能先 Y 后 Δ；若电机正常为 Y 接法，星三角启动就无法接回正常接法，不能使用。",
+          "id": "s3e_star_delta_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "星三角切换的延时时间应在电动机转速接近额定值后进行，过早切换会产生电流冲击。",
+          "correct_answer": true,
+          "explanation": "延时过短、转速未上来就切 Δ，反电动势小、切换冲击电流大；应整定到电机转速接近额定值再切换。",
+          "id": "s3e_star_delta_n9"
+        },
+        {
+          "type": "info",
+          "title": "五种起动方式对比（NHP 3.4）",
+          "content": "鼠笼电动机常见起动方式对比如下（相对额定电流 Ie / 额定转矩 Te）：直接起动 DOL——起动电流 6~8×Ie、转矩 1.5~3×Te，电网冲击大；星三角 Y-Δ——起动电流约 DOL 的 1/3（1.3~2.7×Ie）、转矩约 1/3，但切换瞬间有电流/转矩冲击；自耦变压器起动——0.25~0.65×Ie 可选档位、转矩 0.4~2×Te；软起动器——起动电流 2~6×Ie 可调、无切换冲击；变频器 VFD——起动电流仅 1~2×Ie，可在低电流下提供高转矩，还支持调速与节能。选型要点：电网强、允许大冲击电流用 DOL；只求降压不求调速用 Y-Δ 或自耦；要求平滑起动无冲击用软起动器；需要调速或节能用变频器。",
+          "id": "s3e_star_delta_n10"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于几种起动方式的起动电流（相对额定电流），下列哪项正确？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接起动最大（约 6~8 倍），星三角约 1/3，变频起动最小（1~2 倍）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "星三角起动电流大于直接起动",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "变频起动电流最大，可达 6~8 倍",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "软起动器起动电流固定为 6 倍，不可调节",
+              "is_correct": false
+            }
+          ],
+          "explanation": "直接起动 6~8×Ie 最大；星三角约为其 1/3（1.3~2.7×Ie）；软起动 2~6×Ie 且晶闸管相位可调；变频器 1~2×Ie 最小。",
+          "id": "s3e_star_delta_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "星三角降压起动相比自耦变压器和软起动器，一个明显的缺点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "起动电流是直接起动的两倍以上",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "Y→Δ 切换瞬间存在电流和转矩冲击（峰值）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "起动转矩不可控制，恒为额定转矩",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "无法降低起动电压",
+              "is_correct": false
+            }
+          ],
+          "explanation": "星三角在切换到三角形全压运行的瞬间会产生电流和转矩冲击（峰值）；自耦变压器分档切换无中断、软起动器连续调节，都不存在这种切换冲击。这是星三角方案的固有缺点。",
+          "id": "s3e_star_delta_n12"
+        }
+      ]
+    }
+  ]
+}

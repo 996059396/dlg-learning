@@ -1,0 +1,723 @@
+{
+  "id": "s10_electronics",
+  "title": "电工考证单元十：电工电子技术基础",
+  "description": "二极管、整流与滤波、稳压管与三极管、常用电子元器件、电子电路应用与安全",
+  "icon": "🔬",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s10a_diode",
+      "title": "二极管",
+      "description": "PN 结、单向导电、正向与反向特性",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "半导体与 PN 结",
+          "content": "二极管由 P 型半导体和 N 型半导体结合形成的 PN 结构成，有两个电极：阳极（P 端）和阴极（N 端）。PN 结在两种半导体的交界处形成，是二极管、三极管等半导体器件的核心结构。",
+          "id": "s10a_diode_n0"
+        },
+        {
+          "type": "info",
+          "title": "单向导电性",
+          "content": "二极管的根本特性是单向导电：给二极管加正向电压（阳极接正、阴极接负）时导通，电流可以流过；加反向电压（阴极接正）时截止，几乎无电流。把交流电变成直流电的整流就是利用这一特性。",
+          "id": "s10a_diode_n1"
+        },
+        {
+          "type": "info",
+          "title": "正向与反向特性",
+          "content": "正向特性：正向电压超过导通电压（硅管约 0.7V、锗管约 0.2V）后二极管导通，电流随电压迅速增大。反向特性：反向电压未达击穿电压前，反向电流很小（近似截止）；反向电压超过击穿电压会反向击穿损坏（稳压管除外，它利用击穿工作）。",
+          "id": "s10a_diode_n2"
+        },
+        {
+          "type": "info",
+          "title": "识别与测量",
+          "content": "二极管外壳标有环形色带的一端为阴极（负极）。用万用表电阻挡（或二极管挡）测：正向电阻小（导通）、反向电阻大（截止）。若正反向电阻都很小（击穿短路）或都很大（开路），二极管已损坏。",
+          "id": "s10a_diode_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "二极管的核心特性是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "双向导通",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "放大信号",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "单向导电性",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "存储能量",
+              "is_correct": false
+            }
+          ],
+          "explanation": "二极管正向导通、反向截止，单向导电性决定了它用于整流、检波、保护等场合。",
+          "id": "s10a_diode_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "硅二极管的正向导通电压约为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "2V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "0.02V",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "10V",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "0.7V",
+              "is_correct": true
+            }
+          ],
+          "explanation": "硅管正向导通压降约 0.6~0.8V（常记 0.7V），锗管约 0.2~0.3V。",
+          "id": "s10a_diode_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "二极管只要加上正向电压就立即导通，不需要超过任何门槛。",
+          "correct_answer": false,
+          "explanation": "不对。PN 结存在门槛电压，正向电压必须超过它才能导通：硅管约 0.7V、锗管约 0.2V。低于门槛时二极管仍处于截止状态。",
+          "id": "s10a_diode_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "二极管外壳上环形色带一端是 ____ 极。",
+          "answer": "阴",
+          "acceptable_answers": [
+            "阴",
+            "负极",
+            "阴极",
+            "K"
+          ],
+          "explanation": "阴。外壳色环标志阴极端 K（负极）：二极管单向导电，正向导通时电流从阳极 A 流向阴极 K。色环让封装对称的管子也能一眼认出极性，防止接反导致电路不工作甚至烧管。",
+          "id": "s10a_diode_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用万用表测二极管，正反向电阻都很小，说明？",
+          "options": [
+            {
+              "id": "A",
+              "text": "二极管击穿短路，已损坏",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "二极管开路",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "测量错误，重新测",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "二极管正常",
+              "is_correct": false
+            }
+          ],
+          "explanation": "正常二极管正阻小反阻大；正反都小=击穿短路，正反都大=开路，均属损坏。",
+          "id": "s10a_diode_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "普通二极管反向电压超过击穿电压时会反向击穿而损坏，稳压二极管则专门利用击穿区稳压。",
+          "correct_answer": true,
+          "explanation": "普通管击穿即损坏；稳压管工作在反向击穿区，电压稳定在击穿电压附近，实现稳压。",
+          "id": "s10a_diode_n9"
+        }
+      ]
+    },
+    {
+      "id": "s10b_rectifier",
+      "title": "整流与滤波",
+      "description": "半波、全波、桥式整流、滤波电容",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "整流的概念",
+          "content": "把交流电变成单向脉动直流电的过程叫整流。利用二极管的单向导电性，让交流电只在半个周期（或两个半周期同方向）通过负载，负载上就得到方向不变的电流。整流后仍是脉动直流，需滤波才接近平滑直流。",
+          "id": "s10b_rectifier_n0"
+        },
+        {
+          "type": "info",
+          "title": "半波整流与全波整流",
+          "content": "半波整流只用一只二极管，只利用交流电的正半周，输出脉动大、平均电压低（约 0.45 倍交流有效值）。全波整流（中心抽头）用两只二极管、利用正负两个半周，平均电压约 0.9 倍。",
+          "id": "s10b_rectifier_n1"
+        },
+        {
+          "type": "info",
+          "title": "桥式整流",
+          "content": "桥式整流用四只二极管接成电桥：正半周一对二极管导通、负半周另一对导通，负载始终获得同一方向的电流。输出为全波，平均电压约 0.9 倍交流有效值，无需变压器中心抽头，是应用最广的整流电路。",
+          "id": "s10b_rectifier_n2"
+        },
+        {
+          "type": "info",
+          "title": "滤波",
+          "content": "整流输出的脉动直流经滤波电容（大容量电解电容，并联在负载两端）或电感滤波后变得平滑：电容在电压高时充电、电压低时放电，把脉动拉平。滤波电容越大负载越轻，纹波越小。",
+          "id": "s10b_rectifier_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "桥式整流电路需要几只二极管？",
+          "options": [
+            {
+              "id": "A",
+              "text": "3 只",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "4 只",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "1 只",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "2 只",
+              "is_correct": false
+            }
+          ],
+          "explanation": "桥式整流四只二极管接成桥，正负半周各有一对导通，输出全波整流。",
+          "id": "s10b_rectifier_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "半波整流输出的平均电压约为交流有效值的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "0.9 倍",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "1.2 倍",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "0.45 倍",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "1 倍",
+              "is_correct": false
+            }
+          ],
+          "explanation": "半波整流只利用半个周期，平均电压 0.45U；全波/桥式利用两个半周为 0.9U。",
+          "id": "s10b_rectifier_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "全波整流（含桥式）的输出平均电压约为半波整流的两倍。",
+          "correct_answer": true,
+          "explanation": "全波用正负半周，0.9U 是半波 0.45U 的 2 倍，脉动也更小。",
+          "id": "s10b_rectifier_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "整流后的脉动直流常并联 ____ 电容滤波，使其变得平滑。",
+          "answer": "滤波",
+          "acceptable_answers": [
+            "滤波",
+            "电解",
+            "滤波电容",
+            "大容量电解"
+          ],
+          "explanation": "滤波电容利用充放电把脉动拉平；容量越大、负载越轻，输出越平滑。",
+          "id": "s10b_rectifier_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "关于滤波电容，下列说法正确的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "串联在负载回路",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用电感并联",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电容越小滤波越好",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "并联在负载两端，充电放电平滑输出",
+              "is_correct": true
+            }
+          ],
+          "explanation": "滤波电容并联于负载，利用充放电保持输出电压；容量大、负载轻时纹波小。",
+          "id": "s10b_rectifier_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "桥式整流需要变压器中心抽头，每只二极管在正负半周都导通。",
+          "correct_answer": false,
+          "explanation": "不对。桥式整流不需要中心抽头，四只二极管两两配对、正负半周轮流导通；需要变压器中心抽头的是带抽头的全波整流电路。",
+          "id": "s10b_rectifier_n9"
+        }
+      ]
+    },
+    {
+      "id": "s10c_zener_transistor",
+      "title": "稳压管与三极管",
+      "description": "稳压原理、三极管结构与放大",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "稳压二极管",
+          "content": "稳压二极管（齐纳二极管）工作在反向击穿区：反向电压达到击穿电压后，电流在一定范围内变化而两端电压几乎不变，利用这一点实现稳压。使用时必须串联限流电阻，防止电流过大烧毁。",
+          "id": "s10c_zener_transistor_n0"
+        },
+        {
+          "type": "info",
+          "title": "三极管的结构",
+          "content": "三极管（晶体三极管）由两个 PN 结组成，有 NPN 和 PNP 两种类型，三个电极：基极 B、发射极 E、集电极 C。它有三个工作区：截止区、放大区、饱和区。",
+          "id": "s10c_zener_transistor_n1"
+        },
+        {
+          "type": "info",
+          "title": "三极管的放大作用",
+          "content": "三极管的放大作用是「以小控大」：基极电流 iB 的微小变化，引起集电极电流 iC 的较大变化，iC = β·iB（β 为电流放大倍数）。它是电流控制器件，实现电流放大，再配电阻可实现电压放大。",
+          "id": "s10c_zener_transistor_n2"
+        },
+        {
+          "type": "info",
+          "title": "三极管的开关作用",
+          "content": "三极管还可当电子开关：基极加足够电流时饱和导通（相当于开关闭合，C-E 间电压≈0.3V）；基极电流为零时截止（相当于开关断开）。数字电路、继电器驱动中都大量使用三极管的开关特性。",
+          "id": "s10c_zener_transistor_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "稳压二极管工作在？",
+          "options": [
+            {
+              "id": "A",
+              "text": "反向击穿区，端电压稳定",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "截止区",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "放大区",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "正向导通区",
+              "is_correct": false
+            }
+          ],
+          "explanation": "稳压管反接（阴极接正）工作在击穿区，电流变化时端电压基本不变，用于稳压。",
+          "id": "s10c_zener_transistor_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "NPN 型三极管的三个电极是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "只有两个电极",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "基极 B、发射极 E、集电极 C",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "阳极、阴极、栅极",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "源极、漏极、栅极",
+              "is_correct": false
+            }
+          ],
+          "explanation": "三极管三极 B/E/C；二极管的叫阳极阴极；场效应管叫源漏栅。",
+          "id": "s10c_zener_transistor_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "三极管是电压控制器件：集电极电流主要由基极-发射极电压决定，基极电流几乎不起作用。",
+          "correct_answer": false,
+          "explanation": "不对。三极管是电流控制器件：iC ≈ β·iB，靠基极电流的微小变化控制集电极电流的较大变化；靠电压控制的是场效应管（FET），两者控制方式正好相反。",
+          "id": "s10c_zener_transistor_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三极管当电子开关使用时，基极电流足够大时三极管处于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "截止（像开关断开）",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "放大（部分导通）",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "饱和导通（C-E 间近似短路，像开关闭合）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "击穿",
+              "is_correct": false
+            }
+          ],
+          "explanation": "基极电流足够大→饱和，C-E 电压≈0.3V 近似短路；基极电流为零→截止近似开路。",
+          "id": "s10c_zener_transistor_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "稳压管使用时必须串联 ____ 电阻限制电流，防止过流烧毁。",
+          "answer": "限流",
+          "acceptable_answers": [
+            "限流",
+            "限流电阻",
+            "限流电阻R",
+            "限流（串联）"
+          ],
+          "explanation": "限流电阻把稳压管电流限制在允许范围内，同时配合稳压管起稳压作用。",
+          "id": "s10c_zener_transistor_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "三极管有截止、放大、饱和三个工作区，作放大用时工作在放大区。",
+          "correct_answer": true,
+          "explanation": "放大区 iC=βiB 线性放大；截止区 iB=0 关断；饱和区 iC 不再随 iB 增大。",
+          "id": "s10c_zener_transistor_n9"
+        }
+      ]
+    },
+    {
+      "id": "s10d_components",
+      "title": "常用电子元器件",
+      "description": "电阻、电容、电感的识别与测量",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电阻",
+          "content": "电阻限流、分压。色环电阻用色环标注阻值：四环（两位有效数字+倍率+误差）、五环（三位有效数字+倍率+误差）。色环颜色对应数字：棕1 红2 橙3 黄4 绿5 蓝6 紫7 灰8 白9 黑0。单位 Ω、kΩ、MΩ。用万用表欧姆挡测量时须断电、一端脱离电路。",
+          "id": "s10d_components_n0"
+        },
+        {
+          "type": "info",
+          "title": "电容",
+          "content": "电容储存电荷、隔直通交。电解电容有极性（长脚正极、短脚负极，外壳标负极），接反会损坏爆炸；无极性电容（瓷片、薄膜）不分正负。电容单位：F、μF、nF、pF。测电容用电容挡或看标称。",
+          "id": "s10d_components_n1"
+        },
+        {
+          "type": "info",
+          "title": "电感与变压器",
+          "content": "电感（线圈）储存磁场能、通直阻交，与电容对偶。变压器、继电器线圈都是电感。电感单位：H、mH、μH。工频电路中电感量小，其感抗 XL=2πfL 与频率成正比。",
+          "id": "s10d_components_n2"
+        },
+        {
+          "type": "info",
+          "title": "元器件测量注意",
+          "content": "测电阻前先断电并让电阻一端脱离电路（避免与其他元件并联）；电解电容测前先放电；注意元件引脚与极性，识别色环、标识、管脚排列（三极管 E/B/C）要看清 datasheet 或丝印。",
+          "id": "s10d_components_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "色环电阻中，红色对应的数字是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "3",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "5",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "2",
+              "is_correct": true
+            }
+          ],
+          "explanation": "答案 2。色环色码按「黑0 棕1 红2 橙3 黄4 绿5 蓝6 紫7 灰8 白9」对应数字，红色排第三位即 2；可按光谱从红到紫的色序辅助记忆（红橙黄绿蓝紫=2~7）。看清题目问的是第几位再作答。",
+          "id": "s10d_components_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电解电容的极性特点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "有极性，接反会损坏甚至爆炸",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "只有正极没有负极",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "只能用于交流",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "无极性，随便接",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电解电容分正负极（长脚正、短脚负），反接时氧化膜被破坏、发热爆炸，必须按极性接入。",
+          "id": "s10d_components_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电感「通交流、阻直流」，感抗 XL = 2πfL 与频率成反比。",
+          "correct_answer": false,
+          "explanation": "不对。电感「通直流、阻交流」：直流频率为零感抗为零（只余线圈电阻），交流频率越高感抗越大，XL = 2πfL 与频率成正比。把通直/通交和正比/反比都记反了。",
+          "id": "s10d_components_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测电阻时，正确的做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用手捏住引脚测",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "断电并让电阻一端脱离电路，避免并联影响",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "带电直接测",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电阻在电路里并联着也能测准",
+              "is_correct": false
+            }
+          ],
+          "explanation": "带电测会烧表、测不准；并联其他元件读数偏低；手捏引脚人体电阻并联也不准。",
+          "id": "s10d_components_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "电容的基本单位是 ____（F），常用 μF、nF、pF 等。",
+          "answer": "法拉",
+          "acceptable_answers": [
+            "法拉",
+            "法",
+            "F",
+            "法拉（F）"
+          ],
+          "explanation": "电容单位法拉 F，1F 很大，实用多用 μF（微法）、nF（纳法）、pF（皮法）。",
+          "id": "s10d_components_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电容「隔直流、通交流」，能通过交变信号而阻断直流。",
+          "correct_answer": true,
+          "explanation": "电容两端电压不能突变，直流无法通过；交流使电容反复充放电，看起来「通过」了交流。",
+          "id": "s10d_components_n9"
+        }
+      ]
+    },
+    {
+      "id": "s10e_app_safety",
+      "title": "电子电路应用与安全",
+      "description": "整流电源、焊接、防静电、示波器",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "典型应用：直流稳压电源",
+          "content": "直流稳压电源的典型结构：电源变压器（降压）→ 整流桥（交变直）→ 滤波电容（平滑）→ 稳压（稳压管/三端稳压器）→ 输出稳定直流。三端稳压器如 7805（输出 +5V）、7812（+12V）使用简单，是电子制作常用器件。",
+          "id": "s10e_app_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "焊接工艺",
+          "content": "电烙铁焊接要点：烙铁温度合适（约 350℃）、焊点吃锡均匀光亮、焊后无虚焊；元器件引脚先处理上锡。电烙铁用完及时断电。焊 CMOS 敏感器件要防静电（用防静电腕带、接地烙铁）。",
+          "id": "s10e_app_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "防静电",
+          "content": "CMOS 集成电路、场效应管对静电敏感，静电放电会击穿栅极损坏。操作时应：手腕戴防静电腕带接地、工作台接地、烙铁可靠接地、运输用防静电袋、避免穿易起静电的衣服。",
+          "id": "s10e_app_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "示波器",
+          "content": "示波器用来观测电压波形，可测波形形状、幅度（Vpp）、周期/频率、相位。使用要点：选好垂直（V/div）和水平（时间/div）档位、用探头（×1/×10 档）、接地夹接电路地。测市电波形要注意安全、隔离。",
+          "id": "s10e_app_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三端稳压器 7812 的输出电压是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "+5V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "+9V",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "+12V",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "-12V",
+              "is_correct": false
+            }
+          ],
+          "explanation": "78xx 系列：7805=+5V、7812=+12V、7809=+9V；79xx 为负压系列。",
+          "id": "s10e_app_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "焊接 CMOS 器件时，正确的防静电做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "手直接抓器件引脚",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "穿化纤衣服摩擦后操作",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "烙铁不接地直接焊",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "戴防静电腕带接地、烙铁接地、避免静电积累",
+              "is_correct": true
+            }
+          ],
+          "explanation": "CMOS 栅极绝缘层薄，静电可瞬间击穿，必须防静电接地操作。",
+          "id": "s10e_app_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电烙铁焊接要求焊点光亮圆润、无虚焊；烙铁不用时应及时断电。",
+          "correct_answer": true,
+          "explanation": "虚焊是电子故障最常见原因之一；烙铁空烧氧化、耗电又危险，不用即断电。",
+          "id": "s10e_app_safety_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "示波器可测量的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电压波形的形状、幅度、周期频率",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "只能测绝缘电阻",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "只能测电能",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只能测电阻",
+              "is_correct": false
+            }
+          ],
+          "explanation": "示波器显示电压随时间变化的波形，可测幅度 Vpp、周期/频率、相位等。",
+          "id": "s10e_app_safety_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "直流稳压电源的典型结构为：变压器→整流→____→稳压。",
+          "answer": "滤波",
+          "acceptable_answers": [
+            "滤波",
+            "滤波电容",
+            "滤波（电容）"
+          ],
+          "explanation": "滤波。整流输出的是脉动直流（纹波很大），先用滤波电容充放电把波形抹平，再由稳压电路稳到固定值。顺序不能反：滤波给稳压提供较平滑的输入，稳压器才能稳定输出。",
+          "id": "s10e_app_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "场效应管和 CMOS 集成电路耐静电能力强，可以徒手直接拿取，无需防静电保护。",
+          "correct_answer": false,
+          "explanation": "不对。场效应管和 CMOS 的绝缘栅极很薄，静电放电即可击穿。运输要用防静电袋、操作要戴防静电腕带并接地，任何徒手拿取都可能造成隐性损伤。",
+          "id": "s10e_app_safety_n9"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,723 @@
+{
+  "id": "s11_vfd_plc",
+  "title": "电工考证单元十一：变频调速与PLC自动化基础",
+  "description": "变频器原理、变频调速应用、PLC 基础、传感器与执行器、自动化控制安全",
+  "icon": "🤖",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s11a_vfd",
+      "title": "变频器原理",
+      "description": "交-直-交、U/f 协调、变频变压调速",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "变频调速的原理",
+          "content": "三相异步电动机转速 n = 60f(1−s)/p，改变电源频率 f 就能平滑改变转速。变频器把工频交流电变成频率可调的交流电供给电动机，实现无级调速，比变极调速、串阻调速平滑得多，是现代电机调速的主流。",
+          "id": "s11a_vfd_n0"
+        },
+        {
+          "type": "info",
+          "title": "交-直-交变频",
+          "content": "通用变频器多为交-直-交结构：先把工频交流整流成直流（整流器），经中间直流环节（滤波）平滑，再由逆变器（IGBT 开关）把直流逆变成频率、电压可调的交流供给电机。逆变器用脉宽调制（PWM）技术控制输出。",
+          "id": "s11a_vfd_n1"
+        },
+        {
+          "type": "info",
+          "title": "U/f 协调控制",
+          "content": "电机磁通与电压/频率之比（U/f）有关：频率降低时若电压不变，磁通饱和、电流剧增发热。所以变频调速要「变频必变压」，保持 U/f 近似恒定（恒磁通调速），使转矩基本不变——这就是 VVVF 变压变频调速。",
+          "id": "s11a_vfd_n2"
+        },
+        {
+          "type": "info",
+          "title": "变频器的组成",
+          "content": "变频器除主电路外还有控制电路（CPU、参数设定、显示面板）、保护功能（过流、过压、欠压、过载、过热保护）。通过面板或外部端子（正转/反转/多段速/模拟量 0-10V 或 4-20mA）设定频率和启停。",
+          "id": "s11a_vfd_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相异步电动机变频调速改变的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "磁极对数 p",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电源频率 f（转速 n=60f(1−s)/p）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "转差率 s 只靠机械调节",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电源电压不变只调电流",
+              "is_correct": false
+            }
+          ],
+          "explanation": "改变频率 f 即平滑改变同步转速，是变频调速的核心；变极是有级调速、串阻只能调转差率。",
+          "id": "s11a_vfd_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "通用变频器的主电路结构是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直-交直接变换",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "交-交直接变换",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "交-直-交（整流→滤波→逆变）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "纯电阻降压",
+              "is_correct": false
+            }
+          ],
+          "explanation": "先整流成直流、滤波，再经 IGBT 逆变器逆变成变频交流，属交-直-交结构。",
+          "id": "s11a_vfd_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "变频器降低频率时保持电压不变，即可正常运行，无需调压。",
+          "correct_answer": false,
+          "explanation": "不对。若频率降低而电压不变，磁通会增大到饱和、励磁电流剧增而烧毁电机；必须「变频必变压」保持 U/f 近似恒定，这是变频调速的基本协调关系。",
+          "id": "s11a_vfd_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "逆变器采用脉宽调制（____）技术控制输出电压波形和频率。",
+          "answer": "PWM",
+          "acceptable_answers": [
+            "PWM",
+            "pwm",
+            "脉宽调制",
+            "脉宽调制（PWM）"
+          ],
+          "explanation": "PWM（脉宽调制）通过改变开关脉冲宽度实现变频变压，是变频器逆变的核心技术。",
+          "id": "s11a_vfd_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "变频器比变极调速的主要优点是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "成本最低",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不需要电机",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "只能有几挡转速",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "无级平滑调速、可调范围宽、软启动",
+              "is_correct": true
+            }
+          ],
+          "explanation": "变频调速连续无级、调速比大、兼有软启动功能；变极只有几挡，变频器成本相对较高。",
+          "id": "s11a_vfd_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "变频器具有过流、过压、过载、过热等保护功能，故障时自动停机。",
+          "correct_answer": true,
+          "explanation": "变频器内置多重保护，检测到异常立即跳闸并显示故障代码，保护电机和自身。",
+          "id": "s11a_vfd_n9"
+        }
+      ]
+    },
+    {
+      "id": "s11b_vfd_app",
+      "title": "变频调速应用",
+      "description": "风机水泵节能、恒压供水、参数与接线",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "风机水泵节能",
+          "content": "风机、水泵属平方转矩负载：功率与转速三次方成正比（P∝n³）。用变频器降速运行，流量减小时功率大幅下降，节能显著——即使只降到 80% 转速，功率也降到约 51%。这是变频改造最典型的应用。",
+          "id": "s11b_vfd_app_n0"
+        },
+        {
+          "type": "info",
+          "title": "恒压供水",
+          "content": "恒压供水系统：压力传感器测管网压力，与设定值比较后自动调节变频器输出频率，使水泵转速跟随用水量变化，保持水压恒定。用水少时低速、用水多时高速，节能又稳压。",
+          "id": "s11b_vfd_app_n1"
+        },
+        {
+          "type": "info",
+          "title": "接线与端子",
+          "content": "变频器接线：三相电源接 R/S/T（进线），输出 U/V/W 接电动机；外部控制端子接启动（正转/反转）、多段速、模拟量频率给定（0~10V 电压或 4~20mA 电流）等。输出端 U/V/W 严禁接电容器和浪涌吸收器。",
+          "id": "s11b_vfd_app_n2"
+        },
+        {
+          "type": "info",
+          "title": "参数设置",
+          "content": "常用参数：频率上限/下限、加减速时间（软启动软停车时间）、启动方式（面板/端子）、电机额定参数（电压、电流、转速）、U/f 曲线、过载保护电流等。参数设置不当会导致启动失败或保护误动。",
+          "id": "s11b_vfd_app_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "风机水泵类负载变频降速节能的原理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "功率与转速三次方成正比，降速后功率大幅下降",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "靠关掉风机",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "功率与转速无关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "降速后功率反而增大",
+              "is_correct": false
+            }
+          ],
+          "explanation": "P∝n³：转速降 20%（到 80%），功率降到 0.8³≈0.51，即约一半——节能最显著。",
+          "id": "s11b_vfd_app_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "变频器输出端 U/V/W 严禁接？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电动机",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电容器和浪涌吸收器（影响输出波形）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "接触器线圈",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "热继电器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "变频器输出是 PWM 波形，接电容会改变波形损坏逆变器；电机、接触器等可正常连接。",
+          "id": "s11b_vfd_app_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "恒压供水系统是开环控制：变频器按固定频率运行，不依赖压力反馈。",
+          "correct_answer": false,
+          "explanation": "不对。恒压供水是典型闭环控制：压力传感器测实际压力，与给定值比较后由 PID 自动调节变频器频率→电机转速→供水量，从而保持管网压力恒定。开环就谈不上「恒压」。",
+          "id": "s11b_vfd_app_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "变频器外部频率给定常用的模拟量信号是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "任意大小电压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "只能靠面板按键",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "0~10V 电压或 4~20mA 电流",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "数字脉冲",
+              "is_correct": false
+            }
+          ],
+          "explanation": "模拟量端子 0~10V 或 4~20mA 可连续给定频率，配合传感器/电位器实现调速；也可用数字多段速。",
+          "id": "s11b_vfd_app_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "变频器控制电机软启动软停车，通过设置加减速 ____ 参数实现。",
+          "answer": "时间",
+          "acceptable_answers": [
+            "时间",
+            "加减速时间",
+            "斜坡时间",
+            "加速时间"
+          ],
+          "explanation": "加减速时间决定输出频率上升/下降的快慢，时间越长启动越平缓。",
+          "id": "s11b_vfd_app_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "变频器参数中电机额定电压、电流、转速必须与所带电机铭牌一致，否则保护不准确。",
+          "correct_answer": true,
+          "explanation": "变频器按设定的电机参数计算保护与 U/f，设错会导致过载保护误动或失效。",
+          "id": "s11b_vfd_app_n9"
+        }
+      ]
+    },
+    {
+      "id": "s11c_plc",
+      "title": "PLC 基础",
+      "description": "可编程控制器、梯形图、输入输出、扫描循环",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "PLC 是什么",
+          "content": "PLC（可编程逻辑控制器）是专为工业控制设计的计算机：用程序代替大量继电器接线实现逻辑控制，可灵活修改逻辑、可靠性高、抗干扰强。它取代了传统继电器控制柜，是自动化控制的核心。",
+          "id": "s11c_plc_n0"
+        },
+        {
+          "type": "info",
+          "title": "组成与输入输出",
+          "content": "PLC 由 CPU、存储器、输入接口（DI/AI 模块，接按钮、开关、传感器信号）、输出接口（DO 模块，驱动接触器、指示灯、电磁阀）、电源等组成。输入信号采集进来、CPU 运行程序、输出控制执行元件。",
+          "id": "s11c_plc_n1"
+        },
+        {
+          "type": "info",
+          "title": "梯形图编程",
+          "content": "PLC 常用梯形图语言编程，外形与继电器控制图相似：左右母线、输入触点（常开 ─┤├─、常闭 ─┤/├─）、输出线圈（─( )─）。「线圈得电=输出接通」，「触点=读取输入状态」。梯形图从左母线到右母线构成逻辑回路。",
+          "id": "s11c_plc_n2"
+        },
+        {
+          "type": "info",
+          "title": "扫描工作方式",
+          "content": "PLC 按循环扫描方式工作：输入采样→程序执行（从上到下、从左到右）→输出刷新，循环往复。一个循环叫一个扫描周期（毫秒级）。正因为是周期扫描，输出刷新在程序执行后统一进行。",
+          "id": "s11c_plc_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "PLC 是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "只能处理模拟量",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不需要程序",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "纯继电器组合",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "可编程逻辑控制器，用程序实现工业逻辑控制",
+              "is_correct": true
+            }
+          ],
+          "explanation": "PLC 是可编程控制器，程序代替硬接线，改逻辑只需改程序，可靠性高抗干扰强。",
+          "id": "s11c_plc_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "PLC 的一个扫描周期包括？",
+          "options": [
+            {
+              "id": "A",
+              "text": "输入采样→程序执行→输出刷新",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "随机顺序",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "只有程序执行",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只有输入输出",
+              "is_correct": false
+            }
+          ],
+          "explanation": "周期扫描三步：先读输入，再执行程序，最后统一刷新输出，毫秒级循环。",
+          "id": "s11c_plc_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "梯形图中的常开触点在程序运行中读取输入为 1（接通）时闭合导通。",
+          "correct_answer": true,
+          "explanation": "常开触点 ─┤├─ 在对应输入/内部软元件为 1 时闭合；常闭 ─┤/├─ 在 0 时闭合。",
+          "id": "s11c_plc_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "PLC 的输出端通常驱动？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接驱动三相电动机",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "接触器线圈、指示灯、电磁阀",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "高压断路器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "主电路电源",
+              "is_correct": false
+            }
+          ],
+          "explanation": "PLC 输出是小电流信号，一般经中间继电器/接触器间接控制主电路，不直接带大电流负载。",
+          "id": "s11c_plc_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "PLC 最常用的编程语言是 ____ 图。",
+          "answer": "梯形",
+          "acceptable_answers": [
+            "梯形",
+            "梯形图",
+            "梯形图（LAD）",
+            "LAD"
+          ],
+          "explanation": "梯形图（Ladder Diagram）与继电器控制图相似，直观易懂，是 PLC 最常用语言。",
+          "id": "s11c_plc_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "用 PLC 改造继电器控制，每次修改控制逻辑都需要重新改硬件接线。",
+          "correct_answer": false,
+          "explanation": "不对。PLC 的核心优势就是「软逻辑」——控制逻辑在程序里，修改逻辑只需改程序并下载，输入/输出接线完全不变；继电器控制改逻辑才必须改接线。",
+          "id": "s11c_plc_n9"
+        }
+      ]
+    },
+    {
+      "id": "s11d_sensors",
+      "title": "传感器与执行器",
+      "description": "接近开关、光电、热电偶、行程开关",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "接近开关",
+          "content": "接近开关无需接触就能检测物体靠近，常见有电感式（检测金属物体，靠感应涡流）和电容式（可检测金属和非金属，靠介电常数变化）。三线制接近开关有棕（+24V）、蓝（0V）、黑（信号输出）三根线，注意 NPN/PNP 型输出形式。",
+          "id": "s11d_sensors_n0"
+        },
+        {
+          "type": "info",
+          "title": "光电开关",
+          "content": "光电开关用光束检测物体：对射式（发射器与接收器分离，物体遮挡光束即动作）、反射式（一体，靠物体反射光束动作）。适用于检测距离较远、非金属物体等场合。",
+          "id": "s11d_sensors_n1"
+        },
+        {
+          "type": "info",
+          "title": "行程开关与限位",
+          "content": "行程开关（限位开关）靠机械触头碰撞动作，装在运动部件的极限位置，用于限位保护、终点停靠、行程计数。按下去常开闭合/常闭断开，与按钮类似但由机械撞块驱动。",
+          "id": "s11d_sensors_n2"
+        },
+        {
+          "type": "info",
+          "title": "热电偶与热电阻",
+          "content": "测温传感器：热电偶靠两种金属接点温差产生热电势（测温范围宽，高温常用）；热电阻（Pt100）靠阻值随温度变化（低温段精度高）。它们把温度变成电信号送给仪表/PLC 实现温度测量与控制。",
+          "id": "s11d_sensors_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电感式接近开关只能检测？",
+          "options": [
+            {
+              "id": "A",
+              "text": "任何物体",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "透明物体",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "金属物体（靠感应涡流）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "液体",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电感式靠金属中感生涡流工作，只能检测金属；电容式可检测金属和非金属。",
+          "id": "s11d_sensors_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "检测远距离、非金属物体，通常选用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "热电阻",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "行程开关",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电感式接近开关",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "光电开关（对射式距离远）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "光电开关用光束检测，对射式检测距离可达数米、可测非金属；电感式只测近距金属。",
+          "id": "s11d_sensors_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "行程开关靠机械撞块碰撞触头动作，常用于运动部件的限位保护。",
+          "correct_answer": true,
+          "explanation": "行程开关是机械式触发的开关，装在极限位置实现限位、终端保护、行程计数。",
+          "id": "s11d_sensors_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量锅炉、窑炉等高温场合的温度，宜选用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "热电偶（测温范围宽，适合高温）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "光电开关",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "热电阻 Pt100",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "接近开关",
+              "is_correct": false
+            }
+          ],
+          "explanation": "热电偶测温上限高（可达上千℃）适合高温；热电阻低温段精度高但量程有限。",
+          "id": "s11d_sensors_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "三线制接近开关常见的电源为棕线接 +24V、蓝线接 0V、黑线为 ____ 输出。",
+          "answer": "信号",
+          "acceptable_answers": [
+            "信号",
+            "信号线",
+            "输出",
+            "信号输出"
+          ],
+          "explanation": "三线制传感器棕+24V、蓝0V、黑信号输出；还分 NPN（低电平输出）/PNP（高电平输出）型。",
+          "id": "s11d_sensors_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "对射式光电开关的发射器与接收器装在同一侧，靠物体反射光束来检测。",
+          "correct_answer": false,
+          "explanation": "不对。对射式光电开关发射器与接收器分离、面对面安装，物体遮挡光束时动作；发射器与接收器同侧靠物体反射光束检测的是反射式光电开关，两种结构正好相反。",
+          "id": "s11d_sensors_n9"
+        }
+      ]
+    },
+    {
+      "id": "s11e_auto_safety",
+      "title": "自动化控制安全",
+      "description": "联锁、急停、防误动作、电磁干扰",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "联锁保护",
+          "content": "自动化系统必须设联锁：正反转互锁（防止两接触器同时吸合短路）、门联锁（柜门打开禁止运行）、油压/气压联锁（润滑不足禁止启动）、位置联锁（未到位禁止下一动作）。联锁是防止误动作、事故扩大的基本措施。",
+          "id": "s11e_auto_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "急停与安全回路",
+          "content": "急停按钮（红色蘑菇头）串在控制回路，按下即切断所有危险动作；安全回路把急停、门开关、光栅等串联，任何一处断开都禁止运行。急停应装在操作者随手可及处。",
+          "id": "s11e_auto_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "防误动作设计",
+          "content": "防止误动作：启动须按确认按钮且有人监护；程序里加延时、互锁、状态判断；输出电路设短路和过载保护；传感器故障要能报警（故障安全）。「安全第一」体现在每一个控制环节。",
+          "id": "s11e_auto_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "抗干扰",
+          "content": "工业现场电磁干扰严重：PLC/变频器信号线要屏蔽并单端接地，动力线与信号线分开敷设（≥一定间距），变频器输出要远离传感器信号；供电加滤波器/隔离变压器；合理接地避免形成干扰环路。",
+          "id": "s11e_auto_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "正反转控制电路中设置互锁的目的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "加快电机转速",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "防止两只接触器同时吸合造成相间短路",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "让电机更省电",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "防止过热",
+              "is_correct": false
+            }
+          ],
+          "explanation": "互锁保证同一时刻只允许一个方向的接触器吸合，避免换相的两相被短接短路。",
+          "id": "s11e_auto_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "急停按钮的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "正常启动用",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "调节转速",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "紧急情况下立即切断危险动作，串在安全回路",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "只在调试用",
+              "is_correct": false
+            }
+          ],
+          "explanation": "红色急停按钮（蘑菇头）按下即断开安全回路、停止所有危险动作，是紧急安全措施。",
+          "id": "s11e_auto_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "安全回路把急停、门开关、安全光栅等保护元件并联，任何一处断开系统仍可继续运行。",
+          "correct_answer": false,
+          "explanation": "不对。安全回路必须采用串联——任一保护元件断开，回路就断开、系统立即停机，这是「与」逻辑。若改成并联，一个保护断开系统照样运行，安全保护就完全失效了。",
+          "id": "s11e_auto_safety_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "PLC 与变频器的信号线抗干扰的正确做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "屏蔽层两端都悬空",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不加任何处理",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "信号线与动力线捆在一起走",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "信号线用屏蔽电缆并单端接地，与动力线分开敷设",
+              "is_correct": true
+            }
+          ],
+          "explanation": "屏蔽+单端接地、与动力线保持距离，能有效防止变频器 PWM 干扰进入 PLC 信号。",
+          "id": "s11e_auto_safety_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "急停按钮通常为红色 ____ 头形状，便于紧急时拍按。",
+          "answer": "蘑菇",
+          "acceptable_answers": [
+            "蘑菇",
+            "蘑菇头",
+            "蘑菇型"
+          ],
+          "explanation": "红色蘑菇头急停按钮突出醒目，紧急时一按即停，是标准安全元件。",
+          "id": "s11e_auto_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "控制系统应设计成「故障安全」：传感器故障时应报警并停在安全状态，而不是继续危险运行。",
+          "correct_answer": true,
+          "explanation": "故障安全原则：异常时倾向停止/报警，防止带病运行造成事故。",
+          "id": "s11e_auto_safety_n9"
+        }
+      ]
+    }
+  ]
+}

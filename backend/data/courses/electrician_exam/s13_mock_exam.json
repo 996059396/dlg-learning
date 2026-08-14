@@ -1,0 +1,721 @@
+{
+  "id": "s13_mock_exam",
+  "title": "电工考证单元十三：考证综合模拟考",
+  "description": "安全用电、仪表测量、电机控制、变配电综合复习与全真模拟测验",
+  "icon": "🎯",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s13a_review_safety",
+      "title": "安全用电综合复习",
+      "description": "触电急救、安全距离、漏保、接地",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "触电急救核心",
+          "content": "触电急救四原则：①迅速脱离电源（拉闸、挑线、切断电源，救护者不得徒手接触带电体）；②伤者脱离电源后立即判断意识呼吸；③呼吸心跳骤停立即心肺复苏（胸外按压 30:2，频率 100-120 次/分，按压深度 5-6cm）；④及时呼叫 120 并坚持施救不放弃。",
+          "id": "s13a_review_safety_n0"
+        },
+        {
+          "type": "info",
+          "title": "安全距离",
+          "content": "人体与带电体保持安全距离：10kV 及以下 0.7m、35kV 1.0m、110kV 1.5m、220kV 3.0m。安全色标：红色禁止、黄色警告、蓝色指令、绿色提示。验电前先在有电设备上验证验电器良好。",
+          "id": "s13a_review_safety_n1"
+        },
+        {
+          "type": "info",
+          "title": "漏电保护与接地",
+          "content": "漏电保护器（RCD）是防触电最后防线：家用额定剩余动作电流 30mA、动作时间 <0.1s，每月按试验按钮验证。保护接地（PE）把漏电电流引入大地限制外壳电位；TN-S 五线制 PE 与 N 分开最安全，PE 线严禁装熔断器和开关。",
+          "id": "s13a_review_safety_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全操作纪律",
+          "content": "检修停电执行「停电→验电→挂接地线→设标示牌」四步；装接地线先接地端后导体端，拆时相反；低压带电作业须两人、穿绝缘鞋、用绝缘工具、站在绝缘垫上。严禁用铜丝铁丝代替熔体，严禁约时停送电。",
+          "id": "s13a_review_safety_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "发现有人触电，第一步急救措施是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接用手拉触电者",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先送医院再断电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "给触电者泼水降温",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "迅速使触电者脱离电源",
+              "is_correct": true
+            }
+          ],
+          "explanation": "先断电救人（拉闸、挑线、切电源），救护者不得徒手接触带电体，否则双双触电。",
+          "id": "s13a_review_safety_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "人体与 35kV 高压带电体的安全距离不小于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "1.0m",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "0.7m",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "0.5m",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "5m",
+              "is_correct": false
+            }
+          ],
+          "explanation": "安全距离：10kV 及以下 0.7m、35kV 1.0m、110kV 1.5m、220kV 3.0m。",
+          "id": "s13a_review_safety_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "成人心肺复苏的按压与吹气比例为 15:2，按压频率 60-80 次/分。",
+          "correct_answer": false,
+          "explanation": "不对。成人 CPR 标准是按压:吹气 = 30:2，按压频率 100-120 次/分、深度 5-6cm。15:2 和 60-80 次/分都是错误参数，按压过慢会失去泵血效果。",
+          "id": "s13a_review_safety_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "保护零线（PE）线在全线中严禁装设熔断器和 ____。",
+          "answer": "开关",
+          "acceptable_answers": [
+            "开关",
+            "断路器",
+            "隔离开关"
+          ],
+          "explanation": "PE 线任何情况下不得断开，装熔断器/开关会使其断开，设备漏电时失去保护而伤人。",
+          "id": "s13a_review_safety_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "装设检修接地线的正确顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "任意接",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "先接接地端，后接导体端",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "不接地直接搭导体",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先接导体端，后接地端",
+              "is_correct": false
+            }
+          ],
+          "explanation": "先接地端建立地电位，后接导体端；拆除相反，先拆导体端后拆接地端，防止感应电触电。",
+          "id": "s13a_review_safety_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "漏电保护器每月应按试验按钮验证其保护功能是否有效。",
+          "correct_answer": true,
+          "explanation": "试验按钮模拟漏电，验证跳闸功能正常；漏保失效是重大安全隐患，须定期试验。",
+          "id": "s13a_review_safety_n9"
+        }
+      ]
+    },
+    {
+      "id": "s13b_review_meters",
+      "title": "仪表测量综合复习",
+      "description": "钳形表、摇表、万用表、电度表",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "钳形电流表",
+          "content": "钳形表测交流电流不断开线路：只钳一根载流导线（钳两根读数约抵消为零），量程先大后小，换挡必须离开导线，测小电流可把导线绕几圈（读数除以圈数）。铁心钳口要闭合严密。",
+          "id": "s13b_review_meters_n0"
+        },
+        {
+          "type": "info",
+          "title": "兆欧表（摇表）",
+          "content": "摇表测绝缘电阻，额定电压选择：测 500V 以下设备用 500V 摇表。接线 L（线路）接被测端、E（接地）接地、G（屏蔽）接屏蔽层。转速 120 转/分，测量前先停电、验电、放电，开路试验指针应指向∞。",
+          "id": "s13b_review_meters_n1"
+        },
+        {
+          "type": "info",
+          "title": "万用表",
+          "content": "万用表测电阻必须断电、一端脱离电路，测前先调零；严禁带电测电阻。测电压并联、测电流串联、测直流注意极性（红笔接正）。电压电流测量时严禁换挡。",
+          "id": "s13b_review_meters_n2"
+        },
+        {
+          "type": "info",
+          "title": "电能表接线",
+          "content": "单相电度表接线：1、3 进（火线进 1 出 2，零线进 3 出 4），即 1、3 进线，2、4 出线。电流互感器二次严禁开路；1 度=1kWh，读数×互感器变比得实际电量。",
+          "id": "s13b_review_meters_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用钳形表测量小电流时，正确的做法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用手握紧导线",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "加大量程硬读",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "把导线在钳口上绕几圈，读数除以圈数",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "钳两根导线",
+              "is_correct": false
+            }
+          ],
+          "explanation": "绕圈使磁场叠加，读数=真实电流×圈数，故除以圈数得实际电流。",
+          "id": "s13b_review_meters_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "摇表测量前，对被测设备应进行的预处理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "加电压预热",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用水湿润",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "直接测量",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "停电、验电、放电",
+              "is_correct": true
+            }
+          ],
+          "explanation": "摇表输出电压较高，必须先断电并放电，防止触电和损坏设备。",
+          "id": "s13b_review_meters_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "用万用表测电阻可以在线直接测量，不必断电，读数一样准确。",
+          "correct_answer": false,
+          "explanation": "不对。带电测电阻时被测电压产生的电流会流过表头而烧毁万用表，且并联支路会使读数偏小；必须断电、让被测电阻一端脱离电路、先欧姆调零再测。",
+          "id": "s13b_review_meters_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "单相电度表的接线是：火线进 ____ 号端子。",
+          "answer": "1",
+          "acceptable_answers": [
+            "1",
+            "1号",
+            "1#",
+            "进线1"
+          ],
+          "explanation": "单相表接线 1、3 进（火进 1、零进 3），2、4 出（火出 2、零出 4），即「一三进、二四出」。",
+          "id": "s13b_review_meters_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测 500V 以下低压设备的绝缘电阻，应选用？",
+          "options": [
+            {
+              "id": "A",
+              "text": "500V 兆欧表",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "万用表电阻挡",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "钳形表",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电压表",
+              "is_correct": false
+            }
+          ],
+          "explanation": "摇表按被测设备额定电压选档：500V 以下设备用 500V 摇表；万用表输出电压低测不了绝缘。",
+          "id": "s13b_review_meters_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电流互感器二次侧严禁开路，电压互感器二次侧严禁短路。",
+          "correct_answer": true,
+          "explanation": "CT 二次开路产生危险高压；PT 二次短路电流剧增烧毁——这是测量回路的两条铁律。",
+          "id": "s13b_review_meters_n9"
+        }
+      ]
+    },
+    {
+      "id": "s13c_review_control",
+      "title": "电机控制综合复习",
+      "description": "接触器、自锁、正反转、星三角",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "低压电器要点",
+          "content": "接触器主触头通断主电路、线圈控制吸合、灭弧装置灭电弧；热继电器靠双金属片过载保护，整定电流取电机额定电流的 1~1.1 倍，常闭触点串控制回路；时间继电器有通电/断电延时两种。",
+          "id": "s13c_review_control_n0"
+        },
+        {
+          "type": "info",
+          "title": "自锁与点动",
+          "content": "按钮是短时动作元件。点动：按下电机运转、松开即停（无自锁）。自锁：在启动按钮上并联接触器常开辅助触点，松开按钮后接触器靠自身触点保持吸合，实现连续运转；停止按钮（常闭）串在控制回路。",
+          "id": "s13c_review_control_n1"
+        },
+        {
+          "type": "info",
+          "title": "正反转控制",
+          "content": "三相电机对调任意两相电源即反转。正反转控制必须互锁：接触器触头互锁+按钮互锁=双重互锁，防止两只接触器同时吸合造成相间短路。换向必须先停转。",
+          "id": "s13c_review_control_n2"
+        },
+        {
+          "type": "info",
+          "title": "星三角降压启动",
+          "content": "全压启动电流为额定电流 4~7 倍。星三角启动：启动时星形接法（Y），启动电流降为三角形（Δ）的 1/3、转矩也降为 1/3，由时间继电器延时自动切换到 Δ。仅适用于正常运行时 Δ 接法、且空载或轻载启动的电机。",
+          "id": "s13c_review_control_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "热继电器的整定电流一般取电动机额定电流的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "2 倍以上",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "1~1.1 倍",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "随便设",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "0.5 倍",
+              "is_correct": false
+            }
+          ],
+          "explanation": "整定电流取额定 1~1.1 倍，过大过小都会使过载保护失效或误动作。",
+          "id": "s13c_review_control_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "正反转控制电路设置互锁的根本目的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "降低噪音",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "提高电机转速",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "防止两接触器同时吸合造成相间短路",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "节省电能",
+              "is_correct": false
+            }
+          ],
+          "explanation": "正反转两接触器主触头换相连接，同时吸合即短接两相短路，互锁保证同一时刻只吸合一个。",
+          "id": "s13c_review_control_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "自锁控制是把接触器常闭辅助触点串联进控制回路，实现按钮松开后保持吸合。",
+          "correct_answer": false,
+          "explanation": "不对。自锁必须用常开辅助触点与启动按钮并联：按下启动按钮→线圈吸合→常开辅助触点闭合→松开按钮后仍经辅助触点自供电保持吸合。若把常闭触点串联进回路，一吸合就把线圈断电了。",
+          "id": "s13c_review_control_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "星三角降压启动时，启动电流降为全压直接启动的 ____（填分数）。",
+          "answer": "1/3",
+          "acceptable_answers": [
+            "1/3",
+            "三分之一",
+            "1/3倍",
+            "三分之一倍"
+          ],
+          "explanation": "星形接法每相绕组电压为线电压的 1/√3，启动电流和转矩都降为 Δ 接法的 1/3。",
+          "id": "s13c_review_control_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "三相异步电动机反转的方法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "降低电压",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "增大频率",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "换一台电机",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "任意对调两根电源线",
+              "is_correct": true
+            }
+          ],
+          "explanation": "对调任意两根相线改变旋转磁场方向即反转；降低电压只降速不反转。",
+          "id": "s13c_review_control_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "星三角降压启动只适用于正常运行时为三角形接法、且空载或轻载启动的三相电机。",
+          "correct_answer": true,
+          "explanation": "若电机正常为星形接法则无法切换；转矩降为 1/3，重载启动会因转矩不足而启动失败。",
+          "id": "s13c_review_control_n9"
+        }
+      ]
+    },
+    {
+      "id": "s13d_review_distribution",
+      "title": "变配电综合复习",
+      "description": "高低压设备、互感器、继保、倒闸",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "高压开关设备",
+          "content": "高压断路器能切断短路电流（有灭弧装置，真空/SF6）；隔离开关无灭弧只能隔离电源、严禁带负荷拉合；负荷开关+高压熔断器配合。停送电：先断断路器、后拉隔离开关，送电相反，靠五防联锁保证。",
+          "id": "s13d_review_distribution_n0"
+        },
+        {
+          "type": "info",
+          "title": "互感器",
+          "content": "电流互感器（CT）一次串联、二次接仪表，二次严禁开路；电压互感器（PT）一次并联、二次严禁短路并装熔断器。二次额定：PT 100V、CT 5A/1A。二次侧一端必须接地防高压窜入。",
+          "id": "s13d_review_distribution_n1"
+        },
+        {
+          "type": "info",
+          "title": "继电保护",
+          "content": "继保四性：可靠性、选择性、快速性、灵敏性。电流速断瞬时保护线路首段；过流保护带延时保护全长兼后备；差动保护比较变压器两侧电流作主保护；瓦斯保护反映油箱内部故障（重瓦斯跳闸、轻瓦斯信号）。",
+          "id": "s13d_review_distribution_n2"
+        },
+        {
+          "type": "info",
+          "title": "倒闸操作纪律",
+          "content": "倒闸操作按操作票执行、两人操作（一人操作一人监护）、唱票复诵、逐项打勾。停电先断负荷侧后断电源侧、先断断路器后拉隔离开关；禁止约时停送电。变电所巡视发现问题及时处理报告。",
+          "id": "s13d_review_distribution_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "隔离开关与断路器配合使用时，停电操作顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "先断断路器，后拉隔离开关",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "先拉隔离开关，后断断路器",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "同时拉合",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "只拉隔离开关",
+              "is_correct": false
+            }
+          ],
+          "explanation": "先断断路器切断负荷与短路电流，再拉隔离开关建立明显断点，严禁带负荷拉隔离开关。",
+          "id": "s13d_review_distribution_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电流互感器二次侧（接仪表侧）严禁？",
+          "options": [
+            {
+              "id": "A",
+              "text": "接地",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "开路",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "串联电流表",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "短路",
+              "is_correct": false
+            }
+          ],
+          "explanation": "CT 二次开路时铁芯饱和、二次感应危险高压，击穿绝缘危及人身——二次侧必须保持通路。",
+          "id": "s13d_review_distribution_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "继电保护的基本要求是灵敏、可靠、经济、简单「四性」。",
+          "correct_answer": false,
+          "explanation": "不对。继保四性是可靠（不误动不拒动）、选择（只切故障区）、快速（缩短故障时间）、灵敏（对故障响应）；「经济、简单」是设计时的次要考虑，不是四性内容。",
+          "id": "s13d_review_distribution_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "高压开关柜通过机械联锁（____ 防）强制操作顺序，防止带负荷拉合隔离开关。",
+          "answer": "五",
+          "acceptable_answers": [
+            "五",
+            "5",
+            "五防"
+          ],
+          "explanation": "开关柜五防联锁包括防止带负荷拉合隔离开关、误分合断路器、带接地线送电、误入带电间隔等。",
+          "id": "s13d_review_distribution_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "反映变压器油箱内部故障（气体/油流动作）的保护是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "温度保护",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "过电流保护",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "瓦斯保护",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "电流速断",
+              "is_correct": false
+            }
+          ],
+          "explanation": "瓦斯保护检测油箱内气体和油流，是变压器内部故障的主要保护，重瓦斯动作跳闸。",
+          "id": "s13d_review_distribution_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "倒闸操作必须按操作票执行，两人操作、唱票复诵、逐项打勾，禁止凭记忆操作。",
+          "correct_answer": true,
+          "explanation": "操作票+双人监护+唱票复诵防止误操作（带负荷拉刀闸、带电挂地线），是倒闸操作铁律。",
+          "id": "s13d_review_distribution_n9"
+        }
+      ]
+    },
+    {
+      "id": "s13e_mock_test",
+      "title": "考证全真模拟测验",
+      "description": "高频考点综合演练、应试技巧",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "应试总纲",
+          "content": "电工考证高频模块：安全用电与急救（触电脱电源、CPR、安全距离）、仪表测量（钳形/摇表/万用表、互感器禁忌）、电机与低压电器（自锁/互锁/正反转/星三角）、低压配电与照明（火零线、左零右火、漏保）、变配电与继保（倒闸顺序、CT/PT 禁忌、继保四性）。先易后难、控制时间、不漏答。",
+          "id": "s13e_mock_test_n0"
+        },
+        {
+          "type": "info",
+          "title": "易错点盘点",
+          "content": "①热继整定 1~1.1 倍不是 1.5~2.5 倍（那是熔体）；②CT 二次禁开路、PT 二次禁短路；③PE 线禁装熔断器；④先断断路器再拉隔离开关；⑤钳形表只钳一根线、换挡离导线；⑥星三角只适用 Δ 运行电机且轻载启动；⑦用电笔测电须验证试电笔良好。",
+          "id": "s13e_mock_test_n1"
+        },
+        {
+          "type": "info",
+          "title": "计算类考点",
+          "content": "功率 P=UI（单相）；1 度电=1kWh；电流估算：三相电机每 kW 约 2A、单相约 4.5A；星三角启动电流降为 1/3；变频风机功率与转速三次方成正比（P∝n³）；变压器电压比 U1/U2=N1/N2。",
+          "id": "s13e_mock_test_n2"
+        },
+        {
+          "type": "info",
+          "title": "安全判断题口诀",
+          "content": "「先断电、再施救」「先停电、再验电、再接地」「不约时送电、不用铜丝代熔体、不徒手拉触电者、不带负荷拉刀闸」——安全类判断题凡违背上述原则一律判错，这是最高效的得分技巧。",
+          "id": "s13e_mock_test_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "触电急救中，胸外心脏按压的部位是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "左胸心尖部任意按",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "腹部",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "颈部",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "胸骨中下段（两乳头连线中点）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "按压部位在两乳头连线中点的胸骨处，深度 5-6cm、频率 100-120 次/分，30:2 配人工呼吸。",
+          "id": "s13e_mock_test_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "单相 220V、2kW 电热设备的电流约为？",
+          "options": [
+            {
+              "id": "A",
+              "text": "约 9A",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "约 4A",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "约 1A",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "约 20A",
+              "is_correct": false
+            }
+          ],
+          "explanation": "I=P/U=2000/220≈9.1A；记忆口诀：单相每 kW 约 4.5A，三相电机每 kW 约 2A。",
+          "id": "s13e_mock_test_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "电机回路熔断器熔体的额定电流应等于电机额定电流，这样保护最灵敏。",
+          "correct_answer": false,
+          "explanation": "不对。电机启动电流可达额定电流的 4~7 倍，熔体须取额定电流的 1.5~2.5 倍才能躲过启动电流；取等于额定值会在启动瞬间误熔断。熔体更不能随意用铜丝铁丝代替，否则失去短路保护。",
+          "id": "s13e_mock_test_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "插座接线的规范是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "不分极性随便接",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "左零右火上接地（PE）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "PE 接零线即可",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "左火右零",
+              "is_correct": false
+            }
+          ],
+          "explanation": "插座规范「左零右火上接地」：左侧接零线 N、右侧接火线 L、上方接保护地线 PE，且 PE 禁以零线代替。",
+          "id": "s13e_mock_test_n7"
+        },
+        {
+          "type": "fill_blank",
+          "question": "万用表测量电压时，表笔与被测电路是 ____ 联的。",
+          "answer": "并",
+          "acceptable_answers": [
+            "并",
+            "并联",
+            "并接"
+          ],
+          "explanation": "电压表内阻大，必须并联在被测两点间测电压；电流表内阻小，须串联在回路中测电流。",
+          "id": "s13e_mock_test_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "变频器输出端 U/V/W 严禁接电容器和浪涌吸收器，以免损坏逆变器。",
+          "correct_answer": true,
+          "explanation": "变频器输出为 PWM 波形，接电容会改变波形、冲击逆变管；输出端只接电动机等感性负载。",
+          "id": "s13e_mock_test_n9"
+        }
+      ]
+    }
+  ]
+}

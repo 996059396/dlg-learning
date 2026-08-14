@@ -1,0 +1,21 @@
+{
+  "name": "dlg-backend",
+  "version": "1.0.0",
+  "description": "Duolingo-like learning system for electrician skills - Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test:content": "node ../scripts/validate_content.cjs",
+    "test:data": "node ../scripts/check_data_integrity.cjs",
+    "test": "node ../scripts/validate_content.cjs && node ../test_api.mjs && node ../smoke_milestone1.mjs && node ../test_leaderboard_v2.mjs && node ../smoke_settlement.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-cron": "^4.5.0",
+    "uuid": "^9.0.0"
+  }
+}

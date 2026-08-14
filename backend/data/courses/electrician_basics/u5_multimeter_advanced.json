@@ -1,0 +1,1526 @@
+{
+  "id": "u5_multimeter_advanced",
+  "title": "单元五：万用表高级实操（仿真训练）",
+  "description": "对照真实 DT9205Pro 万用表，进行档位选择、插孔连接、探针测量的全流程仿真训练",
+  "icon": "📟",
+  "course_id": "electrician_basics",
+  "lessons": [
+    {
+      "id": "l1_real_panel",
+      "title": "认识真实万用表面板",
+      "description": "全面认识 DT9205Pro / FLUKE 真实面板的 22 档位与 4 个插孔",
+      "estimated_time": "8分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "DT9205Pro 是一台什么样的表？",
+          "content": "DT9205Pro 是国内电工现场使用率极高的一款中高端数字万用表，它的兄弟产品 FLUKE 17B+/15B+ 在工业现场同样常见。两款表面板布局非常相似，掌握 DT9205Pro 你也基本能上手 FLUKE。\n\n📐 面板从上到下分四层：\n1️⃣ 顶部 LCD 大屏（3½位或3¾位，最大读数 1999 或 3999）\n2️⃣ 中部功能按键（HOLD 保持、REL 相对值、RANGE 量程、背光）\n3️⃣ 中间旋钮区（22 个档位环绕一圈）\n4️⃣ 底部 4 个香蕉插孔（20A / mA / COM / VΩ）\n\n⚠️ 注意：DT9205Pro 旋钮总档位数共 22 档，包含直流交流电压电流、电阻、电容、二极管、通断、温度、频率、三极管、火线探测等。每一档背后都有独立的内部电路，绝对不能拨错。",
+          "image": "dt9205_panel",
+          "id": "l1_real_panel_n0"
+        },
+        {
+          "type": "info",
+          "title": "面板符号图解（V--- / V~ / Ω / A--- / A~）",
+          "content": "DT9205Pro 旋钮上的符号语言要先学会：\n\n🔹 V---（或 V 加一条横线）= 直流电压（DCV），分 200mV / 2V / 20V / 200V / 1000V 五档\n🔹 V~（V 加波浪线）= 交流电压（ACV），分 2V / 20V / 200V / 750V 四档\n🔹 A--- = 直流电流（DCA），分 200μA / 2mA / 20mA / 200mA / 20A 五档\n🔹 A~ = 交流电流（ACA），分 200mA / 20A 两档\n🔹 Ω = 电阻档（OHM），分 200 / 2K / 20K / 200K / 2M / 20M 六档\n🔹 ⟶|⊢ + 🔔 = 二极管 + 通断蜂鸣合并档（DIODE_BUZZ）\n🔹 -||- 或 F = 电容档（CAP），分 200nF / 2μF / 20μF / 200μF / 2mF 五档\n🔹 Hz = 频率档，℃ = 温度档，NCV = 火线感应档，hFE = 三极管放大倍数档\n\n💡 记忆法：横线代表直流（平稳如直线），波浪代表交流（如海浪起伏）。",
+          "image": "dt9205_symbols",
+          "id": "l1_real_panel_n1"
+        },
+        {
+          "type": "match",
+          "question": "请将旋钮上的真实符号与中文功能说明连线",
+          "instruction": "点击左侧符号，再点击右侧的功能描述完成连线",
+          "pairs": [
+            {
+              "left": "V---",
+              "right": "直流电压（DCV）档位区"
+            },
+            {
+              "left": "V~",
+              "right": "交流电压（ACV）档位区"
+            },
+            {
+              "left": "Ω",
+              "right": "电阻档（OHM）"
+            },
+            {
+              "left": "A---",
+              "right": "直流电流（DCA）档位区"
+            },
+            {
+              "left": "A~",
+              "right": "交流电流（ACA）档位区"
+            }
+          ],
+          "id": "l1_real_panel_n2",
+          "explanation": "横线 V--- 表示直流、波浪线 V~ 表示交流；A--- 是直流电流、A~ 是交流电流，Ω 专测电阻。记住「横直流、浪交流」的口诀，旋钮符号与功能就不会连错。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你在旋钮上看到一档标记为 \"200μF\"，请问这属于哪一类档位？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直流电流档（DCA），200微安",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "交流电压档（ACV），200伏",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "电阻档（OHM），200欧姆",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电容档（CAP），200微法",
+              "is_correct": true
+            }
+          ],
+          "explanation": "F 是法拉（Farad）的单位符号，μF 即微法拉，是电容专属单位。电流单位用 A，电压用 V，电阻用 Ω，要看清单位的细微差别。",
+          "id": "l1_real_panel_n3"
+        },
+        {
+          "type": "info",
+          "title": "4 个插孔的真实布局与铁律",
+          "content": "DT9205Pro 底部从左到右排列着 4 个香蕉插孔，每个都有专属用途，绝对不能插错：\n\n🔌 PORT_20A：大电流孔，仅用于测 0.2A~20A 的大电流。⚠️【没有保险丝！】超过 10 秒就有烧表风险。\n🔌 PORT_MA：小电流孔，用于测 0~200mA 的小电流，内置保险丝可在过流时熔断保护。\n🔌 PORT_COM：公共端（黑表笔的永久之家），无论测什么物理量，黑表笔都插这里。\n🔌 PORT_VOHM：综合孔，测电压（V）、电阻（Ω）、电容、频率（Hz）、温度（℃）都把红表笔插这里。\n\n🛡 铁律：黑笔永远 COM；红笔按测量类型变换插孔。【测电流必须移红笔到 mA 或 20A 孔】，这是新手最容易疏忽的致命点。",
+          "image": "dt9205_ports",
+          "id": "l1_real_panel_n4"
+        },
+        {
+          "type": "true_false",
+          "question": "20A 孔内部不带保险丝，但只要不是短路，长时间通电也不会烧坏万用表。",
+          "correct_answer": false,
+          "explanation": "错！PORT_20A 孔内部没有保险丝保护，厂家明确标注「10秒MAX」——即使在量程范围内，连续测量也不能超过 10 秒，否则分流电阻发热可能烧毁表笔线甚至损坏内部电路。",
+          "id": "l1_real_panel_n5"
+        },
+        {
+          "type": "fill_blank",
+          "question": "DT9205Pro 万用表交流电压最大可测 ____ V。",
+          "correct_answer": "750",
+          "explanation": "DT9205Pro 的 ACV 档最高量程为 ACV_750V，可用于测家用 220V、工业 380V 三相电。直流电压最高量程则为 DCV_1000V。",
+          "id": "l1_real_panel_n6",
+          "answer": "750",
+          "acceptable_answers": [
+            "750"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于 DT9205Pro 的描述，哪一条是错误的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "测交流电流时，黑表笔也要换孔",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电阻档共有 6 个量程，最大 20MΩ",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "PORT_MA 孔内部有保险丝保护",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "OFF 档用于关机省电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "黑表笔永远插在 PORT_COM 孔，无论测电压、电流、电阻都不变。需要换孔的只有红表笔。",
+          "id": "l1_real_panel_n7"
+        },
+        {
+          "type": "info",
+          "title": "CAT 安全等级——你的命由它保护",
+          "content": "万用表外壳侧面或背面会标记 CAT 等级（Category，测量类别），它定义了表能安全使用的电气环境。常见标记：\n\n🟢 CAT II 600V：家庭用电器插座电路，离配电箱较远的末端用电点（如电视、电脑插座）\n🟡 CAT III 1000V：建筑配电箱、固定布线（如墙内三相线、空调专用回路）\n🔴 CAT IV 600V：建筑入户进线点、室外电表、变压器低压侧——最危险的环境\n\n⚠️ 关键认知：CAT 等级数字越大，能承受的瞬时浪涌电压越高，电压数字反而不一定大！CAT IV 600V 抗浪涌能力 > CAT III 1000V > CAT II 1000V。\n\n📌 DT9205Pro 一般标 CAT III 600V / CAT II 1000V，能胜任大多数家用与轻工业场景，但室外进线柜要用 FLUKE 87V (CAT IV 600V) 这类专业表。",
+          "image": "cat_levels",
+          "id": "l1_real_panel_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你要测一台建筑物入户配电箱进线侧的电压，下列哪个 CAT 等级最合适？",
+          "options": [
+            {
+              "id": "A",
+              "text": "CAT II 1000V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "CAT IV 600V",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "CAT III 600V",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "无 CAT 标识的便宜表",
+              "is_correct": false
+            }
+          ],
+          "explanation": "建筑入户进线属于 CAT IV 环境，因为雷击和电网瞬时浪涌可能极大，必须用 CAT IV 等级万用表。数字越大代表抗浪涌等级越高，不要被电压数字混淆。",
+          "id": "l1_real_panel_n9"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "你要测家用插座 220V 的电压，请正确设置你的 DT9205Pro 万用表",
+          "instruction": "依次：① 拨档位 → ② 插红表笔 → ③ 放置探针 → ④ 提交确认",
+          "target": {
+            "type": "wall_outlet_220v",
+            "label": "家用 220V 三孔插座",
+            "hotspots": [
+              {
+                "id": "live",
+                "label": "火线孔 (L)"
+              },
+              {
+                "id": "neutral",
+                "label": "零线孔 (N)"
+              },
+              {
+                "id": "ground",
+                "label": "地线孔 (E)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "ACV_750",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "live",
+            "black_touch": "neutral"
+          },
+          "success_msg": "正确！家用 220V 是交流电，ACV_750V 是覆盖 220V 的最近上档，红笔接火线 L，黑笔接零线 N",
+          "fail_msg": "档位或表笔位置不对：220V 是交流电（V~），不是直流；且 ACV_200V 无法覆盖 220V，会显示溢出 OL",
+          "id": "l1_real_panel_n10",
+          "correct_display": "220.5 V",
+          "explanation": "家用 220V 是交流电，应拨 ACV_750V：200V 档量程不足会溢出，750V 是覆盖它的最近上档。红笔插 VΩ 孔接火线 L，黑笔永远插 COM 孔接零线 N，交流电两笔对调读数不变。"
+        },
+        {
+          "type": "true_false",
+          "question": "DT9205Pro 旋钮上的 NCV 档不需要接触金属导体也能感应火线。",
+          "correct_answer": true,
+          "explanation": "NCV（Non-Contact Voltage）是非接触式火线探测档，通过表头顶端的感应天线靠近导线即可发声/亮灯报警，无需接触金属。",
+          "id": "l1_real_panel_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "看到旋钮上有一个 \"hFE\" 档位，它是用来做什么的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "测量频率",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "测量电池剩余电量百分比",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "测量三极管的直流电流放大倍数",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "高频电压测量",
+              "is_correct": false
+            }
+          ],
+          "explanation": "hFE 是双极型晶体管（BJT）的直流电流放大系数（β值），万用表上有一个专门的三极管插座，可以测出 NPN/PNP 三极管的 hFE 值。",
+          "id": "l1_real_panel_n12"
+        }
+      ]
+    },
+    {
+      "id": "l2_dial_selection",
+      "title": "量程选择策略",
+      "description": "学会从大到小逐步缩小量程，找到既不溢出又最精确的档位",
+      "estimated_time": "8分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "为什么要懂量程？——OL 与烧表的距离",
+          "content": "量程（Range）= 该档位能测量的最大值。例如 DCV_20V 表示这一档最大能读到 20V 直流电压，再大就溢出显示 \"OL\" 或 \"1.\" 表示 Over Limit。\n\n如果你拿 DCV_2V 去测 9V 电池 → 显示 OL（溢出，无法读数）；如果你拿 DCV_1000V 去测 1.5V 电池 → 能读到，但是会显示 \"001.5\" 这种粗糙数字，丢失小数精度。\n\n💡 选量程的黄金原则：【覆盖被测值，且尽量接近被测值】。\n\n⚠️ 更可怕的是：用电压档（高内阻）去测电流是\"测不到\"；但用电流档（极低内阻）去测电压 = 几乎短路 → 烧保险或烧表！选档错误直接关系到生命与设备安全。",
+          "image": "range_selection",
+          "id": "l2_dial_selection_n0"
+        },
+        {
+          "type": "info",
+          "title": "未知量的标准操作：从大到小逐步缩小",
+          "content": "现场遇到未知电压、未知电阻时，必须遵循\"先大后小\"的安全原则：\n\n🪜 步骤：\n1️⃣ 首先确认是直流还是交流（看电源类型）\n2️⃣ 把旋钮拨到该类别的【最大量程】（如 DCV_1000V 或 ACV_750V）\n3️⃣ 短暂测量一次，读到一个粗值（如 218V）\n4️⃣ 根据粗值，向下选择最接近的量程（如 218V → 拨到 ACV_750V，因为 200V 档不够）\n5️⃣ 再次测量得到精确数字\n\n📌 反例：上来就拨 DCV_2V 去测充电桩输出 400V → 内部分压电阻瞬间烧穿，整表报废。\n\n🛡 这条规则没有任何例外，哪怕你\"觉得\"是 5V，也最好从 20V 开始确认。",
+          "image": "step_down_range",
+          "id": "l2_dial_selection_n1"
+        },
+        {
+          "type": "info",
+          "title": "已知值时的量程公式：最近上档",
+          "content": "如果你已经知道被测大概值（比如标称 9V 电池），可以直接选\"最近上档\"——即量程比被测值大、但是离它最近的那一档。\n\n📐 公式：选择满足 \"量程 > 被测值\" 的【最小】量程档位\n\n举例：\n• 测 1.5V 干电池 → 选 DCV_2V（不要选 200mV 会溢出，也不要选 20V 精度变差）\n• 测 9V 方块电池 → 选 DCV_20V（DCV_2V 不够；DCV_200V 太大）\n• 测 12V 汽车电瓶 → 选 DCV_20V\n• 测 220V 家用插座 → 选 ACV_750V（不要选 ACV_200V，220 > 200 会溢出）\n• 测 380V 三相电 → 选 ACV_750V\n\n💡 \"最近上档\"意味着：既不会溢出 OL，又能利用满量程精度。",
+          "image": "range_formula",
+          "id": "l2_dial_selection_n2"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你要测一节标称 9V 的方块电池，下列哪个档位最合适？",
+          "options": [
+            {
+              "id": "A",
+              "text": "DCV_2V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "DCV_200V",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "ACV_20V",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "DCV_20V",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电池是直流电，必须选 V--- 类（不能选 ACV）。9V > 2V，DCV_2V 会溢出；DCV_200V 量程偏大精度低；DCV_20V 既覆盖又最精确。",
+          "id": "l2_dial_selection_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "现场来了一根你完全不知道电压的导线（怀疑是直流），第一步应该拨到哪一档？",
+          "options": [
+            {
+              "id": "A",
+              "text": "DCV_1000V（最大量程）先试测，再逐步缩小",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "DCV_200mV，因为要追求最高精度",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "DCV_20V，因为电池一般就是这个范围",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "直接拨 OHM_20M 测试有没有电",
+              "is_correct": false
+            }
+          ],
+          "explanation": "未知值必须先选最大量程，确保不会烧表。读到粗值后再向下缩档。直接拨小量程或电阻档去测带电体都是严重违规操作。",
+          "id": "l2_dial_selection_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你刚用 ACV_750V 测出读数 \"023\"，下一步应该怎么做以获得精确读数？",
+          "options": [
+            {
+              "id": "A",
+              "text": "保持 ACV_750V 不变，这就是最佳读数",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "拨到 ACV_200V，因为 23 < 200",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "拨到 ACV_20V，因为 23 接近 20",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "拨到 DCV_200V，因为数字更稳",
+              "is_correct": false
+            }
+          ],
+          "explanation": "ACV_750V 测出 23V 精度太差。下一档应选 ACV_200V（覆盖 23V 且最接近）。注意不能选 ACV_20V，因为 23 > 20 会溢出。",
+          "id": "l2_dial_selection_n5"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请正确设置万用表，测量一节标称 9V 的方块干电池",
+          "instruction": "依次：① 拨档位 → ② 插红表笔 → ③ 放置探针 → ④ 提交确认",
+          "target": {
+            "type": "battery_9v",
+            "label": "9V 方块干电池",
+            "hotspots": [
+              {
+                "id": "positive",
+                "label": "正极 (+)"
+              },
+              {
+                "id": "negative",
+                "label": "负极 (-)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCV_20",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "positive",
+            "black_touch": "negative"
+          },
+          "success_msg": "完美！DCV_20V 是覆盖 9V 的最小档位，精度最高。红笔 VΩ 孔接正极，黑笔 COM 孔接负极",
+          "fail_msg": "档位或表笔不对：电池是直流（V---），9V 适合 DCV_20V；红笔应插 PORT_VOHM",
+          "id": "l2_dial_selection_n6",
+          "correct_display": "9.12 V",
+          "explanation": "9V 电池是直流电，拨 DCV_20V 最合适：2V 档溢出、200V 档精度差，20V 是覆盖 9V 的最小量程。红笔插 VΩ 孔接正极、黑笔插 COM 孔接负极；反接只显示负号，绝对值仍正确。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请正确设置万用表，测量家用 220V 插座电压",
+          "instruction": "未知/标准 220V 的最佳起步档应为 ACV_750V。请完成设置。",
+          "target": {
+            "type": "wall_outlet_220v",
+            "label": "家用 220V 三孔插座",
+            "hotspots": [
+              {
+                "id": "live",
+                "label": "火线孔 (L)"
+              },
+              {
+                "id": "neutral",
+                "label": "零线孔 (N)"
+              },
+              {
+                "id": "ground",
+                "label": "地线孔 (E)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "ACV_750",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "live",
+            "black_touch": "neutral"
+          },
+          "success_msg": "正确！220V > 200V，所以 ACV_200V 不够用，必须用 ACV_750V。读到稳定值后可考虑此档已是最近上档",
+          "fail_msg": "档位偏小或类型错：ACV_200V 测 220V 会显示 OL；千万不要用 DCV 档测交流电！",
+          "id": "l2_dial_selection_n7",
+          "correct_display": "219.8 V",
+          "explanation": "220V 是交流电，须用 ACV_750V：ACV_200V 被 220V 超出会显示 OL，750V 才是覆盖它的最近上档。红笔插 VΩ 孔接火线 L、黑笔插 COM 孔接零线 N，切勿用直流档测交流，否则读不到数。"
+        },
+        {
+          "type": "true_false",
+          "question": "用 DCV_200V 量程测一节 1.5V 干电池，万用表会立即烧坏。",
+          "correct_answer": false,
+          "explanation": "不会烧表。1.5V 远小于量程 200V，只是显示精度差（可能显示 001.5 或 002）。烧表的情况是反过来——用电流档去测电压，或用小量程去测大值并长时间通电。",
+          "id": "l2_dial_selection_n8"
+        },
+        {
+          "type": "sort",
+          "question": "请把下列\"未知电压量程选择\"的 5 个步骤按正确顺序排列",
+          "instruction": "拖动每个步骤到正确顺序",
+          "items": [
+            {
+              "id": "1",
+              "text": "确认被测对象是直流（DC）还是交流（AC）"
+            },
+            {
+              "id": "2",
+              "text": "估计被测电压的大致范围"
+            },
+            {
+              "id": "3",
+              "text": "拨到该类别的最大量程档试测"
+            },
+            {
+              "id": "4",
+              "text": "根据粗值，向下选择最接近的量程档读精确值"
+            },
+            {
+              "id": "5",
+              "text": "测量结束后将旋钮拨回 OFF"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "explanation": "AC/DC 判断 → 估计范围 → 大量程试测 → 缩档精测 → 拨回 OFF，这是电工现场的标准操作流程，可保护设备和人身安全。",
+          "id": "l2_dial_selection_n9"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列哪种操作最有可能导致万用表烧毁？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用 DCV_1000V 量程测 1.5V 电池",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用 DCA_20A 档串联在 9V 电路中测电流",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "用 DCA_200mA 档红表笔留在 mA 孔，去测 220V 插座电压",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "用 OHM_20M 档测一个 1kΩ 电阻",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电流档内阻极低（接近短路），如果不小心用电流档去测电压，相当于把电源短路，会瞬间烧断保险丝甚至烧毁分流电阻。这是新手最常见的烧表事故。",
+          "id": "l2_dial_selection_n10"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测量未知电压时，应当先把旋钮拨到该类别的____量程。",
+          "correct_answer": "最大",
+          "explanation": "从最大量程开始可以避免溢出和烧表。读到粗值后再逐步降档以提高精度。",
+          "id": "l2_dial_selection_n11",
+          "answer": "最大",
+          "acceptable_answers": [
+            "最大"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l3_voltage_measure",
+      "title": "电压测量实战",
+      "description": "学会直流和交流电压的真实测量步骤，并联连接的核心要点",
+      "estimated_time": "10分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电压测量的核心法则——并联！",
+          "content": "测电压的金科玉律只有一句：【表笔与被测元件\"并联\"连接】。\n\n📐 含义：万用表的红黑两支表笔分别接到被测元件的两端（两个不同的电位点），就像给两端\"搭一座桥\"。绝对不能拆开电路再串进去！\n\n💡 为什么必须并联？因为电压档的内阻极高（通常 10MΩ 以上），并联进电路几乎不影响原电路；如果错误地串联，反而无法形成回路，读不到正确电压，甚至打断电路工作。\n\n🛡 实操要点：\n• 不需要切断电路\n• 不需要焊接\n• 只需要红黑两笔分别按在被测元件的两端金属点上\n• 注意手不要碰表笔金属部分（人体可能形成并联通路，影响精度，且高压有触电风险）",
+          "image": "voltage_parallel",
+          "id": "l3_voltage_measure_n0"
+        },
+        {
+          "type": "info",
+          "title": "直流电压（DCV）测量完整步骤",
+          "content": "测直流电压（电池、稳压电源、汽车电瓶、电子元件等）的完整 6 步：\n\n1️⃣ 把红表笔插入【PORT_VOHM】孔，黑表笔插入【PORT_COM】孔\n2️⃣ 旋钮拨到 V--- 区域，选择合适量程（未知就用 DCV_1000V）\n3️⃣ 红表笔接被测元件【正极/高电位端】，黑表笔接【负极/低电位端】\n4️⃣ 读数：液晶屏会显示电压值。如果显示 OL → 量程太小，向大档拨；如果数字前有负号 → 红黑笔接反了（数字仍然有效）\n5️⃣ 如有需要，降档到最接近的量程读精确值\n6️⃣ 测完先把表笔拿开，再把旋钮拨回 OFF\n\n💡 红负号特技：现场不确定电池正负时，先随便接，看数字符号——前面有负号就说明红笔接到了负极，知道极性后再调整。",
+          "image": "dcv_steps",
+          "id": "l3_voltage_measure_n1"
+        },
+        {
+          "type": "info",
+          "title": "交流电压（ACV）测量步骤——为何不分极性？",
+          "content": "测交流电压（家用插座 220V、三相 380V、变压器输出等）的步骤：\n\n1️⃣ 红表笔【PORT_VOHM】，黑表笔【PORT_COM】（与 DCV 一样）\n2️⃣ 旋钮拨到 V~ 区域，选择合适量程（家用 220V → ACV_750V）\n3️⃣ 两支表笔分别接到火线 L 和零线 N（交流电不分正负，两笔可以任意调换）\n4️⃣ 读数稳定后记录\n5️⃣ 测完拨回 OFF，并将表笔放回绝缘表笔架\n\n⚠️ 高压安全要点：\n• 一定要单手操作！另一只手插口袋，避免双手形成跨胸电流通路\n• 站在干燥的绝缘垫上\n• 表笔金属部分严禁同时接触\n• 220V 测量请戴绝缘手套，380V 必须戴绝缘手套\n• 测量完毕，旋钮立即拨 OFF，切勿留在 V~ 档移动",
+          "image": "acv_steps",
+          "id": "l3_voltage_measure_n2"
+        },
+        {
+          "type": "info",
+          "title": "电压表的两大典型异常读数",
+          "content": "电压档读数出现两类异常时，要会判断：\n\n🔴 显示 \"OL\" / \"1.\" / \"1\"（最左侧只有一个数字 1，其余空白）：\n→ 被测电压超出当前量程！立即向大档拨。例：DCV_20V 测 24V 电池就会显示 OL。\n\n🔵 显示 \"0.00\" 或一直跳变小数字：\n→ 可能原因：(a) 电路根本没电；(b) 表笔接触不良；(c) 红笔没插对孔；(d) 量程过大（如 1000V 量程测 1.5V 时小数位丢失看起来像 0）\n\n🟢 显示负号 \"-12.5\"：\n→ 不是错误！只是红黑笔接反了，绝对值正确。\n\n💡 现场判断小窍门：先把表笔互相短路看是否归零，再去测目标，能排除表笔故障。",
+          "image": "abnormal_display",
+          "id": "l3_voltage_measure_n3"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请测量一节标称 1.5V 的 AA 干电池电压",
+          "instruction": "依次：① 拨档位 → ② 插红表笔 → ③ 放置探针 → ④ 提交确认",
+          "target": {
+            "type": "battery_aa_1v5",
+            "label": "1.5V AA 干电池",
+            "hotspots": [
+              {
+                "id": "positive",
+                "label": "正极 (+)，凸起一端"
+              },
+              {
+                "id": "negative",
+                "label": "负极 (-)，平整一端"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCV_2",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "positive",
+            "black_touch": "negative"
+          },
+          "success_msg": "完美！1.5V 适合 DCV_2V 档，能读到 3 位小数最精确",
+          "fail_msg": "档位选大了精度差，选小了会 OL。1.5V 最佳档是 DCV_2V",
+          "id": "l3_voltage_measure_n4",
+          "correct_display": "1.523 V",
+          "explanation": "1.5V 是直流，DCV_2V 是覆盖它的最近上档：200mV 会溢出、20V 精度下降。红笔插 VΩ 孔接凸起正极、黑笔插 COM 孔接平整负极；若显示负号仅说明表笔接反，数值依然有效。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请测量家用 220V 插座的电压（先用安全量程）",
+          "instruction": "未知或标称 220V 起步必须用 ACV_750V",
+          "target": {
+            "type": "wall_outlet_220v",
+            "label": "家用 220V 三孔插座",
+            "hotspots": [
+              {
+                "id": "live",
+                "label": "火线孔 (L)"
+              },
+              {
+                "id": "neutral",
+                "label": "零线孔 (N)"
+              },
+              {
+                "id": "ground",
+                "label": "地线孔 (E)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "ACV_750",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "live",
+            "black_touch": "neutral"
+          },
+          "success_msg": "正确！ACV_750V 是测 220V 的最佳量程（200V 档不够覆盖 220）",
+          "fail_msg": "档位错：220V 是交流电（V~）；ACV_200V 不够覆盖；DCV 档完全测不出",
+          "id": "l3_voltage_measure_n5",
+          "correct_display": "220.3 V",
+          "explanation": "220V 属交流电，拨到 V~ 区选 ACV_750V：ACV_200V 量程小于 220V 会溢出，750V 是最近上档。红笔插 VΩ 孔、黑笔插 COM 孔，分别接火线 L 与零线 N；直流档测交流毫无读数。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请测量一台汽车的 12V 启动电瓶电压",
+          "instruction": "汽车电瓶是直流电，请选择最接近 12V 的档位",
+          "target": {
+            "type": "car_battery_12v",
+            "label": "12V 汽车启动电瓶",
+            "hotspots": [
+              {
+                "id": "positive",
+                "label": "正极桩 (+)"
+              },
+              {
+                "id": "negative",
+                "label": "负极桩 (-)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCV_20",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "positive",
+            "black_touch": "negative"
+          },
+          "success_msg": "完美！DCV_20V 量程刚好覆盖 12V 且精度高。12.6V 以上说明电瓶健康",
+          "fail_msg": "档位或类型不对：电瓶是直流（V---），12V 适合 DCV_20V；DCV_2V 会溢出 OL",
+          "id": "l3_voltage_measure_n6",
+          "correct_display": "12.68 V",
+          "explanation": "汽车电瓶是直流，标称 12V 应选 DCV_20V：2V 档溢出、200V 档精度差，20V 是覆盖它的最近上档。红笔插 VΩ 孔接正极桩、黑笔插 COM 孔接负极桩，健康电瓶空载电压约 12.6V 以上。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你不小心把旋钮停留在 OHM_2K 电阻档，却去测家用 220V 插座，结果会怎样？",
+          "options": [
+            {
+              "id": "A",
+              "text": "万用表会自动切换到电压档，安全显示 220V",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "屏幕会显示 22.0Ω 或一些数字，无任何危险",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "什么也不会发生，因为电阻档不工作",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "电阻档内部电路被 220V 冲击，烧毁电阻档（更严重时连主板都烧）",
+              "is_correct": true
+            }
+          ],
+          "explanation": "电阻档内部由表内电池提供微弱电流，电路设计假设外部无电源。把 220V 加在电阻档输入端 → 内部分压电阻和保护元件被瞬间击穿烧毁，整表常常报废。这是新手最容易犯的灾难性错误。",
+          "id": "l3_voltage_measure_n7"
+        },
+        {
+          "type": "true_false",
+          "question": "测电压时必须把电路断开，让万用表串联在电路中。",
+          "correct_answer": false,
+          "explanation": "错！测电压是【并联】，不需要断开电路；只有测电流才需要串联。如果错误地把电压档串联在工作电路里，相当于电路被一个 10MΩ 的电阻断开，电路停止工作。",
+          "id": "l3_voltage_measure_n8"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测交流电压时，旋钮应该拨到带____符号的档位区。",
+          "correct_answer": "波浪线",
+          "explanation": "V~ 中的波浪线（~）代表交流电（如海浪起伏），V--- 中的横线代表直流电（如平稳直线）。看错这两个符号会导致读数全错或损坏设备。",
+          "id": "l3_voltage_measure_n9",
+          "answer": "波浪线",
+          "acceptable_answers": [
+            "波浪线"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测 220V 高压时，下列哪个安全习惯是错误的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用双手分别握住红黑两支表笔的金属探针部分以便精确放置",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "尽量单手操作，另一只手插口袋",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "站在干燥的绝缘垫上",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "测量完毕立即把旋钮拨回 OFF",
+              "is_correct": false
+            }
+          ],
+          "explanation": "绝对不能用手接触表笔金属探针！必须握表笔的绝缘塑料柄。双手同时碰金属 + 接触带电体 = 电流跨胸通过心脏，极易致命。",
+          "id": "l3_voltage_measure_n10"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "现场来了一段未知的电源线（怀疑是直流），请用最安全方式开始测量",
+          "instruction": "未知电压必须先选最大量程！",
+          "target": {
+            "type": "unknown_dc_terminal",
+            "label": "未知直流电源接线柱",
+            "hotspots": [
+              {
+                "id": "term_a",
+                "label": "接线柱 A"
+              },
+              {
+                "id": "term_b",
+                "label": "接线柱 B"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCV_1000",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "term_a",
+            "black_touch": "term_b"
+          },
+          "success_msg": "标准操作！未知电压先用最大量程 DCV_1000V 试测，读到 24V 后可再降档到 DCV_200V 精测",
+          "fail_msg": "未知电压绝对不能直接用小量程！正确做法是 DCV_1000V 起步",
+          "id": "l3_voltage_measure_n11",
+          "correct_display": "24 V",
+          "explanation": "未知电压必须从最大量程 DCV_1000V 起步，先读粗值再降档精测，能避免溢出和烧表。红笔插 VΩ 孔、黑笔插 COM 孔分别接两接线柱；读数带负号说明红黑笔接反，交换即可。"
+        }
+      ]
+    },
+    {
+      "id": "l4_current_measure",
+      "title": "电流测量与防雷区",
+      "description": "电流必须串联！换孔是关键，不换孔等于短路烧表",
+      "estimated_time": "12分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电流测量的两条铁律——串联 + 换孔",
+          "content": "测电流和测电压完全不同，必须同时满足两条铁律，否则非烧表即触电：\n\n🔥 铁律一：【串联】连接\n→ 必须断开原电路，把万用表\"插入\"电路成为电流的必经之路。相当于在导线上剪一刀，让红黑表笔接在剪开的两端，让电流从红表笔流入、黑表笔流出。\n\n🔥 铁律二：【红表笔必须换孔】\n→ 默认红笔在 PORT_VOHM 是测电压的。测电流必须把红表笔【拔出】，根据电流大小重新插入：\n  • 测 0~200mA → 插 PORT_MA（有保险）\n  • 测 200mA~20A → 插 PORT_20A（无保险，10秒MAX）\n\n⚠️ 如果忘记换孔，红表笔留在 PORT_VOHM 但旋钮拨到 A--- 档去串联电路——电流档内阻极低，相当于短路，电池/电源瞬间短路放电！\n\n⚠️ 如果忘记换回，红表笔留在 PORT_MA/20A 孔却去测 220V 电压 → 220V 直接通过低内阻分流电阻 → 保险熔断 + 严重时烧毁内部电阻 + 表笔起弧。",
+          "image": "current_series",
+          "id": "l4_current_measure_n0"
+        },
+        {
+          "type": "info",
+          "title": "测电流前必须先估算大致范围",
+          "content": "和测电压不同，电流档不能\"先用最大量程\"——因为换插孔本身有上限：\n\n📏 200mA 以下 → 红笔插 PORT_MA 孔，旋钮选 DCA_200mA 或更小档\n📏 200mA ~ 20A → 红笔必须移到 PORT_20A 孔，旋钮选 DCA_20A 档\n📏 超过 20A → 不能用万用表！要换钳形电流表\n\n📊 常见电器电流参考（建立直觉）：\n• LED 灯珠：5~20 mA → DCA_200mA + PORT_MA\n• 手机充电（5V 1A）：~1000 mA = 1A → DCA_20A + PORT_20A\n• 小型电热水壶（1500W/220V）：~7 A → DCA_20A + PORT_20A\n• 一节 5号电池短路：~5A → DCA_20A + PORT_20A\n\n⚠️ 估算错误的后果：\n• 把 5A 电流塞进 PORT_MA 孔 → 保险瞬间熔断（要拆机更换保险）\n• 把 50A 强行通过 PORT_20A → 分流电阻烧毁、表笔线熔化",
+          "image": "current_estimate",
+          "id": "l4_current_measure_n1"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测量一颗 LED 灯珠的工作电流（实测约 20 mA），请正确设置万用表",
+          "instruction": "已知小电流，请选择合适档位与孔",
+          "target": {
+            "type": "led_circuit",
+            "label": "LED 工作电路（电池+限流电阻+LED）",
+            "hotspots": [
+              {
+                "id": "wire_in",
+                "label": "断开点：进电流侧"
+              },
+              {
+                "id": "wire_out",
+                "label": "断开点：出电流侧"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCA_200M",
+            "red_port": "mA",
+            "black_port": "COM",
+            "red_touch": "wire_in",
+            "black_touch": "wire_out"
+          },
+          "success_msg": "完美！LED 约 20mA，选 DCA_200MA 档，红笔插 PORT_MA（有保险更安全），串联到断开的电路里",
+          "fail_msg": "档位或插孔不对：小电流（20mA）应用 PORT_MA + DCA_200MA，且必须串联进电路",
+          "id": "l4_current_measure_n2",
+          "correct_display": "19.8 mA",
+          "explanation": "测电流须串联进电路，让电流从红笔流入、黑笔流出。20mA 属小电流，红笔换插 PORT_MA（带保险）孔、拨 DCA_200MA 档，黑笔仍在 COM 孔；用 20A 孔则精度差。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你要测一根工作电流约 5A 的导线，红表笔应该插在哪个孔？",
+          "options": [
+            {
+              "id": "A",
+              "text": "PORT_VOHM（电压电阻孔）",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "PORT_20A（大电流孔）",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "PORT_MA（小电流孔）",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "PORT_COM（公共端）",
+              "is_correct": false
+            }
+          ],
+          "explanation": "5A 远超 PORT_MA 孔 200mA 的上限，必须用 PORT_20A 孔。PORT_COM 永远是黑表笔。PORT_VOHM 测电压会让电流档变成短路。",
+          "id": "l4_current_measure_n3"
+        },
+        {
+          "type": "true_false",
+          "question": "为了方便，可以把红表笔一直插在 PORT_20A 孔里，不管测什么都不换。",
+          "correct_answer": false,
+          "explanation": "极度危险！PORT_20A 孔【没有保险丝】，且与电流档内部直连。如果你拨到电压档去测插座电压，红笔留在 20A 孔，相当于把电源通过一个极低电阻短路 → 表笔线烧红、分流电阻烧毁、电源跳闸甚至起弧。每次测完电流应立即把红笔换回 PORT_VOHM。",
+          "id": "l4_current_measure_n4"
+        },
+        {
+          "type": "info",
+          "title": "为何 PORT_20A 没有保险丝？",
+          "content": "你可能很疑惑：为何最容易烧的大电流孔反而没有保险丝？\n\n🛠 原因：20A 这种大电流如果用保险丝保护，保险丝本身的电阻会显著影响测量精度和读数；且 20A 级别的保险熔断后选型和更换都非常困难。厂家设计上选择\"信任用户判断\"——只测短时间、不测过载。\n\n📌 因此 PORT_20A 严格规则：\n• 单次测量不超过 10 秒\n• 测完立即断开\n• 测完立即把红表笔换回 PORT_VOHM 孔\n• 旋钮立即拨回 OFF 或 V--- 档\n\n相对地，PORT_MA 孔内部串有一颗陶瓷保险管（一般 250mA F250mA L 或 500mA），过流时会熔断保护内部电路。但熔断后必须拆机更换，所以也不要随意逞强测量。",
+          "image": "fuse_inside",
+          "id": "l4_current_measure_n5"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用户匆忙之间，红表笔留在 PORT_20A 孔（上一次刚测完电机电流），旋钮拨到 ACV_750V 档，想测家用 220V 插座电压。两支表笔分别插入插座火线孔和零线孔。\n\n这个操作会发生什么？请选择最准确的描述",
+          "options": [
+            {
+              "id": "A",
+              "text": "安全测量到 220V，因为旋钮已经拨到电压档",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "万用表内部 20A 孔与 COM 间是低阻分流电阻 → 220V 直接短路 → 火花、跳闸、烧表",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "只是读数不准，没有任何危险",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "万用表会发出蜂鸣提醒，自动断开",
+              "is_correct": false
+            }
+          ],
+          "explanation": "插孔的物理连接独立于旋钮档位！红表笔在 PORT_20A 孔就是直连到内部低阻分流电阻，无论旋钮怎么拨，220V 加上去就是短路。瞬间电流可达数百安培，会拉弧、烧毁电阻、引发空开跳闸，严重时引燃可燃物。这是电工事故案例库中的经典悲剧。",
+          "id": "l4_current_measure_n6"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测量一台直流电机的工作电流（约 1 A），请正确设置万用表",
+          "instruction": "1A 属于大电流，必须用 20A 孔",
+          "target": {
+            "type": "dc_motor_circuit",
+            "label": "12V 直流电机工作电路",
+            "hotspots": [
+              {
+                "id": "wire_break_a",
+                "label": "断点 A（电源正→电机）"
+              },
+              {
+                "id": "wire_break_b",
+                "label": "断点 B（电机→电源负）"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "A20",
+            "red_port": "20A",
+            "black_port": "COM",
+            "red_touch": "wire_break_a",
+            "black_touch": "wire_break_b"
+          },
+          "success_msg": "完美！1A 必须用 PORT_20A + DCA_20A 档，串联进断开的电路中。记得 10 秒内完成测量",
+          "fail_msg": "档位/插孔不对：1A 超过 PORT_MA 的 200mA 上限，必须用 PORT_20A 孔 + DCA_20A 档",
+          "id": "l4_current_measure_n7",
+          "correct_display": "1.05 A",
+          "explanation": "1A 超过 PORT_MA 的 200mA 上限，红笔必须换到 PORT_20A 孔并拨 DCA_20A 档。断开电路把表串联进去，电流红进黑出；该孔无保险丝，单次测量不能超过 10 秒。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测量一个工作电流约 80 mA 的小蜂鸣器电路",
+          "instruction": "请选最合适的小电流档与插孔",
+          "target": {
+            "type": "buzzer_circuit",
+            "label": "5V 蜂鸣器电路",
+            "hotspots": [
+              {
+                "id": "break_in",
+                "label": "断开点：电源正侧"
+              },
+              {
+                "id": "break_out",
+                "label": "断开点：蜂鸣器负侧"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCA_200M",
+            "red_port": "mA",
+            "black_port": "COM",
+            "red_touch": "break_in",
+            "black_touch": "break_out"
+          },
+          "success_msg": "完美！80mA 在 PORT_MA 范围内，DCA_200MA 是最近上档",
+          "fail_msg": "档位偏差：80mA 应用 PORT_MA + DCA_200MA。不要用 20A 孔（精度差），也不要用 DCA_20mA（会溢出）",
+          "id": "l4_current_measure_n8",
+          "correct_display": "78 mA",
+          "explanation": "80mA 属小电流，红笔插 PORT_MA（带保险）孔、拨 DCA_200MA 档，是覆盖它的最近上档；DCA_20mA 会溢出、20A 孔精度差。串联进电路，电流红进黑出，黑笔始终在 COM 孔。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "下列关于电流测量的描述，哪一条是【错误】的？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电流必须串联进电路才能测",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "测电流前要先估算大致范围，再选孔与档",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "PORT_20A 孔内部带保险丝，可以放心长时间通电",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "测完电流要立即把红表笔换回 PORT_VOHM",
+              "is_correct": false
+            }
+          ],
+          "explanation": "PORT_20A 孔【没有保险丝】，且厂家明确标注 10 秒最大连续测量时间。把它当成\"安全孔\"是最常见的认知误区。",
+          "id": "l4_current_measure_n9"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测电流的两条铁律：第一是____连接，第二是红表笔要换插孔。",
+          "correct_answer": "串联",
+          "explanation": "串联 + 换孔，两条缺一不可。错了任何一条都可能烧表或触电。",
+          "id": "l4_current_measure_n10",
+          "answer": "串联",
+          "acceptable_answers": [
+            "串联"
+          ]
+        },
+        {
+          "type": "true_false",
+          "question": "测电流时，黑表笔也需要根据电流大小换孔。",
+          "correct_answer": false,
+          "explanation": "黑表笔永远在 PORT_COM 孔不变。换孔的只有红表笔（VOHM ↔ MA ↔ 20A）。",
+          "id": "l4_current_measure_n11"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你刚测完一颗 LED 的电流，下一项任务是测插座 220V 电压。中间最关键的安全步骤是什么？",
+          "options": [
+            {
+              "id": "A",
+              "text": "直接把旋钮拨到 ACV_750V 然后去测插座",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "保持红表笔在 PORT_MA 孔，反正旋钮拨过去就行",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "把黑表笔也换到 PORT_VOHM 孔",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "先把红表笔从 PORT_MA 拔回 PORT_VOHM，再拨档到 ACV_750V，然后测插座",
+              "is_correct": true
+            }
+          ],
+          "explanation": "插孔是物理连接，先于旋钮档位生效。每次测完电流，第一动作必须是把红表笔换回 PORT_VOHM 孔，否则下次测电压立即短路。这是养成习惯的关键步骤。",
+          "id": "l4_current_measure_n12"
+        }
+      ]
+    },
+    {
+      "id": "l5_resistance_capacitor",
+      "title": "电阻 / 电容 / 通断 测量",
+      "description": "断电状态下的元件测量，注意手不要碰金属",
+      "estimated_time": "10分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "电阻测量——必须断电！",
+          "content": "测电阻的第一条铁律：被测电阻【必须从电路中断开】，或整个电路必须【完全断电】。原因：\n\n📌 测电阻原理：万用表内部小电池通过被测电阻形成微弱电流，根据欧姆定律反推电阻值。如果电路本身还带电，外加电压会与内部基准电池冲突，结果完全不准，甚至烧毁电阻档。\n\n🛡 操作要点：\n1️⃣ 断电！把电路总闸拉下，或把电阻焊脚取下\n2️⃣ 拨到 Ω 档，红黑表笔分别插 PORT_VOHM 与 PORT_COM\n3️⃣ 两支表笔分别按在电阻两端引脚上\n4️⃣ 读数稳定后记录\n\n⚠️ 严禁用手同时捏住表笔金属探针！人体电阻约 1kΩ~100kΩ，会与被测电阻并联，导致读数偏小。应只接触绝缘塑料柄部分。\n\n💡 量程选择：未知电阻先从 OHM_2M 等中等档开始，读不到再向上或向下调。",
+          "image": "ohm_measure",
+          "id": "l5_resistance_capacitor_n0"
+        },
+        {
+          "type": "info",
+          "title": "电容测量——先放电再测",
+          "content": "测电容（电解电容、瓷片电容、薄膜电容）的注意事项：\n\n🔋 电容会储电！特别是大容量电解电容（>100μF）和高压电容（>100V）。直接测可能：\n• 内部残余电压击穿万用表电容档\n• 残余高压电击操作者\n\n📌 标准操作 5 步：\n1️⃣ 断电，拆下电容（在路测电容会受其他元件影响）\n2️⃣ 【放电】：用一颗 1kΩ~10kΩ 电阻短接电容两脚 5 秒以上，让电荷彻底释放\n3️⃣ 拨到 F 档（CAP），选合适量程（如 220μF → CAP_2MF，因为 200μF < 2000μF）\n4️⃣ 红表笔接电解电容【正极】（标记长脚或外壳无白色条），黑笔接负极\n5️⃣ 等待屏幕读数稳定（大电容要几秒）\n\n💡 电容档量程换算：CAP_200N = 200 纳法 = 0.2μF；CAP_2UF = 2 微法；CAP_2MF = 2000μF。",
+          "image": "cap_measure",
+          "id": "l5_resistance_capacitor_n1"
+        },
+        {
+          "type": "info",
+          "title": "通断蜂鸣档——电工最快的诊断神器",
+          "content": "DIODE_BUZZ 档（二极管 / 通断蜂鸣合并档）是现场使用频率最高的档之一，因为可以【不看屏幕，光靠耳朵】判断电路通不通。\n\n🔔 操作：\n1️⃣ 拨到 DIODE_BUZZ 档\n2️⃣ 红黑表笔分别接被测两点\n3️⃣ 听声音：\n   • 持续\"哔——\"长鸣 → 电阻小于约 50Ω，认为是【通路】\n   • 短促\"哔\"一下 → 接触瞬时通了\n   • 完全无声 + 屏幕显示 OL → 电阻大于约 50Ω 或无穷大，认为【断路】\n\n📌 典型应用：\n• 检查保险丝是否熔断（好的保险通，坏的断）\n• 检查导线断点（一根线两端测通断）\n• 检查开关接触是否良好\n• 检查二极管单向导通性\n\n⚠️ 同样要求被测电路【断电】，否则带电测可能损坏蜂鸣档。",
+          "image": "buzzer_diode",
+          "id": "l5_resistance_capacitor_n2"
+        },
+        {
+          "type": "info",
+          "title": "电阻档读数异常的三种情况",
+          "content": "测电阻时常见的三种屏幕异常：\n\n1️⃣ 显示 \"OL\" 或 \"1.\" → 量程过小，被测电阻 > 当前量程。例：OHM_2K 测 5kΩ 电阻 → OL。解决：向大量程拨（OHM_20K 或 OHM_200K）。\n\n2️⃣ 显示 \"0.00\" 或接近 0 → (a) 量程过大，被测电阻太小没被精细分辨；(b) 表笔短路。解决：向小量程拨。但若是 OHM_200 档测仍为 0 → 真的是短路或导通。\n\n3️⃣ 数字漂移不稳 → (a) 表笔接触不良，按紧再读；(b) 被测电阻没完全断电；(c) 手在碰金属探针；(d) 电容性元件还在充电中。\n\n💡 \"0Ω 校验\"小技巧：每次换电阻档时，先把红黑表笔短接，应显示 0.0~0.5Ω。如果显示其他数字，说明表笔损坏或电池没电。",
+          "image": "ohm_abnormal",
+          "id": "l5_resistance_capacitor_n3"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测量一个标称 1kΩ（1000Ω）的色环电阻",
+          "instruction": "请选最合适的电阻量程",
+          "target": {
+            "type": "resistor_1k",
+            "label": "1kΩ 色环电阻（棕黑红金）",
+            "hotspots": [
+              {
+                "id": "pin_left",
+                "label": "电阻左引脚"
+              },
+              {
+                "id": "pin_right",
+                "label": "电阻右引脚"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "OHM_2K",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "pin_left",
+            "black_touch": "pin_right"
+          },
+          "success_msg": "完美！1kΩ < 2kΩ，OHM_2K 是最近上档；电阻无极性，红黑笔可互换",
+          "fail_msg": "档位偏差：1kΩ 应用 OHM_2K（最近上档）。OHM_200 会 OL，OHM_20K 精度变差",
+          "id": "l5_resistance_capacitor_n4",
+          "correct_display": "1.002 kΩ",
+          "explanation": "测电阻必须断电。1kΩ 应选 OHM_2K：200Ω 档小于 1kΩ 会溢出，20K 档精度变差，2K 是最近上档。红笔插 VΩ 孔、黑笔插 COM 孔分别按两端引脚，电阻无极性，红黑笔可互换。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测一个未知电阻，你先用 OHM_2M 档测出读数 \"0.85\"（即 0.85MΩ = 850kΩ），下一步应该怎么选档？",
+          "instruction": "提示：850kΩ 仍属较大电阻范畴",
+          "target": {
+            "type": "unknown_resistor",
+            "label": "未知电阻",
+            "hotspots": [
+              {
+                "id": "pin_a",
+                "label": "引脚 A"
+              },
+              {
+                "id": "pin_b",
+                "label": "引脚 B"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "OHM_2M",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "pin_a",
+            "black_touch": "pin_b"
+          },
+          "success_msg": "正确！0.85MΩ = 850kΩ，仍小于 2MΩ，OHM_2M 已是最近上档。注意：OHM_200K 会 OL（850 > 200），不能再降",
+          "fail_msg": "850kΩ 已经超过 200kΩ，不能降到 OHM_200K；OHM_2M 就是最佳量程。再降会 OL",
+          "id": "l5_resistance_capacitor_n5",
+          "correct_display": "0.853 MΩ",
+          "explanation": "0.85MΩ=850kΩ，已超过 200kΩ，降档到 OHM_200K 会溢出，OHM_2M 正是覆盖它的最近上档。表笔保持红插 VΩ、黑插 COM 即可，量程再降只会显示 OL，无法读数。"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测一个标称 100μF / 25V 的电解电容（已放电）",
+          "instruction": "请选合适的电容量程",
+          "target": {
+            "type": "capacitor_100uf",
+            "label": "🔌 100μF 电解电容",
+            "hotspots": [
+              {
+                "id": "pos_pin",
+                "label": "正极（长脚）"
+              },
+              {
+                "id": "neg_pin",
+                "label": "负极（短脚，外壳白条侧）"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "CAP_200U",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "pos_pin",
+            "black_touch": "neg_pin"
+          },
+          "success_msg": "完美！100μF < 200μF，CAP_200UF 是最近上档；电解电容必须红笔接正极",
+          "fail_msg": "档位偏差：100μF < 200μF，应选 CAP_200UF（最近上档）。选 CAP_200N 或更小会 OL，选 CAP_2MF 精度变差",
+          "id": "l5_resistance_capacitor_n6",
+          "correct_display": "100.5 μF",
+          "explanation": "电容须先放电再测。100μF 应选 CAP_200UF：200nF/2μF 等小档会溢出，2mF 档精度差，200μF 是最近上档。红笔插 VΩ 孔接长脚正极、黑笔插 COM 孔接负极，电解电容极性不能接反。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你用蜂鸣档（DIODE_BUZZ）测一根电线，没听到\"哔\"声，屏幕显示 OL，这说明什么？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电线已经断路（不通），电阻趋近无穷大",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电线电阻为 1Ω，是好的",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "万用表电池没电了",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "档位选错了，要换到电阻档",
+              "is_correct": false
+            }
+          ],
+          "explanation": "OL 在蜂鸣档表示电阻大于约 50Ω（实际上多为无穷大）。导线正常应几乎为 0Ω 并持续蜂鸣。OL + 无声 = 断路。在排故时这是判断保险丝、导线、开关好坏的关键依据。",
+          "id": "l5_resistance_capacitor_n7"
+        },
+        {
+          "type": "true_false",
+          "question": "测电阻时用两只手分别捏住红黑表笔的金属探针，可以让接触更牢、读数更准。",
+          "correct_answer": false,
+          "explanation": "完全相反！人体电阻约 1kΩ~100kΩ 会与被测电阻并联，导致读数偏小。正确做法是只握表笔的绝缘塑料柄，让金属探针单独接触电阻引脚。",
+          "id": "l5_resistance_capacitor_n8"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "测量一颗 470μF / 400V 的滤波电解电容前，必须做哪一项操作？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用万用表 ACV_750V 先量两端电压一下",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用一颗合适电阻短接电容两脚，彻底放电",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "用酒精擦拭电容外壳",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "把电容加热到 50°C 再测",
+              "is_correct": false
+            }
+          ],
+          "explanation": "大容量高压电解电容可能存储数百伏残余电压（哪怕断电几天后仍有电）。必须用 1~10kΩ 电阻短接两脚放电几秒，才能安全测量。直接短接两脚会拉弧并可能损坏电容。",
+          "id": "l5_resistance_capacitor_n9"
+        },
+        {
+          "type": "fill_blank",
+          "question": "测电阻前，被测电路必须完全 ____ ，否则读数不准甚至损表。",
+          "correct_answer": "断电",
+          "explanation": "电阻档依靠内部小电池供电测量，被测电路必须断电。如果电路带电，外加电压会冲乱测量并可能烧毁电阻档。",
+          "id": "l5_resistance_capacitor_n10",
+          "answer": "断电",
+          "acceptable_answers": [
+            "断电"
+          ]
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "用蜂鸣档快速判断一根电源线是否完好",
+          "instruction": "通断档可以不看屏幕、靠耳朵判断",
+          "target": {
+            "type": "power_cord_test",
+            "label": "一根电源线（两端断开取出）",
+            "hotspots": [
+              {
+                "id": "end_a",
+                "label": "线端 A 的铜芯"
+              },
+              {
+                "id": "end_b",
+                "label": "线端 B 的铜芯（同一根芯线）"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DIODE",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "end_a",
+            "black_touch": "end_b"
+          },
+          "success_msg": "完美！持续蜂鸣 + 读数接近 0Ω = 线芯完好导通。如果没哔声/显示 OL 就说明线已断",
+          "fail_msg": "请选 DIODE_BUZZ 档；红笔 VOHM、黑笔 COM；同一根线的两端分别接红黑探针",
+          "id": "l5_resistance_capacitor_n11",
+          "correct_display": "0.4 Ω  哔————",
+          "explanation": "通断档靠蜂鸣判断：电阻小于约 50Ω 持续长鸣为通路，无声并显示 OL 即断路。红笔插 VΩ 孔、黑笔插 COM 孔，分别接同一根芯线的两端，被测电路必须先断电。"
+        }
+      ]
+    },
+    {
+      "id": "l6_repair_scenario",
+      "title": "综合排故实战",
+      "description": "从故障描述到分步定位，建立电工排故思维",
+      "estimated_time": "12分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "排故的核心思维：从大到小，由表及里",
+          "content": "电工现场排故不能瞎拆，要遵循\"从大到小，由表及里\"四步思维：\n\n🧭 第一步【现象观察】：先看明显现象——闻味、看烟、听声音、摸温度（关电后）。能用感官判断的先用感官。\n\n🧭 第二步【从源头到末端】：从电源进线开始往负载查。例如插座没电 → 先查空开 → 查配电箱进线 → 查墙内布线 → 查插座本身。\n\n🧭 第三步【从大块到小件】：先整段排除（这一段线是否通电），再细查到具体元件。不要一上来就拆插座。\n\n🧭 第四步【先测电压后测电阻】：带电情况下用电压档定位有电/没电的边界；确认无电后再用电阻或蜂鸣档查具体断点。\n\n💡 万用表的三大排故神器：\n• ACV/DCV 档 → 找有电没电的边界\n• 蜂鸣档（DIODE_BUZZ）→ 找通断、坏元件\n• 火线档（LIVE_NCV）→ 不接触判断哪根是火线",
+          "image": "troubleshoot_flow",
+          "id": "l6_repair_scenario_n0"
+        },
+        {
+          "type": "info",
+          "title": "典型故障：插座没电的排查地图",
+          "content": "用户报修\"卧室插座没电，但灯还亮\"，标准排查流程：\n\n📍 第一步：万用表 ACV_750V 测插座 L 和 N → 0V 确认无电\n📍 第二步：摸/看配电箱 → 卧室回路空开是否跳闸？\n   - 跳了 → 复位试试，若再跳 → 回路有短路，需进一步查\n   - 没跳 → 空开下端是否有电？拨 ACV_750V 测空开下接线柱对 N\n📍 第三步：若空开下端有电而插座没电 → 中间布线断了\n   - 拆插座面板，测进线端（黑/红线对蓝/白零线）\n   - 有电 → 插座本体故障，换插座\n   - 无电 → 中间接线盒接头松脱或线断\n📍 第四步：若空开下端也没电 → 空开本身坏，换空开\n\n⚠️ 操作必须戴绝缘手套，单手操作，并通知周围人员！或先把总闸拉下再拆插座。",
+          "image": "outlet_diagnose",
+          "id": "l6_repair_scenario_n1"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "用户报修\"插座没电，灯还亮\"。打开配电箱后，你的第一步排查动作是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "立即拆开插座面板看内部接线",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "用蜂鸣档先测插座内部通断",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "用万用表 ACV_750V 测插座 L-N 确认\"是否真的没电\"，并观察配电箱中卧室回路空开是否跳闸",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "把整个房子的总闸先合上再断一次试试",
+              "is_correct": false
+            }
+          ],
+          "explanation": "排故先确认现象（真的没电？）和源头（空开有没有跳？）。不能直接动手拆，也不能在带电情况下用蜂鸣档（损表+触电）。从大到小，从电源到末端，才是正确思维。",
+          "id": "l6_repair_scenario_n2"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "你怀疑一根延长线插头内的金属脚到导线之间断了，用万用表哪个档最快判断？",
+          "options": [
+            {
+              "id": "A",
+              "text": "ACV_750V 电压档",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "DCA_20A 电流档",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "OHM_20M 高电阻档",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "DIODE_BUZZ 通断蜂鸣档",
+              "is_correct": true
+            }
+          ],
+          "explanation": "查通断用蜂鸣档最快——不用看屏幕，靠声音就能判断好坏。一端接插头金属脚、另一端接对应导线的另一头，听到\"哔\"就通，无声就断。前提必须断电！",
+          "id": "l6_repair_scenario_n3"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "请用蜂鸣档测一根可疑的延长线导线（确认两端是否通路）",
+          "instruction": "已确保电源已拔，电路完全断电",
+          "target": {
+            "type": "extension_cord_wire",
+            "label": "怀疑断路的延长线导线（已断电）",
+            "hotspots": [
+              {
+                "id": "plug_pin_l",
+                "label": "插头 L 脚"
+              },
+              {
+                "id": "socket_l",
+                "label": "另一端 L 端铜片"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DIODE",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "plug_pin_l",
+            "black_touch": "socket_l"
+          },
+          "success_msg": "结论：这根 L 线断了！哔声没响 + 显示 OL = 线芯内部断路。需要更换延长线",
+          "fail_msg": "请用 DIODE_BUZZ 档；红笔 VOHM、黑笔 COM；两支探针接同一根线的两端",
+          "id": "l6_repair_scenario_n4",
+          "correct_display": "OL  （无哔声）",
+          "explanation": "用通断蜂鸣档测同一根 L 线的两端：红笔插 VΩ 孔接插头 L 脚、黑笔插 COM 孔接另一端 L 铜片，实测无声且显示 OL，说明线芯内部断路，应整条更换延长线。"
+        },
+        {
+          "type": "sort",
+          "question": "请把\"判断一台不工作的电器是否真的故障\"的 5 个步骤按正确顺序排列",
+          "instruction": "拖动重新排序",
+          "items": [
+            {
+              "id": "1",
+              "text": "用 ACV_750V 测插座是否有 220V（确认电源没问题）"
+            },
+            {
+              "id": "2",
+              "text": "用 DIODE_BUZZ 测电源线是否通（确认线没断）"
+            },
+            {
+              "id": "3",
+              "text": "拆开电器外壳，目视检查保险丝、明显烧痕"
+            },
+            {
+              "id": "4",
+              "text": "用 DIODE_BUZZ 测电器内保险丝是否完好"
+            },
+            {
+              "id": "5",
+              "text": "通电试机，逐级测各级电压定位故障点"
+            }
+          ],
+          "correct_order": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "explanation": "正确思维：先排除外部（插座、电源线）→ 拆开后目视检查 → 测保险等明显部件 → 最后才通电细测。这样既安全又高效。直接通电盲试可能引发更大故障。",
+          "id": "l6_repair_scenario_n5"
+        },
+        {
+          "type": "info",
+          "title": "现场常见三大故障套路",
+          "content": "电工现场 80% 的故障都能归到这三种套路：\n\n🔹 套路一：【完全没电】\n→ 先用 ACV 测插座/端子电压。如果上游有电、下游没电 → 中间某个节点断（空开、保险、接头、线芯断）。从上游往下游一点点测电压，电压突然消失的那个节点就是故障点。\n\n🔹 套路二：【一通电就跳闸】\n→ 短路或漏电。先断电拆开负载，用 OHM_200 或 DIODE_BUZZ 测火线对零线、火线对地线是否短路（应该 OL 不通）。如果蜂鸣 = 短路点找到。\n\n🔹 套路三：【时好时坏（接触不良）】\n→ 最难查。拆开接头逐一紧固，用蜂鸣档边晃动接头边观察声音是否中断。中断的那个接头就是松脱点。\n\n💡 三种套路对应的万用表档分别是：ACV / DIODE_BUZZ / DIODE_BUZZ。",
+          "image": "fault_patterns",
+          "id": "l6_repair_scenario_n6"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "一户人家\"一插电烧水壶就跳闸\"，最可能的故障类型与排查方法是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电热水壶发热管对地漏电或对外壳短路，断电后用蜂鸣档测壶内 L 对地是否通",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "电源电压过低，用 ACV 测电压解决",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "万用表保险丝坏了",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "插座没接地",
+              "is_correct": false
+            }
+          ],
+          "explanation": "跳闸常见原因是漏电保护动作，多半是水壶发热管绝缘老化导致 L 对地或对外壳漏电。断电后用蜂鸣档测 L 对水壶金属外壳，若蜂鸣或电阻很低 → 发热管损坏，换发热管或换壶。",
+          "id": "l6_repair_scenario_n7"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "测试一节客户怀疑\"过期\"的 1.5V 干电池，看电压是否还正常",
+          "instruction": "1.5V 电池请选最精确档位",
+          "target": {
+            "type": "old_battery_1v5",
+            "label": "客户拿来的可疑 1.5V 干电池",
+            "hotspots": [
+              {
+                "id": "pos",
+                "label": "正极 (+)"
+              },
+              {
+                "id": "neg",
+                "label": "负极 (-)"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "DCV_2",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "pos",
+            "black_touch": "neg"
+          },
+          "success_msg": "测出 1.12V，远低于 1.5V 标称，确认电池已严重亏电（一般低于 1.3V 就可判废）。档位 DCV_2V 精度最高",
+          "fail_msg": "档位选不对：1.5V 是直流，选 DCV_2V 最精确。DCV_20V 也能读但精度差",
+          "id": "l6_repair_scenario_n8",
+          "correct_display": "1.12 V",
+          "explanation": "1.5V 是直流，选 DCV_2V 档精度最高；20V 档虽能读但会丢失小数位。红笔插 VΩ 孔接正极、黑笔插 COM 孔接负极。实测仅 1.12V、低于 1.3V，可判定电池严重亏电。"
+        },
+        {
+          "type": "true_false",
+          "question": "现场判断一根线是不是火线，最快最安全的方式是用万用表的 NCV（火线探测）档非接触式靠近导线。",
+          "correct_answer": true,
+          "explanation": "NCV（LIVE_NCV）档是非接触感应式检测，靠近火线就会嘀嘀报警，不用碰金属，避免触电风险。比传统试电笔更直观（数字表头蜂鸣 + 亮灯），是现场判断火线的首选方式。",
+          "id": "l6_repair_scenario_n9"
+        },
+        {
+          "type": "multimeter_challenge",
+          "question": "排故场景：用 ACV_750V 验证配电箱卧室回路空开下接线柱对 N 排的电压",
+          "instruction": "测带电节点的电压，要安全单手操作",
+          "target": {
+            "type": "breaker_output",
+            "label": "配电箱卧室回路空开下接线柱",
+            "hotspots": [
+              {
+                "id": "breaker_out",
+                "label": "空开下接线柱（火线下端）"
+              },
+              {
+                "id": "n_bar",
+                "label": "N 零线汇流排"
+              }
+            ]
+          },
+          "correct_setup": {
+            "dial": "ACV_750",
+            "red_port": "VOhm",
+            "black_port": "COM",
+            "red_touch": "breaker_out",
+            "black_touch": "n_bar"
+          },
+          "success_msg": "测到 220V → 空开本体没问题，故障在下游布线或插座。继续往下游查",
+          "fail_msg": "测带电高压必须 ACV_750V + 红笔 VOHM + 黑笔 COM，单手操作",
+          "id": "l6_repair_scenario_n10",
+          "correct_display": "220.5 V",
+          "explanation": "配电箱内属带电环境，须用 ACV_750V：200V 档覆盖不了 220V。红笔插 VΩ 孔接空开下接线柱、黑笔插 COM 孔接 N 汇流排，单手戴绝缘手套操作；测到 220V 说明空开正常，故障在下游。"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "排故时，下列哪个操作【最不应该】首先做？",
+          "options": [
+            {
+              "id": "A",
+              "text": "用 ACV 档先确认是否真的没电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "不测电直接拆开插座面板查接线",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "目视检查配电箱空开是否跳闸",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "用 NCV 档判断哪根线是火线",
+              "is_correct": false
+            }
+          ],
+          "explanation": "不测电就直接拆带电插座可能导致触电！必须先确认电源是否切断、是否有电。安全检查永远是排故第一步。",
+          "id": "l6_repair_scenario_n11"
+        },
+        {
+          "type": "fill_blank",
+          "question": "排故思维的口诀是\"从大到小，____\"。",
+          "correct_answer": "由表及里",
+          "explanation": "由表及里：先排除外部明显故障（电源、空开、保险），再深入元件内部细查。避免一上来就拆精细元件，既低效又危险。",
+          "id": "l6_repair_scenario_n12",
+          "answer": "由表及里",
+          "acceptable_answers": [
+            "由表及里"
+          ]
+        }
+      ]
+    }
+  ]
+}

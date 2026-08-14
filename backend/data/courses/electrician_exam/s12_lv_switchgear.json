@@ -1,0 +1,721 @@
+{
+  "id": "s12_lv_switchgear",
+  "title": "电工考证单元十二：低压成套柜与配电设备",
+  "description": "低压成套柜类型与结构、母线排、断路器与开关安装、配电柜运行维护、双电源与应急电源",
+  "icon": "🗄️",
+  "course_id": "electrician_exam",
+  "lessons": [
+    {
+      "id": "s12a_panel_types",
+      "title": "低压成套柜类型与结构",
+      "description": "GGD、抽屉柜、进线出线电容柜",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "低压成套柜的分类",
+          "content": "低压成套开关设备（配电柜）按结构分固定式和抽屉式两大类：固定式（如 GGD 型）结构简单、成本低、容量大，元件直接固定安装；抽屉式（如 GCK、GCS、MNS 型）把功能单元做成抽屉，可抽出检修更换、互换性好、维护方便，用于重要的低压配电系统。",
+          "id": "s12a_panel_types_n0"
+        },
+        {
+          "type": "info",
+          "title": "柜体功能划分",
+          "content": "低压配电室通常由多面柜组成：进线柜（接受电源、装总断路器）、出线柜（分路供电、装分路开关）、母联柜（联络两段母线）、电容补偿柜（装电容器组提高功率因数）、计量柜（装电度表计量）。各柜按主接线图排列在母线排下。",
+          "id": "s12a_panel_types_n1"
+        },
+        {
+          "type": "info",
+          "title": "抽屉式单元的三位置",
+          "content": "抽屉式柜的功能单元（抽屉）有三个位置：连接位置（主电路和二次回路都接通）、试验位置（主电路断开、二次回路仍可通电试验）、抽出位置（主二次全断开，可完全抽出检修）。位置转换靠机械定位并带联锁。",
+          "id": "s12a_panel_types_n2"
+        },
+        {
+          "type": "info",
+          "title": "一次回路与二次回路",
+          "content": "一次回路（主回路）是输送电能的大电流回路（母线、断路器、接触器主触头、电流互感器一次侧）；二次回路是控制、测量、信号、保护的小电流回路（控制按钮、继电器线圈、仪表、指示灯、互感器二次侧）。二次回路由控制电源供电（220V/24V 等）。",
+          "id": "s12a_panel_types_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "GCK、GCS、MNS 型低压柜属于？",
+          "options": [
+            {
+              "id": "A",
+              "text": "抽屉式开关柜，功能单元可抽出检修",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "固定式开关柜",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "高压开关柜",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "箱式变压器",
+              "is_correct": false
+            }
+          ],
+          "explanation": "GCK/GCS/MNS 是抽屉式低压柜的常用型号，抽屉可抽出更换、互换性好、维护方便。",
+          "id": "s12a_panel_types_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "专门装电容器组提高功率因数的柜是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "进线柜",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电容补偿柜",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "出线柜",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "计量柜",
+              "is_correct": false
+            }
+          ],
+          "explanation": "电容补偿柜并联电容器，就地补偿无功功率，提高功率因数、降低线损。",
+          "id": "s12a_panel_types_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "抽屉式单元的三个位置是连接、试验、抽出，在试验位置时主电路和二次回路均保持接通，以便带电试运行。",
+          "correct_answer": false,
+          "explanation": "不对。试验位置主电路已断开、二次回路可通电试运行；连接位置主二次全通；抽出位置主二次全断可抽出检修。若试验位置主二次都接通，就无法安全带电试二次了。",
+          "id": "s12a_panel_types_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "低压配电柜的电容补偿作用是通过并联 ____ 器实现的。",
+          "answer": "电容",
+          "acceptable_answers": [
+            "电容",
+            "电容器",
+            "电力电容",
+            "电力电容器"
+          ],
+          "explanation": "并联电容器补偿感性无功，使功率因数提高到 0.9 以上，节能降损。",
+          "id": "s12a_panel_types_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "一次回路与二次回路的区别是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "二者完全一样",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "二次回路输送电能",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "一次回路输送大电流，二次回路是控制测量信号小电流",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "一次回路是小电流",
+              "is_correct": false
+            }
+          ],
+          "explanation": "一次回路承担电能输送（大电流），二次回路承担控制测量保护（小电流），二次电源单独供给。",
+          "id": "s12a_panel_types_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "固定式低压柜（GGD）结构简单成本低，抽屉式柜维护方便互换性好，各有适用场合。",
+          "correct_answer": true,
+          "explanation": "GGD 固定式用于一般配电，抽屉式（MNS 等）用于要求高可靠性、需要快速更换单元的场合。",
+          "id": "s12a_panel_types_n9"
+        }
+      ]
+    },
+    {
+      "id": "s12b_busbar",
+      "title": "母线排",
+      "description": "铜铝母线、相序涂色、搭接工艺、温升",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "母线的材料",
+          "content": "低压母线排常用铜排（T）和铝排（L）：铜导电性好、载流量大、抗腐蚀，用于重要场所；铝价格低、重量轻，用于一般配电。相同截面铜排载流量约为铝排的 1.3 倍。母线截面按长期允许载流量和动热稳定校验。",
+          "id": "s12b_busbar_n0"
+        },
+        {
+          "type": "info",
+          "title": "母线的相序涂色",
+          "content": "母线要按规定涂色标识相序：A 相（L1）黄色、B 相（L2）绿色、C 相（L3）红色；工作零线 N 淡蓝色；保护零线 PE 黄绿双色。涂色便于识别相序、防止误接线，也起散热和防腐蚀作用。",
+          "id": "s12b_busbar_n1"
+        },
+        {
+          "type": "info",
+          "title": "母线的搭接工艺",
+          "content": "母线连接处是发热和故障多发点：搭接面要搪锡或镀银（防止氧化、减小接触电阻）、平整无氧化膜，搭接长度不小于母线宽度，螺栓紧固力矩符合要求，连接处加弹簧垫圈防松动。接触电阻过大是母排发热的主要原因。",
+          "id": "s12b_busbar_n2"
+        },
+        {
+          "type": "info",
+          "title": "母线的运行温升",
+          "content": "母线长期运行允许温升有限制（铜排一般 ≤70K、铝排 ≤65K，视绝缘等级），超过允许温升会加速绝缘老化、连接松动。母线穿过柜体、墙壁要用绝缘套管保护，母线支持绝缘子固定间距符合要求。",
+          "id": "s12b_busbar_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "低压母线 A 相、B 相、C 相的标准涂色是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "A黑、B白、C灰",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "A红、B黄、C绿",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "A绿、B黄、C红",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "A黄、B绿、C红",
+              "is_correct": true
+            }
+          ],
+          "explanation": "相序涂色：A（L1）黄、B（L2）绿、C（L3）红；N 淡蓝、PE 黄绿双色——务必记牢。",
+          "id": "s12b_busbar_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "母线搭接面搪锡或镀银的目的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "防止氧化、减小接触电阻",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "好看美观",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "增加重量",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "降低导电率",
+              "is_correct": false
+            }
+          ],
+          "explanation": "搪锡/镀银隔绝空气防氧化，保持接触面低电阻，避免连接处发热——接触电阻大是发热主因。",
+          "id": "s12b_busbar_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "母线连接处螺栓拧得越紧越好，不必按力矩控制，也不必加弹簧垫圈。",
+          "correct_answer": false,
+          "explanation": "不对。螺栓过紧会压伤母排和接线端子，过松则接触电阻增大、运行发热；必须按规定力矩紧固并加弹簧垫圈防振松，才能保证接触可靠。",
+          "id": "s12b_busbar_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "母线穿过柜体或墙壁时，必须加装绝缘 ____ 保护，防止碰壳漏电。",
+          "answer": "套管",
+          "acceptable_answers": [
+            "套管",
+            "绝缘套管",
+            "护套"
+          ],
+          "explanation": "穿柜/穿墙处用绝缘套管隔离，防止母线碰壳短路、漏电，是标准安装工艺。",
+          "id": "s12b_busbar_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "母排运行发热的主要原因是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "铜排导电性太好",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "搭接面接触电阻过大、螺栓松动或过载",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "涂了油漆",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "母线太短",
+              "is_correct": false
+            }
+          ],
+          "explanation": "接触电阻大（氧化、松动、搭接不良）和长期过载是母排过热、绝缘加速老化的两大主因。",
+          "id": "s12b_busbar_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "相同截面下，铜排的载流量大于铝排，故重要低压配电常用铜母线。",
+          "correct_answer": true,
+          "explanation": "铜的导电率约为铝的 1.6 倍，同截面载流量铜排约铝排 1.3 倍，重要回路用铜排。",
+          "id": "s12b_busbar_n9"
+        }
+      ]
+    },
+    {
+      "id": "s12c_breaker_inst",
+      "title": "断路器与开关安装",
+      "description": "脱扣器、分励/欠压脱扣、漏电断路器",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "断路器的脱扣器",
+          "content": "低压断路器靠脱扣器实现保护：热脱扣（双金属片，过载延时跳闸）、电磁脱扣（短路瞬时跳闸）、电子式脱扣器（可整定电流和时间，精度高）。断路器集通断、过载、短路保护于一体，还可加装分励脱扣器、欠压脱扣器等附件。",
+          "id": "s12c_breaker_inst_n0"
+        },
+        {
+          "type": "info",
+          "title": "分励脱扣器与欠压脱扣器",
+          "content": "分励脱扣器由外部电压信号控制跳闸（远距离分闸、消防联动断电）；欠压脱扣器在电源电压低于整定值时自动跳闸，防止欠压运行烧毁设备。失压（欠压）保护保证电压恢复时设备不会自行启动，防止意外。",
+          "id": "s12c_breaker_inst_n1"
+        },
+        {
+          "type": "info",
+          "title": "断路器的安装要求",
+          "content": "断路器应垂直安装（倾斜不超过规定角度），上进下出接线规范、端子压接牢固；额定电流、分断能力与被保护线路匹配；安装位置便于操作、检查和更换。多极断路器按相线数量选型。",
+          "id": "s12c_breaker_inst_n2"
+        },
+        {
+          "type": "info",
+          "title": "剩余电流断路器（漏电断路器）",
+          "content": "剩余电流断路器（RCD/漏电断路器）在检测到漏电电流（剩余电流）时迅速跳闸：家用和一般场所额定剩余动作电流 30mA、动作时间 <0.1s，用于防人身触电；300mA 用于防火。漏保试验按钮每月按一次验证有效。",
+          "id": "s12c_breaker_inst_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "分励脱扣器的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "短路时自动跳闸",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "提高功率因数",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "由外部信号控制断路器远距离分闸",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "过载时自动跳闸",
+              "is_correct": false
+            }
+          ],
+          "explanation": "分励脱扣器通电即脱扣跳闸，用于远距离操作、消防联动等外部控制分闸。",
+          "id": "s12c_breaker_inst_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "电压低于整定值时自动跳闸、防止欠压运行损坏设备的附件是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "电容补偿",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "分励脱扣器",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "热脱扣器",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "欠压（失压）脱扣器",
+              "is_correct": true
+            }
+          ],
+          "explanation": "欠压脱扣器监视电压，电压过低自动跳闸，并防止停电再来电时设备自行启动造成意外。",
+          "id": "s12c_breaker_inst_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "低压断路器安装方向不限，横装倒装都可以，进出线上下均可，不影响脱扣动作。",
+          "correct_answer": false,
+          "explanation": "不对。断路器必须垂直安装，保证脱扣机构可靠动作；横装/倒装会卡涩脱扣机构，导致故障时拒动。进出线也应上进下出、端子压接牢固。",
+          "id": "s12c_breaker_inst_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "家用及一般场所的漏电保护器额定剩余动作电流一般为 ____ mA。",
+          "answer": "30",
+          "acceptable_answers": [
+            "30",
+            "30mA",
+            "30 mA",
+            "30毫安"
+          ],
+          "explanation": "30mA/<0.1s 是防人身触电的标准参数；300mA 级用于防火。",
+          "id": "s12c_breaker_inst_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "漏电保护器应定期进行什么操作验证其有效？",
+          "options": [
+            {
+              "id": "A",
+              "text": "按试验按钮（每月一次）",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "拆开看内部",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "用水冲洗",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "短路测试",
+              "is_correct": false
+            }
+          ],
+          "explanation": "试验按钮模拟漏电使漏保跳闸，验证保护功能正常；应每月试验一次。",
+          "id": "s12c_breaker_inst_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "电子式脱扣器可对过载、短路电流和时间进行精确整定，保护选择性更好。",
+          "correct_answer": true,
+          "explanation": "电子式脱扣器用微处理器整定电流/时间，可实现可调、选择性的保护配合。",
+          "id": "s12c_breaker_inst_n9"
+        }
+      ]
+    },
+    {
+      "id": "s12d_panel_maintenance",
+      "title": "配电柜运行维护",
+      "description": "巡视检查、停电检修、触头温升、安全规程",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "日常巡视检查",
+          "content": "配电柜巡视看：仪表指示是否正常、信号灯状态、有无异常声响（电弧声、放电声）、异味（焦糊味）、过热变色（母线、触头、接线端子）、柜内有无异物、小动物、柜门是否关好。发现异常及时处理或报告。",
+          "id": "s12d_panel_maintenance_n0"
+        },
+        {
+          "type": "info",
+          "title": "定期停电检修",
+          "content": "配电柜应定期停电检修：清扫灰尘（积尘降低绝缘）、检查母排和接线紧固、检查触头磨损、测量绝缘电阻、检查保护整定、更换老化元件。检修必须停电并执行停电-验电-挂接地线-设标示牌的安全流程。",
+          "id": "s12d_panel_maintenance_n1"
+        },
+        {
+          "type": "info",
+          "title": "触头与连接部位",
+          "content": "接触器触头、断路器接线端子、母线搭接是发热高发点：触头磨损超限、接触不良、氧化会造成过热甚至烧蚀。检修时检查触头压力、接触面、有无变色烧痕，必要时打磨或更换。",
+          "id": "s12d_panel_maintenance_n2"
+        },
+        {
+          "type": "info",
+          "title": "检修安全规程",
+          "content": "配电柜检修严格执行：停电、验电（验明无电）、装设接地线、悬挂「禁止合闸，有人工作」标示牌、设置遮栏。两人作业一人监护；作业完毕后清点工具、拆除地线、恢复送电。",
+          "id": "s12d_panel_maintenance_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "巡视配电柜时发现焦糊异味和母线发热变色，正确的处理是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "装作没看见继续运行",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "立即查明原因、停电处理并报告",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "用手摸带电母线",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "用嘴吹吹就好",
+              "is_correct": false
+            }
+          ],
+          "explanation": "焦糊味、发热变色是接触不良或过载的征兆，应查明原因、必要时停电处理，防止故障扩大。",
+          "id": "s12d_panel_maintenance_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "配电柜停电检修前必须完成的安全措施顺序是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "挂地线→停电→验电",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "只停电不验电",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "停电→验电→挂接地线→设标示牌",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "直接开工",
+              "is_correct": false
+            }
+          ],
+          "explanation": "「停电、验电、接地、标示」是保证检修安全的标准顺序，缺一不可。",
+          "id": "s12d_panel_maintenance_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "配电柜内积尘对绝缘和散热没有影响，可以长期不清扫。",
+          "correct_answer": false,
+          "explanation": "不对。灰尘吸潮会降低绝缘电阻、影响散热导致柜内温升，是引发爬电、放电和绝缘击穿的隐患，必须定期除尘，保证绝缘与散热性能。",
+          "id": "s12d_panel_maintenance_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "检修时在可能送电的开关上悬挂「禁止合闸，有人 ____」标示牌。",
+          "answer": "工作",
+          "acceptable_answers": [
+            "工作",
+            "操作",
+            "作业"
+          ],
+          "explanation": "标示牌「禁止合闸，有人工作」防止他人误合闸造成触电，是检修必备安全措施。",
+          "id": "s12d_panel_maintenance_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "接触器触头磨损、接触不良的主要危害是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "无任何影响",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "使电机转速加快",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "提高绝缘",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "触头过热、烧蚀，接触电阻增大",
+              "is_correct": true
+            }
+          ],
+          "explanation": "触头磨损接触不良→接触电阻大→过热烧蚀→恶性循环，最终触头熔焊或断相烧毁设备。",
+          "id": "s12d_panel_maintenance_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "检修完毕后应清点工具、拆除接地线、确认无人留在柜内，再恢复送电。",
+          "correct_answer": true,
+          "explanation": "送电前清点工具防遗留短路，拆除接地线防带地线送电，确认人员撤离，是恢复送电的铁律。",
+          "id": "s12d_panel_maintenance_n9"
+        }
+      ]
+    },
+    {
+      "id": "s12e_dcd_switch",
+      "title": "双电源与应急电源",
+      "description": "ATS、柴油发电机、UPS、EPS 应急照明",
+      "estimated_time": "3分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "双电源自动转换（ATS）",
+          "content": "双电源自动转换开关（ATS/ATSE）在主电源失电时自动切换到备用电源，恢复后自动（或手动）切回。用于医院、消防、通信等不允许长时间停电的场所。切换要防止两电源并列运行（相序、同期条件不满足时禁止并列）。",
+          "id": "s12e_dcd_switch_n0"
+        },
+        {
+          "type": "info",
+          "title": "备用发电机组",
+          "content": "柴油发电机是常用备用电源：市电失电后自启动、合闸带负荷；也可作应急电源。发电机与市电之间必须可靠联锁，严禁反送电（防止发电机向电网倒送电造成事故）。",
+          "id": "s12e_dcd_switch_n1"
+        },
+        {
+          "type": "info",
+          "title": "UPS 不间断电源",
+          "content": "UPS（不间断电源）平时市电整流给蓄电池充电并供电，市电中断时逆变器把蓄电池直流变成交流继续供电，实现零切换。用于计算机、服务器、监控等对供电连续性要求高的设备。",
+          "id": "s12e_dcd_switch_n2"
+        },
+        {
+          "type": "info",
+          "title": "EPS 应急电源",
+          "content": "EPS（应急电源）专门用于消防应急照明、疏散指示等：市电正常时旁路供电，市电中断时自动切换蓄电池逆变供电，维持应急照明时间（一般不小于 30 分钟）。与消防联动。",
+          "id": "s12e_dcd_switch_n3"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "双电源自动转换开关（ATS）的作用是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "主电源失电时自动切换到备用电源",
+              "is_correct": true
+            },
+            {
+              "id": "B",
+              "text": "把交流变直流",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "提高功率因数",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "测量电能",
+              "is_correct": false
+            }
+          ],
+          "explanation": "ATS 在主电源失电后自动投切备用电源，保证重要负荷供电不中断。",
+          "id": "s12e_dcd_switch_n4"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "市电与柴油发电机之间必须设置联锁，主要目的是？",
+          "options": [
+            {
+              "id": "A",
+              "text": "提高发电机转速",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "防止发电机向电网反送电",
+              "is_correct": true
+            },
+            {
+              "id": "C",
+              "text": "让两台同时供电",
+              "is_correct": false
+            },
+            {
+              "id": "D",
+              "text": "省油",
+              "is_correct": false
+            }
+          ],
+          "explanation": "联锁保证同一时刻只有一路电源接通，防止发电机对电网倒送电，威胁检修人员安全和设备。",
+          "id": "s12e_dcd_switch_n5"
+        },
+        {
+          "type": "true_false",
+          "question": "UPS 平时由市电给蓄电池充电，市电中断时逆变器把蓄电池直流变成交流供电，实现不间断。",
+          "correct_answer": true,
+          "explanation": "UPS 整流充电+逆变供电，切换时间极短（毫秒级），保证负载不掉电。",
+          "id": "s12e_dcd_switch_n6"
+        },
+        {
+          "type": "fill_blank",
+          "question": "消防应急照明和疏散指示通常采用 ____（应急电源）供电。",
+          "answer": "EPS",
+          "acceptable_answers": [
+            "EPS",
+            "应急电源",
+            "EPS电源"
+          ],
+          "explanation": "EPS 专用于消防应急照明，市电中断自动转蓄电池逆变供电，维持不少于 30 分钟。",
+          "id": "s12e_dcd_switch_n7"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "计算机服务器等对供电连续性要求高的设备，宜配置？",
+          "options": [
+            {
+              "id": "A",
+              "text": "只靠发电机",
+              "is_correct": false
+            },
+            {
+              "id": "B",
+              "text": "电容补偿",
+              "is_correct": false
+            },
+            {
+              "id": "C",
+              "text": "UPS 不间断电源（零切换）",
+              "is_correct": true
+            },
+            {
+              "id": "D",
+              "text": "普通插座",
+              "is_correct": false
+            }
+          ],
+          "explanation": "UPS 提供零切换不间断供电，防止数据丢失和设备损坏；发电机启动需要时间，不能做到不间断。",
+          "id": "s12e_dcd_switch_n8"
+        },
+        {
+          "type": "true_false",
+          "question": "双电源并列只需两路电压大小一致即可，相序不一致也可以直接并列运行。",
+          "correct_answer": false,
+          "explanation": "不对。双电源并列必须同时满足相序、频率、电压、相位全部一致；相序不一致会直接造成相间短路，产生巨大环流烧毁设备，必须靠联锁装置禁止并列。",
+          "id": "s12e_dcd_switch_n9"
+        }
+      ]
+    }
+  ]
+}
