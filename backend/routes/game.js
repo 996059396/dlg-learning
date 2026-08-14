@@ -7,6 +7,7 @@ const { requireAuth, optionalAuth, requireAdmin } = require('../middleware/auth'
 const { rateLimit } = require('../middleware/rate_limit');
 const { ITEM_CATALOG, applyItemEffect } = require('../lib/shop');
 const { gradeNode } = require('../lib/grading');
+const { readJSON } = require('../lib/content_cache');
 
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
 
@@ -23,7 +24,7 @@ function loadLesson(courseId, unitId, lessonId) {
   if (!UNIT_IDS.get(courseId)?.has(unitId)) return null;
   const unitPath = path.join(COURSES_DIR, courseId, `${unitId}.json`);
   if (!fs.existsSync(unitPath)) return null;
-  const unit = JSON.parse(fs.readFileSync(unitPath, 'utf-8'));
+  const unit = readJSON(unitPath);
   if (!unit || !unit.lessons) return null;
   return unit.lessons.find(l => l.id === lessonId) || null;
 }
@@ -45,7 +46,7 @@ function loadMistakeNode(mistake) {
     }
   } else if (mistake.lesson_id === 'exam/ms_pool') {
     try {
-      const pool = JSON.parse(fs.readFileSync(MS_POOL_PATH, 'utf-8'));
+      const pool = readJSON(MS_POOL_PATH);
       return mistake.node_id
         ? pool.find(n => n.id === mistake.node_id) || null
         : null;

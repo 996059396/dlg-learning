@@ -5,6 +5,7 @@ const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth } = require('../middleware/auth');
 const { gradeNode, extractAnswer } = require('../lib/grading');
+const { readJSON } = require('../lib/content_cache');
 
 // Load course index
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
@@ -12,7 +13,7 @@ const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
 function loadCourseIndex() {
   const indexPath = path.join(COURSES_DIR, 'index.json');
   if (!fs.existsSync(indexPath)) return [];
-  return JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  return readJSON(indexPath);
 }
 
 // Whitelist of real course ids → their unit ids, built from the authoritative
@@ -27,7 +28,7 @@ function loadUnit(courseId, unitId) {
   if (!UNIT_IDS.get(courseId)?.has(unitId)) return null;
   const unitPath = path.join(COURSES_DIR, courseId, `${unitId}.json`);
   if (!fs.existsSync(unitPath)) return null;
-  return JSON.parse(fs.readFileSync(unitPath, 'utf-8'));
+  return readJSON(unitPath);
 }
 
 function loadLesson(courseId, unitId, lessonId) {

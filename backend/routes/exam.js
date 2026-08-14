@@ -9,6 +9,7 @@ const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth } = require('../middleware/auth');
 const { gradeNode, extractAnswer } = require('../lib/grading');
+const { readJSON } = require('../lib/content_cache');
 
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
 const MS_POOL = path.join(__dirname, '..', 'data', 'exam', 'multi_select.json');
@@ -39,13 +40,13 @@ db.db.exec(`
 // mistakes can be attributed back for SM-2 and p-value stats.
 function loadExamPool() {
   const pool = [];
-  const index = JSON.parse(fs.readFileSync(path.join(COURSES_DIR, 'index.json'), 'utf-8'));
+  const index = readJSON(path.join(COURSES_DIR, 'index.json'));
   const course = index.find(c => c.id === 'electrician_exam');
   if (!course) return pool;
   for (const unit of course.units || []) {
     const unitPath = path.join(COURSES_DIR, course.id, `${unit.id}.json`);
     if (!fs.existsSync(unitPath)) continue;
-    const data = JSON.parse(fs.readFileSync(unitPath, 'utf-8'));
+    const data = readJSON(unitPath);
     for (const lesson of data.lessons || []) {
       const lessonId = `${course.id}/${unit.id}/${lesson.id}`;
       for (const node of lesson.nodes || []) {
@@ -97,7 +98,7 @@ router.post('/start', requireAuth, (req, res) => {
   const mcs = course.filter(n => n.type === 'multiple_choice');
   let mss = [];
   if (fs.existsSync(MS_POOL)) {
-    mss = JSON.parse(fs.readFileSync(MS_POOL, 'utf-8')).map(n => ({ ...n, _lessonId: 'exam/ms_pool' }));
+    mss = readJSON(MS_POOL).map(n => ({ ...n, _lessonId: 'exam/ms_pool' }));
   }
   const questions = [
     ...shuffle(tfs).slice(0, COUNTS.true_false),
