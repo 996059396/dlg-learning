@@ -9,6 +9,23 @@ export function setToken(token) {
   else localStorage.removeItem(TOKEN_KEY);
 }
 
+// Global 401 fallback (P32 P2-3): a session that dies mid-use (logout-all or
+// change-password from another device, token revoked, DB reset) used to strand
+// the UI — every endpoint threw and nothing returned the user to the auth gate.
+// Any 401 from a user-scoped endpoint fires these handlers IN ADDITION to
+// throwing. Login/change-password 401s are business logic (wrong creds / wrong
+// old password), NOT session expiry, so they are excluded.
+const SESSION_401_EXCLUDED = new Set(['/auth/login', '/auth/register', '/auth/change-password']);
+let unauthorizedHandlers = [];
+
+// Register a handler that runs on any non-auth 401. Returns an unsubscribe fn.
+export function onUnauthorized(fn) {
+  unauthorizedHandlers.push(fn);
+  return () => {
+    unauthorizedHandlers = unauthorizedHandlers.filter(h => h !== fn);
+  };
+}
+
 async function request(url, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   const token = getToken();
@@ -18,6 +35,11 @@ async function request(url, options = {}) {
     const err = await res.json().catch(() => ({ error: 'Network error' }));
     const e = new Error(err.error || `HTTP ${res.status}`);
     e.status = res.status;
+    if (res.status === 401 && !SESSION_401_EXCLUDED.has(url.split('?')[0])) {
+      for (const fn of [...unauthorizedHandlers]) {
+        try { fn(); } catch (handlerErr) { console.error('unauthorized handler failed:', handlerErr); }
+      }
+    }
     throw e;
   }
   return res.json();
@@ -64,8 +86,8 @@ export const api = {
   practiceHeal: (correctCount) =>
     request('/game/practice-heal', { method: 'POST', body: JSON.stringify({ correctCount }) }),
   getMistakes: () => request('/game/mistakes'),
-  reviewMistake: (mistakeId, correct, userAnswer) =>
-    request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, correct, userAnswer }) }),
+  reviewMistake: (mistakeId, userAnswer) =>
+    request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, userAnswer }) }),
   spendCoins: (amount, itemId) =>
     request('/game/spend-coins', { method: 'POST', body: JSON.stringify({ amount, itemId }) }),
   getLeaderboard: (league) => request(`/game/leaderboard/${league}`),

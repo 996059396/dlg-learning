@@ -4,22 +4,6 @@ import { api } from '../utils/api';
 import { useGame } from '../context/GameContext';
 import MultimeterChallenge from '../components/multimeter/MultimeterChallenge';
 
-// ── Helper: case-insensitive answer check, normalized to match server grading ──
-// Mirrors backend/lib/grading.js _normalize: full-width → half-width, Ω shielded
-// through toLowerCase (stays distinct from ω), ALL whitespace stripped.
-function answersMatch(userAnswer, correctAnswer) {
-  if (!userAnswer || !correctAnswer) return false;
-  const half = (s) => String(s)
-    .replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
-    .replace(/　/g, ' ');
-  const normalize = (s) => {
-    const h = half(String(s || '').trim());
-    const shielded = h.replace(/Ω/g, '');
-    return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
-  };
-  return normalize(userAnswer) === normalize(correctAnswer);
-}
-
 export default function MistakeReview() {
   const navigate = useNavigate();
   const { user, gameState, showToast, setGameState } = useGame();
@@ -36,6 +20,17 @@ export default function MistakeReview() {
   const [isCorrect, setIsCorrect] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [lastSchedule, setLastSchedule] = useState(null);
+  // Server-revealed review outcome. GET /mistakes ships SANITIZED cards (no
+  // answer keys) so a script can't read the answer and replay it to mint coins
+  // (crosscheck3 P26/P31 P1). The correct answer + verdict are returned by the
+  // review call, AFTER the user commits — the result phase reads them from here.
+  const [reveal, setReveal] = useState(null);
+  // B58 A4 in-session retry: a failed recall re-enters the session for immediate
+  // relearning (SM-2 canonical step 7 / Anki relearn — the "几分钟内再提取" window
+  // is the highest-value memory repair). Failed cards re-queue at the tail, up
+  // to MAX_SESSION_RETRIES, so a correct recall exits the card this session.
+  const MAX_SESSION_RETRIES = 2;
+  const [retryCounts, setRetryCounts] = useState({}); // { [mistakeId]: retries used }
 
   // Load mistakes from API (no demo fallback)
   useEffect(() => {
@@ -72,6 +67,7 @@ export default function MistakeReview() {
     setIsCorrect(null);
     setSubmitted(false);
     setLastSchedule(null);
+    setReveal(null);
   }, [currentIndex]);
 
   const handleSubmitAnswer = useCallback(async () => {
@@ -81,42 +77,48 @@ export default function MistakeReview() {
     setSubmitted(true);
 
     // multi_select: submit the JSON array of option ids the server grades by
-    // (gradeNode requires a JSON array string, not joined texts). Local feedback
-    // compares the selected option TEXTS against the joined correct_answer; the
-    // server verdict remains authoritative for SM-2 scheduling.
+    // (gradeNode requires a JSON array string, not joined texts).
     const answerStr = isMs ? JSON.stringify(msSelected) : userReanswer;
-    let correct = false;
-    if (isMs) {
-      const correctTexts = String(current?.correct_answer || '').split('、').map(s => s.trim()).filter(Boolean);
-      const selectedTexts = msSelected
-        .map(id => current.original_node.options.find(o => o.id === id)?.text)
-        .filter(Boolean);
-      correct = correctTexts.length > 0 && correctTexts.length === selectedTexts.length &&
-        correctTexts.every(t => selectedTexts.includes(t));
-    } else {
-      correct = answersMatch(userReanswer, current?.correct_answer || '');
-    }
-    setIsCorrect(correct);
-    setPhase('result');
 
-    // Record the recall outcome for SM-2 scheduling (server returns the next
-    // review). The server RE-GRADES userReanswer against the stored node, so
-    // the boolean sent here is informational only — no client-claimed outcome
-    // ever earns practice-heal credit.
+    // The verdict AND the correct answer come back from the server's review
+    // call — GET /mistakes no longer ships answer keys (crosscheck3 P26/P31 P1),
+    // so there is nothing to compare against locally. The server verdict is
+    // authoritative for SM-2 scheduling and practice-heal credit.
     if (user?.id && user.id !== 'demo' && current?.id) {
       try {
-        const res = await api.reviewMistake(current.id, correct, answerStr);
+        const res = await api.reviewMistake(current.id, answerStr);
+        setReveal({ correct: res?.correct === true, correctAnswer: res?.correctAnswer ?? null });
+        setIsCorrect(res?.correct === true);
         if (res?.mistake) setLastSchedule(res.mistake);
       } catch {
-        // continue even if backend call fails
+        // Backend unreachable — show the result phase with no revealed answer.
+        setReveal(null);
+        setIsCorrect(null);
       }
+    } else {
+      // Demo/guest users have no stored mistakes (empty state), so this branch
+      // is unreachable in practice — keep it harmless.
+      setReveal(null);
+      setIsCorrect(null);
     }
+    setPhase('result');
   }, [submitted, userReanswer, msSelected, mistakes, currentIndex, user]);
 
   const handleNext = useCallback(async () => {
     const current = mistakes[currentIndex];
     const newReviewed = reviewed + 1;
     setReviewed(newReviewed);
+
+    // B58 A4: wrong recall → don't advance past the card; re-queue it at the
+    // tail of this session so the user re-learns it NOW (bound: 2 retries).
+    const failed = isCorrect === false;
+    const retried = retryCounts[current?.id] || 0;
+    if (failed && retried < MAX_SESSION_RETRIES) {
+      setRetryCounts(prev => ({ ...prev, [current.id]: retried + 1 }));
+      setMistakes(prev => [...prev, current]);
+      setCurrentIndex(currentIndex + 1);
+      return;
+    }
 
     // SM-2 outcome was already recorded at submit time (handleSubmitAnswer).
 
@@ -152,7 +154,7 @@ export default function MistakeReview() {
       );
       navigate('/');
     }
-  }, [currentIndex, reviewed, mistakes, user, gameState, showToast, navigate, setGameState]);
+  }, [currentIndex, reviewed, mistakes, retryCounts, isCorrect, user, gameState, showToast, navigate, setGameState]);
 
   // ── Loading state ──
   if (loading) {
@@ -183,7 +185,8 @@ export default function MistakeReview() {
   }
 
   const current = mistakes[currentIndex];
-  const hasCorrectAnswer = current?.correct_answer && current.correct_answer.trim() !== '';
+  const correctAnswer = reveal?.correctAnswer; // revealed only after a committed attempt
+  const hasCorrectAnswer = correctAnswer && String(correctAnswer).trim() !== '';
 
   return (
     <div>
@@ -272,17 +275,19 @@ export default function MistakeReview() {
                     setUserReanswer(setupStr || '已操作');
                     setIsCorrect(correct);
                     setSubmitted(true);
-                    setPhase('result');
-                    // SM-2 scheduling was MISSING here (60-agent round 2): the
-                    // multimeter card never recorded its recall outcome, so it
-                    // stayed perpetually due and the review queue could never
-                    // drain. Mirror handleSubmitAnswer — the server re-grades the
-                    // serialized setup; the boolean is informational only.
+                    // SM-2 scheduling + verdict come from the server re-grade;
+                    // the challenge's local `correct` gives instant meter
+                    // feedback only (mirror of handleSubmitAnswer).
                     if (user?.id && user.id !== 'demo' && current?.id) {
-                      api.reviewMistake(current.id, correct, setupStr || '已操作')
-                        .then(res => { if (res?.mistake) setLastSchedule(res.mistake); })
-                        .catch(() => {});
+                      api.reviewMistake(current.id, setupStr || '已操作')
+                        .then(res => {
+                          if (res?.mistake) setLastSchedule(res.mistake);
+                          setReveal({ correct: res?.correct === true, correctAnswer: res?.correctAnswer ?? null });
+                          setIsCorrect(res?.correct === true);
+                        })
+                        .catch(() => setReveal(null));
                     }
+                    setPhase('result');
                   }
                 }}
               />
@@ -293,7 +298,7 @@ export default function MistakeReview() {
               {current.original_node.options.map(opt => {
                 const sel = msSelected.includes(opt.id);
                 const isCorrectOpt = phase === 'result' &&
-                  String(current.correct_answer || '').split('、').map(s => s.trim()).includes(opt.text);
+                  String(correctAnswer || '').split('、').map(s => s.trim()).includes(opt.text);
                 return (
                   <button
                     key={opt.id}
@@ -323,9 +328,9 @@ export default function MistakeReview() {
                   className={`option-btn ${
                     phase === 'answer' && userReanswer === opt.text
                       ? 'selected'
-                      : phase === 'result' && opt.text === current.correct_answer
+                      : phase === 'result' && opt.text === correctAnswer
                       ? 'correct'
-                      : phase === 'result' && userReanswer === opt.text && userReanswer !== current.correct_answer
+                      : phase === 'result' && userReanswer === opt.text && userReanswer !== correctAnswer
                       ? 'wrong'
                       : ''
                   }`}
@@ -348,8 +353,8 @@ export default function MistakeReview() {
                <button
                   className={`option-btn`}
                   style={{
-                    backgroundColor: phase === 'answer' && userReanswer === '正确' ? '#F0F8FF' : phase === 'result' && current.correct_answer === '正确' ? '#E5F6D0' : phase === 'result' && userReanswer === '正确' ? '#FFE5E5' : undefined,
-                    borderColor: phase === 'answer' && userReanswer === '正确' ? 'var(--blue)' : phase === 'result' && current.correct_answer === '正确' ? 'var(--primary)' : phase === 'result' && userReanswer === '正确' ? 'var(--danger)' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === '正确' ? '#F0F8FF' : phase === 'result' && correctAnswer === '正确' ? '#E5F6D0' : phase === 'result' && userReanswer === '正确' ? '#FFE5E5' : undefined,
+                    borderColor: phase === 'answer' && userReanswer === '正确' ? 'var(--blue)' : phase === 'result' && correctAnswer === '正确' ? 'var(--primary)' : phase === 'result' && userReanswer === '正确' ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer('正确'); }}
                   disabled={phase === 'result'}
@@ -359,8 +364,8 @@ export default function MistakeReview() {
                 <button
                   className={`option-btn`}
                    style={{
-                    backgroundColor: phase === 'answer' && userReanswer === '错误' ? '#F0F8FF' : phase === 'result' && current.correct_answer === '错误' ? '#E5F6D0' : phase === 'result' && userReanswer === '错误' ? '#FFE5E5' : undefined,
-                    borderColor: phase === 'answer' && userReanswer === '错误' ? 'var(--blue)' : phase === 'result' && current.correct_answer === '错误' ? 'var(--primary)' : phase === 'result' && userReanswer === '错误' ? 'var(--danger)' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === '错误' ? '#F0F8FF' : phase === 'result' && correctAnswer === '错误' ? '#E5F6D0' : phase === 'result' && userReanswer === '错误' ? '#FFE5E5' : undefined,
+                    borderColor: phase === 'answer' && userReanswer === '错误' ? 'var(--blue)' : phase === 'result' && correctAnswer === '错误' ? 'var(--primary)' : phase === 'result' && userReanswer === '错误' ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer('错误'); }}
                   disabled={phase === 'result'}
@@ -383,8 +388,8 @@ export default function MistakeReview() {
                   key={i}
                   className="option-btn"
                   style={{
-                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === current.correct_answer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== current.correct_answer ? '#FFE5E5' : undefined,
-                    borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === current.correct_answer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== current.correct_answer ? 'var(--danger)' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === correctAnswer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? '#FFE5E5' : undefined,
+                    borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === correctAnswer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer(opt.label); }}
                   disabled={phase === 'result'}
@@ -400,8 +405,8 @@ export default function MistakeReview() {
                   key={i}
                   className="option-btn"
                    style={{
-                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === current.correct_answer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== current.correct_answer ? '#FFE5E5' : undefined,
-                    borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === current.correct_answer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== current.correct_answer ? 'var(--danger)' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === correctAnswer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? '#FFE5E5' : undefined,
+                    borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === correctAnswer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer(opt.label); }}
                   disabled={phase === 'result'}
@@ -457,7 +462,7 @@ export default function MistakeReview() {
               }}>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>正确答案：</div>
                 <div style={{ fontWeight: 600, color: 'var(--primary)', fontSize: 15 }}>
-                  {current.correct_answer}
+                  {correctAnswer}
                 </div>
               </div>
             ) : (
@@ -487,7 +492,7 @@ export default function MistakeReview() {
                   <span>
                     {isCorrect
                       ? <>📅 <strong>记住了！</strong>{lastSchedule.interval_days <= 1 ? '明天' : `${lastSchedule.interval_days} 天后`}再复习这道题</>
-                      : <>🔁 <strong>这次没答对</strong>，明天再来复习它</>}
+                      : <>🔁 <strong>这次没答对</strong>，{(retryCounts[current.id] || 0) < MAX_SESSION_RETRIES ? '稍后本会话会再问一次，答对才算过' : '已重试多次，明天再来复习它'}</>}
                   </span>
                 )}
               </div>

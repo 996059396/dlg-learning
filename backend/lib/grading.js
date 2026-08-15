@@ -25,11 +25,20 @@ const _matchCanon = (s) => _normalize(s).replace(/\s*([=,])\s*/g, '$1');
 // Shield Ω with a private-use sentinel before lowercasing, then restore it, so
 // the two stay distinct through normalization.
 const _normalize = (s) => {
-  const half = _halfWidth(String(s || '').trim());
-  const shielded = half.replace(/Ω/g, '');
-  return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
-};
-function extractAnswer(node) {
+  // `?? ''` not `|| ''` (P29 / #72 falsy asymmetry): a legit answer "0" arriving
+  // as the NUMBER 0 (or false for a boolean-typed answer) used to collapse to ''
+  // and falsely fail. Only null/undefined mean "no answer".
+  const half = _halfWidth(String(s ?? '').trim());
+  // Crosscheck4 C08: toLowerCase() fuses the SI prefixes m (milli) and M (mega),
+  // so '0.5MΩ' was accepting '0.5mΩ' and '500mA' accepting '500MA'. Shield an
+  // uppercase M that starts an SI prefix (immediately followed by a unit letter
+  // or Ω/ω) the same way Ω is shielded below — prefix case survives lowercasing.
+  // Selection answers unaffected (both sides transform identically); typed
+  // fill_blank '0.5MΩ' vs '0.5mΩ' now grade distinctly.
+  const mShielded = half.replace(/M(?=[A-Za-zΩω])/g, '');
+  const shielded = mShielded.replace(/Ω/g, '');
+  return shielded.toLowerCase().replace(//g, 'M').replace(//g, 'Ω').replace(/\s+/g, '');
+};function extractAnswer(node) {
   if (!node) return '';
   switch (node.type) {
     case 'multiple_choice':
@@ -126,10 +135,16 @@ function gradeNode(node, userAnswer) {
       const opt = (node.dial_options || []).find(o => _normalize(o.label) === u);
       return { gradeable: true, correct: !!opt?.is_correct };
     }
-    case 'simulation_danger':
+    case 'simulation_danger': {
       // Not unconditional: the safe action has a canonical answer the frontend
-      // sends only after completing the correct (先换表笔再测量) sequence.
-      return { gradeable: true, correct: /安全操作/.test(u) };
+      // sends only after completing the correct (先换表笔再测量) sequence. The old
+      // substring test /安全操作/ wrongly accepted "不安全操作" (it CONTAINS the
+      // characters 安全操作). Accept only the exact safe-action forms after
+      // normalization: the frontend's '安全操作' and extractAnswer's display
+      // canonical '安全操作（先换表笔再测量）'.
+      const displayCanonical = _normalize('安全操作（先换表笔再测量）');
+      return { gradeable: true, correct: u === '安全操作' || u === displayCanonical };
+    }
     case 'sort': {
       if (!node.correct_order || !node.items) return { gradeable: false, correct: false };
       const correctText = node.correct_order

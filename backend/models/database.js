@@ -102,6 +102,28 @@ function initializeDatabase() {
       UNIQUE(user_id, mistake_id)
     );
 
+    -- Append-only review history (B58 A2): one row per review attempt — the
+    -- data base for retention/forgetting-curve stats and future FSRS parameter
+    -- fitting (Anki revlog's minimal set). The mistakes table keeps the CURRENT
+    -- SM-2 state; review_log records every transition so history is never lost
+    -- (before it existed, a card's past schedule was un-auditable).
+    CREATE TABLE IF NOT EXISTS review_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      mistake_id INTEGER NOT NULL,
+      reviewed_at TEXT NOT NULL,
+      quality INTEGER NOT NULL,
+      correct INTEGER NOT NULL,
+      response_time_ms INTEGER,
+      interval_before INTEGER,
+      interval_after INTEGER,
+      ease_before REAL,
+      ease_after REAL,
+      session_id TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_review_log_user_time ON review_log(user_id, reviewed_at);
+
     -- Shop items owned
     CREATE TABLE IF NOT EXISTS inventory (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -225,6 +247,10 @@ function initializeDatabase() {
     review_count: 'ALTER TABLE mistakes ADD COLUMN review_count INTEGER DEFAULT 0',
     next_review_date: 'ALTER TABLE mistakes ADD COLUMN next_review_date TEXT',
     mastered: 'ALTER TABLE mistakes ADD COLUMN mastered BOOLEAN DEFAULT 0',
+    // C10: 多选池错题卡选项 id 会话级重映射。池文件选项 id 恒 {A,B,C,D} 且正确项
+    // 固定——错题卡若不重映射，脚本盲猜 ["A","B"] 即 100% 判对铸币。入册时生成
+    // {原始id: 随机ms-xxxx} 存此列，review/卡面都用重映射后的 id 判分。
+    remap_json: 'ALTER TABLE mistakes ADD COLUMN remap_json TEXT',
   };
   for (const [col, sql] of Object.entries(mkMigrations)) {
     if (!mkCols.includes(col)) {
@@ -559,7 +585,7 @@ const SM2_MASTERED_INTERVAL = 21; // interval_days >= 21 ⇒ mastered
 // node wrong again in a later attempt refreshes the card instead of duplicating.
 // node_id is the stable addressing key (node.id, globally unique); node_index is
 // kept for legacy rows created before node_id existed.
-function addMistake(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer) {
+function addMistake(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer, remapJson = null) {
   const today = todayShanghai();
   const existing = nodeId
     ? db.prepare(
@@ -572,18 +598,18 @@ function addMistake(userId, lessonId, nodeId, nodeIndex, questionText, userAnswe
   if (existing) {
     db.prepare(`
       UPDATE mistakes SET
-        question_text = ?, user_answer = ?, correct_answer = ?,
+        question_text = ?, user_answer = ?, correct_answer = ?, remap_json = ?,
         reviewed = 0, mastered = 0, easiness = 2.5, interval_days = 0,
         review_count = 0, next_review_date = ?, created_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(questionText, userAnswer, correctAnswer, today, existing.id);
+    `).run(questionText, userAnswer, correctAnswer, remapJson, today, existing.id);
   } else {
     db.prepare(`
       INSERT INTO mistakes
         (user_id, lesson_id, node_id, node_index, question_text, user_answer, correct_answer,
-         next_review_date, easiness, interval_days, review_count, mastered)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 2.5, 0, 0, 0)
-    `).run(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer, today);
+         remap_json, next_review_date, easiness, interval_days, review_count, mastered)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 2.5, 0, 0, 0)
+    `).run(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer, remapJson, today);
   }
 }
 
@@ -616,15 +642,38 @@ function getNodeStats(lessonId) {
   `).all(lessonId);
 }
 
-// Due mistakes: not mastered AND next_review_date <= today, oldest due first.
-function getUnreviewedMistakes(userId, limit = 5) {
+// Due mistakes: not mastered AND next_review_date <= today.
+// B58 A6/F3 queue tiering + priority: the combined queue is DUE REVIEWS
+// (review_count > 0, most-overdue first — "到期最久优先" per A6) followed by NEW
+// learning-step cards (review_count = 0, today's mistakes). Each tier has its
+// own per-fetch cap (QUEUE_REVIEW_CAP / QUEUE_NEW_CAP) so neither floods a
+// fetch, and offset pages correctly over the combined queue (a backlog of
+// overdue reviews can't strand fresh mistakes, nor vice versa).
+const QUEUE_REVIEW_CAP = 50; // 复习步硬顶
+const QUEUE_NEW_CAP = 20;    // 学习步硬顶
+function getUnreviewedMistakes(userId, limit = 10, offset = 0) {
   const today = todayShanghai();
-  return db.prepare(`
+  const reviewsCount = db.prepare(`
+    SELECT COUNT(*) c FROM mistakes
+    WHERE user_id = ? AND mastered = 0 AND review_count > 0 AND next_review_date <= ?
+  `).get(userId, today).c;
+  const reviewOffset = Math.min(offset, reviewsCount);
+  const reviewTake = Math.min(limit, reviewsCount - reviewOffset, QUEUE_REVIEW_CAP);
+  const reviews = reviewTake > 0 ? db.prepare(`
     SELECT * FROM mistakes
-    WHERE user_id = ? AND mastered = 0 AND next_review_date <= ?
+    WHERE user_id = ? AND mastered = 0 AND review_count > 0 AND next_review_date <= ?
     ORDER BY next_review_date ASC, created_at ASC
-    LIMIT ?
-  `).all(userId, today, limit);
+    LIMIT ? OFFSET ?
+  `).all(userId, today, reviewTake, reviewOffset) : [];
+  const newOffset = Math.max(0, offset - reviewsCount);
+  const newTake = Math.min(limit - reviewTake, QUEUE_NEW_CAP);
+  const news = newTake > 0 ? db.prepare(`
+    SELECT * FROM mistakes
+    WHERE user_id = ? AND mastered = 0 AND review_count = 0 AND next_review_date <= ?
+    ORDER BY next_review_date ASC, created_at ASC
+    LIMIT ? OFFSET ?
+  `).all(userId, today, newTake, newOffset) : [];
+  return [...reviews, ...news];
 }
 
 function getDueMistakeCount(userId) {
@@ -639,24 +688,26 @@ function getDueMistakeCount(userId) {
 // SM-2 core: advance (easiness, interval, repetition) for a recall quality q (0-5).
 // Returns { easiness, interval, repetition }.
 function _sm2(curEasiness, curInterval, curRepetition, q) {
-  let EF = curEasiness;
-  let interval = curInterval || 0;
-  let repetition = curRepetition || 0;
+  const EF = curEasiness;
+  const interval = curInterval || 0;
+  const repetition = curRepetition || 0;
 
   if (q < 3) {
-    // Failed recall: restart the interval ladder, review again tomorrow.
-    repetition = 0;
-    interval = 1;
-  } else {
-    repetition += 1;
-    if (repetition === 1) interval = 1;
-    else if (repetition === 2) interval = 6;
-    else interval = Math.round(interval * EF);
+    // SM-2 canonical step 6: a failed recall restarts the interval ladder
+    // WITHOUT touching EF — the old code applied the EF formula on failures
+    // too, so a hard card's EF ratcheted toward the 1.3 floor and it took ~7
+    // correct recalls to master instead of ~4 (B58 A1). Failure resets the
+    // ladder; only success feeds the growth curve.
+    return { easiness: EF, interval: 1, repetition: 0 };
   }
-
-  EF = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
-  if (EF < 1.3) EF = 1.3;
-  return { easiness: EF, interval, repetition };
+  let r = repetition + 1;
+  let iv = 1;
+  if (r === 1) iv = 1;
+  else if (r === 2) iv = 6;
+  else iv = Math.round(interval * EF);
+  let ef = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+  if (ef < 1.3) ef = 1.3;
+  return { easiness: ef, interval: iv, repetition: r };
 }
 
 function _addDays(dateStr, days) {
@@ -670,8 +721,11 @@ function _addDays(dateStr, days) {
 // grantCredit controls whether practice-heal credit is issued: callers MUST
 // pass false unless the answer was verified server-side (never trust a client
 // boolean — see routes/game.js /mistakes/review).
+// extra: { responseTimeMs, sessionId } → written to review_log (B58 A2 retention
+// data base). The state UPDATE + review_log append + credit grant are atomic: a
+// failure between them used to leave the schedule advanced without a log row.
 // Returns the updated mistake row, or null if the mistake isn't found.
-function reviewMistake(mistakeId, userId, correct, grantCredit = true) {
+function reviewMistake(mistakeId, userId, correct, grantCredit = true, extra = {}) {
   const row = db.prepare('SELECT * FROM mistakes WHERE id = ? AND user_id = ?').get(mistakeId, userId);
   if (!row) return null;
 
@@ -681,19 +735,38 @@ function reviewMistake(mistakeId, userId, correct, grantCredit = true) {
   );
   const nextReview = _addDays(todayShanghai(), interval);
   const mastered = correct && interval >= SM2_MASTERED_INTERVAL ? 1 : 0;
+  const beforeEase = row.easiness ?? 2.5;
+  const beforeInterval = row.interval_days ?? 0;
 
-  db.prepare(`
-    UPDATE mistakes SET
-      easiness = ?, interval_days = ?, review_count = ?,
-      next_review_date = ?, reviewed = ?, mastered = ?
-    WHERE id = ? AND user_id = ?
-  `).run(easiness, interval, repetition, nextReview, correct ? 1 : 0, mastered, mistakeId, userId);
+  db.transaction(() => {
+    db.prepare(`
+      UPDATE mistakes SET
+        easiness = ?, interval_days = ?, review_count = ?,
+        next_review_date = ?, reviewed = ?, mastered = ?
+      WHERE id = ? AND user_id = ?
+    `).run(easiness, interval, repetition, nextReview, correct ? 1 : 0, mastered, mistakeId, userId);
 
-  // A correct recall earns one unit of practice-heal credit (deduped per
-  // mistake) — only when the caller verified the answer server-side.
-  if (correct && grantCredit) {
-    db.prepare('INSERT OR IGNORE INTO review_credit (user_id, mistake_id) VALUES (?, ?)').run(userId, mistakeId);
-  }
+    // B58 A2: append-only review history (forgetting-curve / retention stats,
+    // future FSRS fitting). reviewed_at is a full ISO timestamp so retention can
+    // be measured in time, not just days.
+    db.prepare(`
+      INSERT INTO review_log
+        (user_id, mistake_id, reviewed_at, quality, correct,
+         response_time_ms, interval_before, interval_after, ease_before, ease_after, session_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      userId, mistakeId, new Date().toISOString(), q, correct ? 1 : 0,
+      extra.responseTimeMs ?? null,
+      beforeInterval, interval, beforeEase, easiness,
+      extra.sessionId ?? null
+    );
+
+    // A correct recall earns one unit of practice-heal credit (deduped per
+    // mistake) — only when the caller verified the answer server-side.
+    if (correct && grantCredit) {
+      db.prepare('INSERT OR IGNORE INTO review_credit (user_id, mistake_id) VALUES (?, ?)').run(userId, mistakeId);
+    }
+  })();
 
   return db.prepare('SELECT * FROM mistakes WHERE id = ?').get(mistakeId);
 }
@@ -714,17 +787,22 @@ function getUnclaimedReviewCredit(userId) {
 // Excess beyond the limit stays unclaimed for a later practice-heal — the old
 // "claim all, reward only 20" logic silently discarded surplus credit.
 // Returns how many units were granted.
+// ATOMIC (P26/P28): one UPDATE with a self-referencing subquery, so the
+// SELECT-and-mark is no longer two statements a concurrent process can interleave
+// (dual-server double-claim was real). The subquery reads claimed=0 rows BEFORE
+// the outer UPDATE flips them, so a second concurrent caller sees 0 rows.
 function claimReviewCredit(userId, limit = null) {
-  const n = limit == null ? Infinity : limit;
-  const rows = db.prepare(
-    'SELECT id FROM review_credit WHERE user_id = ? AND claimed = 0 LIMIT ?'
-  ).all(userId, n);
-  if (rows.length === 0) return 0;
-  const ids = rows.map(r => r.id);
-  const placeholders = ids.map(() => '?').join(',');
-  db.prepare(`UPDATE review_credit SET claimed = 1 WHERE id IN (${placeholders})`)
-    .run(...ids);
-  return rows.length;
+  const n = limit == null ? -1 : limit; // SQLite LIMIT -1 = no limit
+  const info = db.prepare(`
+    UPDATE review_credit SET claimed = 1
+    WHERE user_id = ? AND claimed = 0
+      AND id IN (
+        SELECT id FROM review_credit
+        WHERE user_id = ? AND claimed = 0
+        ORDER BY id LIMIT ?
+      )
+  `).run(userId, userId, n);
+  return info.changes;
 }
 
 // Force-dismiss an orphaned mistake card (its node no longer exists in course
@@ -825,6 +903,32 @@ const LEAGUE_RULES = {
 };
 const MIN_XP_TO_DEMOTE = 50; // Zero-XP protection
 
+// Effective promotion/demotion zone sizes for a league of `total` players
+// (crosscheck3 P26 P2). The static rules assume a FULL league; in a small league
+// they overlap or swallow everyone — e.g. a 5-player silver league (5 top / 5
+// bottom) promoted ALL 5 and could never demote, so the tiers inflated on every
+// settlement. Scale both zones down proportionally so they never overlap and at
+// least one middle rank stays put. Full leagues (promote+demote ≤ total-1) are
+// unaffected — this only kicks in when the zones would collide. A solo player is
+// the top of their league by definition, so they still promote (no dead-end at
+// the floor) while never being demoted.
+function effectiveZones(total, rules) {
+  const rawPromote = rules?.promoteTop || 0;
+  const rawDemote = rules?.demoteBottom || 0;
+  if (total <= 1) {
+    return { promote: rawPromote > 0 ? 1 : 0, demote: 0 };
+  }
+  const room = Math.max(0, total - 1); // at least one rank stays in the middle
+  if (rawPromote + rawDemote <= room) {
+    return { promote: rawPromote, demote: rawDemote };
+  }
+  const scale = room / (rawPromote + rawDemote);
+  return {
+    promote: Math.floor(rawPromote * scale),
+    demote: Math.floor(rawDemote * scale),
+  };
+}
+
 // Mutex guard: settlement is idempotent and can be triggered from cron, admin,
 // and startup catch-up — never run two concurrently.
 let settling = false;
@@ -865,18 +969,23 @@ function settleWeek(targetWeekStart = null, force = false) {
         if (!rows.length) continue;
 
         const total = rows.length;
+        // Effective zones scaled to the ACTUAL league size (P26 P2): static
+        // zone counts assume a full league; a 5-player league must not promote
+        // all 5 and demote 0. Promotion and demotion never overlap, so at
+        // least one middle rank always stays put.
+        const { promote, demote } = effectiveZones(total, rules);
         rows.forEach((row, idx) => {
           const rank = idx + 1;
           let tierChange = 'stay';
           let nextLeague = league;
           const myIdx = LEAGUE_ORDER.indexOf(league);
 
-          if (rules.promoteTop > 0 && rank <= rules.promoteTop && myIdx < LEAGUE_ORDER.length - 1) {
+          if (promote > 0 && rank <= promote && myIdx < LEAGUE_ORDER.length - 1) {
             tierChange = 'promoted';
             nextLeague = LEAGUE_ORDER[myIdx + 1];
           } else if (
-            rules.demoteBottom > 0 &&
-            rank > total - rules.demoteBottom &&
+            demote > 0 &&
+            rank > total - demote &&
             myIdx > 0 &&
             row.xp_earned >= MIN_XP_TO_DEMOTE
           ) {
@@ -979,8 +1088,12 @@ function getLeagueInfo(userId) {
   const all = [...realEntries, ...ghostEntries].sort((a, b) => b.xp_earned - a.xp_earned);
 
   const rules = LEAGUE_RULES[league] || LEAGUE_RULES.bronze;
-  const promotionZoneEnd = rules.promoteTop;
-  const demotionZoneStart = Math.max(1, totalInLeague - rules.demoteBottom + 1);
+  // Same effective zones settlement uses (P26 P2) — the displayed promotion /
+  // demotion boundaries must match what a settle would actually do, or a small
+  // league shows "you'll promote!" for everyone while settle keeps them put.
+  const { promote, demote } = effectiveZones(totalInLeague, rules);
+  const promotionZoneEnd = promote;
+  const demotionZoneStart = Math.max(1, totalInLeague - demote + 1);
 
   // Rank lines read with LIMIT 1 OFFSET so they stay correct past the top-50 cut.
   const rankXP = (rank) => {
@@ -990,8 +1103,8 @@ function getLeagueInfo(userId) {
        WHERE week_start = ? AND league = ? ORDER BY xp_earned DESC LIMIT 1 OFFSET ?`
     ).get(ws, league, rank - 1)?.xp_earned ?? 0;
   };
-  const promoteThresholdXP = rules.promoteTop > 0 ? rankXP(promotionZoneEnd) : 0;
-  const demoteSafeXP = rules.demoteBottom > 0 ? rankXP(demotionZoneStart) : 0;
+  const promoteThresholdXP = promote > 0 ? rankXP(promotionZoneEnd) : 0;
+  const demoteSafeXP = demote > 0 ? rankXP(demotionZoneStart) : 0;
   const xpToPromotion = Math.max(0, promoteThresholdXP - myXP + 1);
   const xpAboveDemotion = Math.max(0, myXP - demoteSafeXP);
 
@@ -1004,10 +1117,10 @@ function getLeagueInfo(userId) {
     total_in_league: totalInLeague,
     promotion_zone_end: promotionZoneEnd,
     demotion_zone_start: demotionZoneStart,
-    xp_to_promotion: rules.promoteTop > 0 ? xpToPromotion : 0,
-    xp_above_demotion: rules.demoteBottom > 0 ? xpAboveDemotion : 999,
-    in_promotion_zone: myRank <= promotionZoneEnd && rules.promoteTop > 0,
-    in_demotion_zone: myRank >= demotionZoneStart && rules.demoteBottom > 0,
+    xp_to_promotion: promote > 0 ? xpToPromotion : 0,
+    xp_above_demotion: demote > 0 ? xpAboveDemotion : 999,
+    in_promotion_zone: myRank <= promotionZoneEnd && promote > 0,
+    in_demotion_zone: myRank >= demotionZoneStart && demote > 0,
     entries: (() => {
       const top10 = all.slice(0, 10).map((e, i) => ({ ...e, rank: i + 1 }));
       // If the user is outside top 10, append their own entry (with separator marker)

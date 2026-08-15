@@ -9,7 +9,10 @@
     "test:content": "node ../scripts/validate_content.cjs",
     "test:data": "node ../scripts/check_data_integrity.cjs",
     "test:grade": "node ../scripts/grade_scan.cjs",
-    "test": "node ../scripts/validate_content.cjs && node ../test_api.mjs && node ../smoke_milestone1.mjs && node ../test_leaderboard_v2.mjs && node ../smoke_settlement.mjs && node ../scripts/grade_scan.cjs"
+    "test": "node ../scripts/validate_content.cjs && node ../test_api.mjs && node ../smoke_milestone1.mjs && node ../test_leaderboard_v2.mjs && node ../smoke_settlement.mjs && node ../test_security_invariants.mjs && node ../scripts/grade_scan.cjs && node ../scripts/check_data_integrity.cjs"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

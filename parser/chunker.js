@@ -1,9 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const __ROOT__ = path.resolve(__dirname, '..');
-const RAW_DIR = __ROOT__;
-const PARSER_DIR = path.join(__ROOT__, 'parser');
+const RAW_DIR = 'D:/dlg_project';
+const PARSER_DIR = 'D:/dlg_project/parser';
 const OUT_DIR = path.join(PARSER_DIR, 'chunks');
 
 if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });

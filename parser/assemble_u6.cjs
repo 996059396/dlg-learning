@@ -2,9 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const __ROOT__ = path.resolve(__dirname, '..');
-const EXT_DIR = path.join(__ROOT__, 'parser', 'extracted');
-const OUT_FILE = path.join(__ROOT__, 'backend', 'data', 'courses', 'electrician_basics', 'u6_circuit_theory.json');
+const EXT_DIR = 'D:/dlg_project/parser/extracted';
+const OUT_FILE = 'D:/dlg_project/backend/data/courses/electrician_basics/u6_circuit_theory.json';
 
 // Lesson plan: group chunks by topic into 6 lessons
 // f0_* = 电路模型、电位、功率能量 (chunks from the base file)
@@ -99,7 +98,7 @@ console.log('═'.repeat(40));
 console.log(`✅ u6_circuit_theory.json written: ${unit.lessons.length} lessons, ${totalNodes} nodes`);
 
 // Register in index.json
-const idxFile = path.join(__ROOT__, 'backend', 'data', 'courses', 'index.json');
+const idxFile = 'D:/dlg_project/backend/data/courses/index.json';
 const idx = JSON.parse(fs.readFileSync(idxFile, 'utf8'));
 const course = idx.find(c => c.id === 'electrician_basics');
 if (course && !course.units.find(u => u.id === 'u6_circuit_theory')) {

@@ -1,0 +1,31 @@
+name: CI
+# 内容 CI 强制触发（P0-2）: 任何 push/PR 到 master/main 都跑全量门禁。
+# 三 OS × Node 24 —— better-sqlite3 v13 只预编译 Node ABI 137(Node 24)，Node 20 会段错误。
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  gate:
+    name: gate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 安装后端依赖
+        working-directory: backend
+        run: npm install --no-audit --no-fund
+
+      - name: 全量门禁（内容校验 + 接口/里程碑/排行/结算/安全不变量 + 判分扫描 + 数据完整性）
+        working-directory: backend
+        run: npm test

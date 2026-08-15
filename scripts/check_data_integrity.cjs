@@ -74,6 +74,17 @@ for (const row of db.prepare('SELECT id, user_id, lesson_id FROM progress').all(
   }
 }
 
+// 3) users 计数哨兵: 账号表不能被意外清空。
+const userCount = db.prepare('SELECT COUNT(*) c FROM users').get().c;
+if (userCount < 1) problems.push('users 表为空 (0 行) — 账号数据丢失或表损坏');
+else console.log(`  users: ${userCount} 行`);
+
+// 4) 外键完整性哨兵: 任何违规(孤儿引用)即失败。数据库写入时开了
+//    foreign_keys=ON, 正常不可能出现; 出现即说明有绕过约束的写入路径。
+for (const v of db.prepare('PRAGMA foreign_key_check').all()) {
+  problems.push(`外键违规: ${v.table}.rowid=${v.rowid} → 引用 ${v.parent} (fkid=${v.fkid})`);
+}
+
 db.close();
 
 if (problems.length === 0) {

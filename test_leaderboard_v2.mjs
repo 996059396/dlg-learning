@@ -88,12 +88,16 @@ async function completeLesson(token, lid) {
     { answers: await correctAnswers(lid, token) }, auth(token));
 }
 
-const server = spawn('node', ['server.js'], {
+// Spawn with the SAME runtime as this test (see test_api.mjs note — Node>=22 required).
+const server = spawn(process.execPath, ['server.js'], {
   cwd: path.join(import.meta.dirname, 'backend'),
   env: { ...process.env, PORT: String(PORT), DLG_DB_PATH: DB_PATH },
   stdio: 'pipe',
 });
 server.stderr.on('data', d => { if (String(d).includes('Error')) console.error('[server]', String(d)); });
+// Reap the server child even on Ctrl+C / external kill — an orphan on 3997
+// would EADDRINUSE every later run until manually killed.
+process.on('exit', () => { try { server.kill(); } catch {} });
 
 function waitForServer(attempts = 40) {
   return new Promise((resolve, reject) => {

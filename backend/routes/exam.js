@@ -108,11 +108,19 @@ router.post('/start', requireAuth, (req, res) => {
   // Anti-cheat (60-agent round 2): the multi-select pool's correct answers all
   // sit at A/B, so a blind "check first two boxes" scores 10/10 on that section.
   // The client shuffles display order too, but the SERVER now shuffles option
-  // order (ids stay stable, so id-based grading is unaffected) — a hand-rolled
-  // or modified client can no longer win by position.
+  // order AND remaps every option's id to a fresh random value per session —
+  // grading is id-based (the client submits o.id and the pool's correct ids are
+  // always {A,B}), so a hand-rolled client submitting the literal ["A","B"] used
+  // to win 10/10 every time. With per-session random ids the correct set moves,
+  // and a blind fixed-id submission hits it only ~1/45. Options are deep-copied
+  // before remapping so the shared pool (and stored mistake cards, which reload
+  // the pool node by its REAL id) keep their canonical ids.
   for (const q of questions) {
     if (q.type === 'multi_select' && Array.isArray(q.options)) {
-      q.options = shuffle(q.options);
+      q.options = shuffle(q.options).map(o => ({
+        ...o,
+        id: `ms-${crypto.randomBytes(4).toString('hex')}`,
+      }));
     }
   }
   if (questions.length < 100) {
@@ -121,22 +129,29 @@ router.post('/start', requireAuth, (req, res) => {
   const id = crypto.randomBytes(8).toString('hex');
   const startedAt = new Date();
   const expiresAt = new Date(startedAt.getTime() + EXAM_MINUTES * 60 * 1000);
-  // Expire any stale active sessions so a user holds at most one live exam.
-  db.db.prepare(
-    `UPDATE exam_sessions SET status='expired' WHERE user_id = ? AND status = 'active'`
-  ).run(req.userId);
-  // DB hygiene (60-agent 性能审查): each session stores ~32KB questions_json,
-  // and completed/expired rows were never purged — the table became the largest
-  // in the DB. Drop finished sessions older than 30 days; live/active rows and
-  // the last month of history stay.
-  db.db.prepare(
-    `DELETE FROM exam_sessions WHERE status IN ('completed','expired')
-     AND created_at < datetime('now', '-30 days')`
-  ).run();
-  db.db.prepare(
-    `INSERT INTO exam_sessions (id, user_id, started_at, expires_at, status, questions_json)
-     VALUES (?, ?, ?, ?, 'active', ?)`
-  ).run(id, req.userId, startedAt.toISOString(), expiresAt.toISOString(), JSON.stringify(questions));
+  // Expire stale active sessions, run DB hygiene, and insert the new session in
+  // ONE transaction (P29): previously each statement autocommitted separately, so
+  // a failure after the expire-UPDATE but before the INSERT stranded the user
+  // (old session gone, no replacement), and two concurrent /start calls could
+  // leave two live sessions. All-or-nothing now.
+  db.db.transaction(() => {
+    // A user holds at most one live exam.
+    db.db.prepare(
+      `UPDATE exam_sessions SET status='expired' WHERE user_id = ? AND status = 'active'`
+    ).run(req.userId);
+    // DB hygiene (60-agent 性能审查): each session stores ~32KB questions_json,
+    // and completed/expired rows were never purged — the table became the largest
+    // in the DB. Drop finished sessions older than 30 days; live/active rows and
+    // the last month of history stay.
+    db.db.prepare(
+      `DELETE FROM exam_sessions WHERE status IN ('completed','expired')
+       AND created_at < datetime('now', '-30 days')`
+    ).run();
+    db.db.prepare(
+      `INSERT INTO exam_sessions (id, user_id, started_at, expires_at, status, questions_json)
+       VALUES (?, ?, ?, ?, 'active', ?)`
+    ).run(id, req.userId, startedAt.toISOString(), expiresAt.toISOString(), JSON.stringify(questions));
+  })();
 
   res.json({
     sessionId: id,
@@ -154,6 +169,18 @@ router.post('/submit', requireAuth, (req, res) => {
   const { sessionId, answers } = req.body;
   if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
   if (!Array.isArray(answers)) return res.status(400).json({ error: 'answers array required' });
+  // Malformed input guard (P29, mirrors the D4 guard in courses.js complete):
+  // better-sqlite3 throws on non-scalar bindings (object/array userAnswer), and
+  // that exception inside the rewards transaction would 500 the whole卷. Reject
+  // non-scalar entries up front so a crafted client gets a clean 400 instead.
+  const isScalar = (v) => v === null || ['string', 'number', 'boolean'].includes(typeof v);
+  for (const a of answers) {
+    if (!a || typeof a !== 'object' || Array.isArray(a)) {
+      return res.status(400).json({ error: 'answers entries must be objects' });
+    }
+    if ('index' in a && typeof a.index !== 'number') return res.status(400).json({ error: 'index must be a number' });
+    if ('userAnswer' in a && !isScalar(a.userAnswer)) return res.status(400).json({ error: 'userAnswer must be a scalar value' });
+  }
 
   const session = db.db.prepare(
     `SELECT * FROM exam_sessions WHERE id = ? AND user_id = ?`
@@ -182,6 +209,7 @@ router.post('/submit', requireAuth, (req, res) => {
       mistakes.push({
         nodeId: node.id,
         lessonId: node._lessonId,
+        type: node.type,
         question: node.question || '',
         userAnswer: userAnswer ?? '',
         correctAnswer: extractAnswer(node),
@@ -227,7 +255,31 @@ router.post('/submit', requireAuth, (req, res) => {
     mistakes.forEach(m => {
       // node_index is irrelevant here (SM-2 looks up by node_id); use 0 as a
       // safe placeholder for the legacy fallback path.
-      db.addMistake(req.userId, m.lessonId, m.nodeId, 0, m.question, m.userAnswer, m.correctAnswer);
+      // C10: multi-select pool cards get a per-card option-id remap when stored.
+      // The pool's option ids are constant {A,B,C,D} with correct ids always
+      // {A,B}, so a review card that reloaded the pool node by its REAL id could
+      // be blind-guessed ["A","B"] for a guaranteed correct grade → free coins.
+      // Storing a fresh random remap (pool id → ms-xxxx) per card means review
+      // re-grading sees a moved correct set; a fixed-id blind guess no longer
+      // lands. loadMistakeNode applies remap_json (and generates one on first
+      // load for pre-C10 legacy cards).
+      let remapJson = null;
+      if (m.lessonId === 'exam/ms_pool' && m.type === 'multi_select') {
+        try {
+          const pool = readJSON(MS_POOL);
+          const poolNode = pool.find(n => n.id === m.nodeId);
+          if (poolNode && Array.isArray(poolNode.options)) {
+            const remap = {};
+            for (const o of poolNode.options) {
+              remap[String(o.id)] = `ms-${crypto.randomBytes(4).toString('hex')}`;
+            }
+            remapJson = JSON.stringify(remap);
+          }
+        } catch (e) {
+          remapJson = null; // fall back to loadMistakeNode's on-load generation
+        }
+      }
+      db.addMistake(req.userId, m.lessonId, m.nodeId, 0, m.question, m.userAnswer, m.correctAnswer, remapJson);
     });
     nodeResults.forEach(r => {
       // Attribute telemetry back to the SOURCE lesson so per-question p-values

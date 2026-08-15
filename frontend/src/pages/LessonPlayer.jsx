@@ -233,11 +233,12 @@ const _halfWidth = (s) => String(s)
   .replace(/　/g, ' ');
 const _fbNormalize = (s) => {
   const half = _halfWidth(String(s || '').trim());
-  const shielded = half.replace(/Ω/g, '');
-  return shielded.toLowerCase().replace(//g, 'Ω').replace(/\s+/g, '');
-};
-
-function FillBlank({ node, onAnswer }) {
+  // Mirror backend grading.js: shield mega-Ω AND uppercase-M SI prefixes (MΩ/MA)
+  // so 'MΩ' != 'mΩ' — keeps 本地判对=服务端判对 (crosscheck4 C08).
+  const mShielded = half.replace(/M(?=[A-Za-zΩω])/g, '');
+  const shielded = mShielded.replace(/Ω/g, '');
+  return shielded.toLowerCase().replace(//g, 'M').replace(//g, 'Ω').replace(/\s+/g, '');
+};function FillBlank({ node, onAnswer }) {
   const [value, setValue] = useState('');
   const [answered, setAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);

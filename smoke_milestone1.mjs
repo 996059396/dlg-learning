@@ -44,6 +44,24 @@ function correctAnswerFor(node) {
   }
 }
 
+// Resolve the "known answer" for a mistake card from the AUTH-GATED lesson
+// endpoint (GET /mistakes ships SANITIZED cards — no answer keys — by design,
+// crosscheck3 P26/P31 P1, so the answer can't be mined from the review queue).
+// The lesson player is the legitimate channel for answer keys, so the test
+// re-derives them the same way: fetch the lesson, locate the node by stable
+// node.id (legacy node_index fallback), then apply correctAnswerFor.
+async function correctAnswerForMistake(m) {
+  if (!m?.lesson_id) return '';
+  const [course, unit, lesson] = String(m.lesson_id).split('/');
+  if (!course || !unit || !lesson) return ''; // e.g. 'exam/ms_pool' — no lesson route
+  const res = await fetch(`${BASE}/courses/${course}/units/${unit}/lessons/${lesson}`, { headers: authHeaders() });
+  if (!res.ok) return '';
+  const lessonData = await res.json();
+  let node = (lessonData?.nodes || []).find(n => n.id === m.node_id);
+  if (!node && typeof m.node_index === 'number') node = (lessonData?.nodes || [])[m.node_index];
+  return correctAnswerFor(node);
+}
+
 // Build a fully-correct answer entry per gradeable node, serialized exactly as
 // the real frontend sends it (keyed by stable node.id + absolute nodeIndex).
 // Used to make a REAL first completion that passes the >=80% gate (empty
@@ -114,12 +132,16 @@ async function test(name, fn) {
   }
 }
 
-const server = spawn('node', ['server.js'], {
+// Spawn with the SAME runtime as this test (see test_api.mjs note — Node>=22 required).
+const server = spawn(process.execPath, ['server.js'], {
   cwd: path.join(import.meta.dirname, 'backend'),
   env: { ...process.env, PORT: String(PORT), DLG_DB_PATH: DB_PATH },
   stdio: 'pipe',
 });
 server.stderr.on('data', d => { if (String(d).includes('Error')) console.error('[server]', String(d)); });
+// Reap the server child even on Ctrl+C / external kill — an orphan on 3999
+// would EADDRINUSE every later run until manually killed.
+process.on('exit', () => { try { server.kill(); } catch {} });
 
 function waitForServer(attempts = 40) {
   return new Promise((resolve, reject) => {
@@ -245,11 +267,14 @@ async function run() {
     // Reward must be EARNED: review 3 due mistakes with the CORRECT answer
     // (server re-grades each and records credit only on a verified correct).
     const { data: due } = await jreq('GET', '/game/mistakes', null, authHeaders());
-    const gradeable = (due.mistakes || []).filter(m => correctAnswerFor(m.original_node) !== '');
+    const gradeable = [];
+    for (const m of (due.mistakes || [])) {
+      if (await correctAnswerForMistake(m) !== '') gradeable.push(m);
+    }
     const toReview = gradeable.slice(0, 3);
     if (toReview.length < 3) throw new Error(`need >=3 server-gradeable due mistakes, got ${toReview.length} of ${(due.mistakes || []).length}`);
     for (const m of toReview) {
-      const r = await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: correctAnswerFor(m.original_node) }, authHeaders());
+      const r = await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: await correctAnswerForMistake(m) }, authHeaders());
       if (r.status !== 200) throw new Error(`review failed: ${r.status} ${JSON.stringify(r.data)}`);
       if (r.data.serverGraded !== true) throw new Error('expected a server-verified correct review');
     }
@@ -308,21 +333,23 @@ async function run() {
 
   await test('SM-2: correct review → interval 1 → 6 → grows', async () => {
     const { data } = await jreq('GET', '/game/mistakes', null, authHeaders());
-    const m = (data.mistakes || []).find(x => correctAnswerFor(x.original_node) !== '');
+    let m = null;
+    for (const x of (data.mistakes || [])) { if (await correctAnswerForMistake(x) !== '') { m = x; break; } }
     if (!m) throw new Error('no server-gradeable mistake available');
-    const ua = () => correctAnswerFor(m.original_node);
-    const r1 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: ua() }, authHeaders())).data;
+    const ua = () => correctAnswerForMistake(m);
+    const r1 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: await ua() }, authHeaders())).data;
     if (r1.serverGraded !== true) throw new Error('review not server-graded');
     if (r1.mistake.interval_days !== 1) throw new Error(`expected interval 1, got ${r1.mistake.interval_days}`);
-    const r2 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: ua() }, authHeaders())).data;
+    const r2 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: await ua() }, authHeaders())).data;
     if (r2.mistake.interval_days !== 6) throw new Error(`expected interval 6, got ${r2.mistake.interval_days}`);
-    const r3 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: ua() }, authHeaders())).data;
+    const r3 = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: true, userAnswer: await ua() }, authHeaders())).data;
     if (r3.mistake.interval_days < 6) throw new Error(`interval should grow past 6, got ${r3.mistake.interval_days}`);
   });
 
   await test('SM-2: wrong review resets interval to tomorrow', async () => {
     const { data } = await jreq('GET', '/game/mistakes', null, authHeaders());
-    const m = (data.mistakes || []).find(x => correctAnswerFor(x.original_node) !== '');
+    let m = null;
+    for (const x of (data.mistakes || [])) { if (await correctAnswerForMistake(x) !== '') { m = x; break; } }
     if (!m) throw new Error('no server-gradeable mistake available');
     const r = (await jreq('POST', '/game/mistakes/review', { mistakeId: m.id, correct: false, userAnswer: '这不是正确答案' }, authHeaders())).data;
     if (r.mistake.interval_days !== 1) throw new Error(`expected interval reset to 1, got ${r.mistake.interval_days}`);
@@ -333,7 +360,8 @@ async function run() {
     // The old exploit: send correct:true with zero knowledge to mint coins.
     // Server now re-grades the actual answer and never trusts the boolean.
     const { data } = await jreq('GET', '/game/mistakes', null, authHeaders());
-    const m = (data.mistakes || []).find(x => correctAnswerFor(x.original_node) !== '');
+    let m = null;
+    for (const x of (data.mistakes || [])) { if (await correctAnswerForMistake(x) !== '') { m = x; break; } }
     if (!m) throw new Error('no server-gradeable mistake available');
     // Drain any credit left over from earlier tests so this assertion is hermetic.
     await jreq('POST', '/game/practice-heal', { correctCount: 0 }, authHeaders());
@@ -342,6 +370,54 @@ async function run() {
     if (r.mistake.interval_days !== 1) throw new Error(`wrong answer must reset interval, got ${r.mistake.interval_days}`);
     const heal = (await jreq('POST', '/game/practice-heal', { correctCount: 99 }, authHeaders())).data;
     if (heal.coinsEarned !== 0) throw new Error(`client-claimed correct must not mint coins, got ${heal.coinsEarned}`);
+  });
+
+  // ── B58 #75 regression: review route re-grades a multimeter setupStr ──
+  // The review route must re-grade a multimeter_challenge card's setupStr
+  // ("档位:…, 红:…→…, 黑:…→…") server-side via gradeNode — a wrong setup must NOT
+  // pass even when the client claims correct:true. Seeds a real multimeter card
+  // by completing l5_ac_voltage with a wrong answer on the multimeter node
+  // (everything else correct → the lesson still completes and only that card
+  // enters the queue).
+  await test('review route re-grades multimeter setupStr server-side', async () => {
+    const unit = await (await fetch(`${BASE}/courses/electrician_basics/units/u1_meter_basics`, { headers: authHeaders() })).json();
+    const lesson = unit.lessons.find(l => l.id === 'l5_ac_voltage');
+    if (!lesson) throw new Error('l5_ac_voltage missing from u1 unit');
+    const full = await (await fetch(`${BASE}/courses/electrician_basics/units/u1_meter_basics/lessons/l5_ac_voltage`, { headers: authHeaders() })).json();
+    const mm = full.nodes.find(n => n.id === 'l5_ac_voltage_n18');
+    if (!mm || mm.type !== 'multimeter_challenge') throw new Error('l5_ac_voltage_n18 is not a multimeter_challenge');
+    const answers = buildCorrectAnswers(full);
+    const mmAns = answers.find(a => a.nodeId === mm.id);
+    mmAns.userAnswer = '%%%WRONG_SETUP%%%'; // deliberately wrong multimeter setup
+
+    const done = await jreq('POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l5_ac_voltage/complete', { answers }, authHeaders());
+    if (done.status !== 200) throw new Error(`multimeter lesson complete failed: ${done.status}`);
+
+    // Find the multimeter card in the (tiered) queue by stable node_id — page
+    // through so tier caps/limits can't hide it.
+    let card = null;
+    for (let off = 0; off <= 60 && !card; off += 30) {
+      const q = await jreq('GET', `/game/mistakes?limit=30&offset=${off}`, null, authHeaders());
+      card = (q.data?.mistakes || []).find(m => m.node_id === 'l5_ac_voltage_n18');
+    }
+    if (!card) throw new Error('multimeter mistake card not in review queue');
+
+    // CORRECT setupStr → server-graded correct, no in-session relearn needed.
+    const cs = mm.correct_setup;
+    const hs = mm.target.hotspots;
+    const label = (k) => (Array.isArray(hs) ? hs.find(h => h?.id === k)?.label : hs[k]?.label) || k;
+    const setupStr = `档位:${cs.dial}, 红:${cs.red_port}→${label(cs.red_touch)}, 黑:${cs.black_port}→${label(cs.black_touch)}`;
+    const ok = await jreq('POST', '/game/mistakes/review', { mistakeId: card.id, correct: true, userAnswer: setupStr }, authHeaders());
+    if (ok.status !== 200) throw new Error(`correct-setup review failed: ${ok.status}`);
+    if (ok.data.serverGraded !== true) throw new Error('multimeter review not server-graded');
+    if (ok.data.correct !== true) throw new Error(`correct setupStr graded wrong: ${JSON.stringify(ok.data)}`);
+    if (ok.data.relearnInSession !== false) throw new Error('correct review must not demand relearn');
+
+    // WRONG setupStr → server-graded wrong despite client correct:true.
+    const bad = await jreq('POST', '/game/mistakes/review', { mistakeId: card.id, correct: true, userAnswer: '档位:ACV_200, 红:COM→火线 (L), 黑:VOhm→零线 (N)' }, authHeaders());
+    if (bad.status !== 200) throw new Error(`wrong-setup review failed: ${bad.status}`);
+    if (bad.data.correct !== false) throw new Error('wrong setupStr must grade wrong (server re-grade)');
+    if (bad.data.relearnInSession !== true) throw new Error('failed recall must flag relearnInSession');
   });
 
   // ── IDOR: another user cannot touch this user's mistakes ──

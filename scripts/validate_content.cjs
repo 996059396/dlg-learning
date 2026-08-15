@@ -69,6 +69,9 @@ const warnings = [];
 let totalNodes = 0;
 const err = (m) => errors.push(m);
 const warn = (m) => warnings.push(m);
+// 多选节点按选项数分组收集 —— 用于跨节点「正确项位置分布」断言(防作者把正确项
+// 全部堆在前几列)。运行时每会话打乱选项，故静态偏斜是内容质量信号而非判分问题。
+const msBySize = new Map(); // optsLen -> Array<{ node, ctx }>
 
 // 后缀 → 基本单位乘子(Ω/V/A/F 基准)
 const SUFFIX_MULT = {
@@ -176,6 +179,9 @@ for (const file of files) {
           node.options.forEach((o, oi) => { if (!o.text || !o.text.trim()) err(`${ctx} (ms) option[${oi}]: 空 text`); });
           if (new Set(node.options.map(o => o.text)).size !== node.options.length)
             warn(`${ctx} (ms): options 有重复文本`);
+          const list = msBySize.get(node.options.length) || [];
+          list.push({ node, ctx });
+          msBySize.set(node.options.length, list);
           break;
         }
         case 'true_false':
@@ -301,8 +307,24 @@ if (fs.existsSync(MS_POOL)) {
         if (correctOpts.length < 2) err(`${ctx} (ms): 正确选项少于 2 (须为多选)`);
         if (correctOpts.length === node.options.length) err(`${ctx} (ms): 全部选项都正确`);
         node.options.forEach((o, oi) => { if (!o.text || !o.text.trim()) err(`${ctx} (ms) option[${oi}]: 空 text`); });
+        const list = msBySize.get(node.options.length) || [];
+        list.push({ node, ctx });
+        msBySize.set(node.options.length, list);
       }
     } else err(`${ctx}: 池内只允许 multi_select, 实际 "${node.type}"`);
+  });
+}
+
+// ── 多选跨节点分布断言 ──
+// 正确项位置必须随题散布: 任一静态列(数组下标)不得从未作为正确项、也不得在
+// 每组全部题目中都是正确项。同一选项数的题归一组; 少于 3 题不判(样本太小)。
+for (const [optsLen, nodes] of msBySize) {
+  if (nodes.length < 3) continue;
+  const posCount = new Array(optsLen).fill(0);
+  for (const { node } of nodes) node.options.forEach((o, i) => { if (o.is_correct) posCount[i]++; });
+  posCount.forEach((cnt, i) => {
+    if (cnt === 0) err(`多选分布: ${optsLen} 选项的 ${nodes.length} 题中, 位置[${i}]从未作为正确选项(正确项偏斜在前列)`);
+    if (cnt === nodes.length) err(`多选分布: ${optsLen} 选项的 ${nodes.length} 题中, 位置[${i}]每题都是正确项(判分无区分度)`);
   });
 }
 

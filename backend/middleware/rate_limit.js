@@ -8,6 +8,24 @@
 
 const buckets = new Map(); // `${scope}:${key}` -> { count, resetAt }
 
+// P25 #3: the bucket Map previously only ever grew — login success cleared just
+// the per-account bucket, so auth-ip/register/admin buckets persisted until a
+// restart. A distributed (IP,username) storm would slowly leak memory. Purge
+// expired entries every minute; if the Map still exceeds a hard cap, evict the
+// soonest-to-expire entries first. unref() so the timer never holds the process
+// open. (Under an active flood the cap's memory protection outweighs the tiny
+// reset-window a capped eviction gives a bucket key; it only ever engages at
+// 10000+ distinct keys within one minute.)
+const MAX_BUCKETS = 10000;
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, b] of buckets) if (b.resetAt <= now) buckets.delete(k);
+  if (buckets.size > MAX_BUCKETS) {
+    const entries = [...buckets.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
+    for (const [k] of entries.slice(0, buckets.size - MAX_BUCKETS)) buckets.delete(k);
+  }
+}, 60 * 1000).unref();
+
 /**
  * Fixed-window rate limiter factory.
  * @param {object} opts

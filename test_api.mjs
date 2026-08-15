@@ -1,14 +1,25 @@
 #!/usr/bin/env node
 // API contract test suite — self-contained.
 // Boots its own server on an isolated DB (DLG_DB_PATH) and verifies the CURRENT
-// contract: JWT session auth, public course catalog, server-side grading,
-// economy (server-priced spend, idempotent rewards), leaderboard, mistakes.
+// contract: DB-opaque token session auth (not JWT — SHA-256 hashed in sessions),
+// public course catalog, server-side grading, economy (server-priced spend,
+// idempotent rewards), leaderboard, mistakes.
 import { spawn } from 'node:child_process';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
+
+// Fail fast with a clear message if the running Node is too old for
+// better-sqlite3@13 (Node>=22 ABI). Under Node 20 the module load below crashes
+// with a segfault / NODE_MODULE_VERSION error; this guard replaces that with a
+// readable hint. Run with C:\Users\moxo\node24\node.exe.
+if (Number(process.versions.node.split('.')[0]) < 22) {
+  console.error(`[fatal] DLG tests require Node >= 22 (better-sqlite3 v13 ABI); got Node ${process.version}. Use the Node 24 binary (C:\\Users\\moxo\\node24\\node.exe).`);
+  process.exit(1);
+}
+
 const req = createRequire(import.meta.url);
 const Database = req(path.join(import.meta.dirname, 'backend', 'node_modules', 'better-sqlite3'));
 
@@ -121,15 +132,20 @@ function buildAnswers(lesson, wrongQ = -1) {
   return answers;
 }
 
-const server = spawn('node', ['server.js'], {
+// Spawn with the SAME runtime that runs this test (process.execPath), never
+// 'node' from PATH: better-sqlite3@13 is Node>=22 ABI, and the default PATH
+// node20 crashes on load with a cryptic "server did not start" (V02/P38 P0).
+const server = spawn(process.execPath, ['server.js'], {
   cwd: path.join(import.meta.dirname, 'backend'),
   env: {
     ...process.env,
     PORT: String(PORT),
     DLG_DB_PATH: DB_PATH,
     // Test-suite runs register/login dozens of throwaway accounts in one run;
-    // scale up the shared per-IP auth bucket (prod never sets this → unchanged).
+    // scale up the shared per-IP auth bucket AND the independent register bucket
+    // (prod never sets these → unchanged behavior).
     'DLG_RATE_MAX_auth-ip': '1000',
+    'DLG_RATE_MAX_register': '1000',
   },
   stdio: 'pipe',
 });
@@ -472,6 +488,36 @@ async function run() {
     if (data.progress?.completed === 1) throw new Error('empty answers must not mark lesson completed');
   });
 
+  await test('completed is MONOTONIC: sub-80 retry never downgrades a passed lesson', async () => {
+    const { data: fresh } = await jreq('POST', '/auth/register', { username: `单调${Date.now() % 100000}`, password: 'pw123456' });
+    const fAuth = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${fresh.token}` });
+    const lesson = (await jreq('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery', null, fAuth())).data;
+    // All-wrong payload: '' fails every gradeable type (C2: server re-grades, no
+    // client claim to trust). Guaranteed < 80%, so the re-attempt must NOT pass.
+    const allWrong = lesson.nodes
+      .filter(n => n.type !== 'info')
+      .map(n => ({ nodeId: n.id, nodeIndex: lesson.nodes.indexOf(n), userAnswer: '' }));
+    // 1) 100% pass → completed=1
+    const first = await jreq('POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: buildAnswers(lesson) }, fAuth());
+    if (first.status !== 200 || first.data.progress?.completed !== 1)
+      throw new Error(`first pass must complete: ${first.status} ${JSON.stringify(first.data.progress)}`);
+    // 2) all-wrong retry → accuracy 0, but completed MUST stay 1 (C2 monotonic
+    //    `wasCompleted || passed` — otherwise pass/fail alternation re-mints
+    //    first-completion coins forever).
+    const retry = await jreq('POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
+      { answers: allWrong }, fAuth());
+    if (retry.status !== 200) throw new Error(`retry failed ${retry.status}: ${JSON.stringify(retry.data)}`);
+    if (retry.data.accuracy >= 80) throw new Error(`all-wrong should score <80, got ${retry.data.accuracy}`);
+    if (retry.data.progress?.completed !== 1)
+      throw new Error(`completed downgraded to ${retry.data.progress?.completed} after sub-80 retry (must stay monotonic)`);
+    if (retry.data.rewards?.repeat !== true) throw new Error('re-attempt after a pass must be marked repeat (no re-mint)');
+    // 3) GET /progress agrees — the lesson is still completed (no silent count drop)
+    const prog = await jreq('GET', '/courses/progress', null, fAuth());
+    const row = (prog.data || []).find(p => p.lesson_id === 'electrician_basics/u1_meter_basics/l2_battery');
+    if (!row || row.completed !== 1) throw new Error(`progress row lost completed flag: ${JSON.stringify(row)}`);
+  });
+
   await test('malformed answers → clean 400 (no 500 / no SQL leak)', async () => {
     const { status: s1, data: d1 } = await jreq(
       'POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l2_battery/complete',
@@ -646,7 +692,16 @@ async function run() {
   return failed === 0;
 }
 
+// 3998 orphan pollution: a crashed run (uncaught rejection, Ctrl+C, hard kill)
+// used to leave its server child bound to 3998, EADDRINUSE-ing every later run
+// until someone manually killed it. Always reap the child on process exit, and
+// never let an unhandled rejection bypass the kill at the end of run().
+process.on('exit', () => { try { server.kill(); } catch {} });
 run().then(success => {
   if (!success) process.exit(1);
   process.exit(0);
+}).catch(e => {
+  console.error('FATAL:', e);
+  try { server.kill(); } catch {}
+  process.exit(1);
 });

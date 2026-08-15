@@ -1,7 +1,18 @@
+// ABI preflight (P0-2): better-sqlite3 v13 is prebuilt for Node ABI 137. On
+// Node 20 (ABI 115) the require itself segfaults with no readable message, and
+// this server runs under nohup/guard where a bare crash is invisible. Fail fast
+// with guidance BEFORE any module that touches better-sqlite3 is loaded.
+if (Number(process.versions.modules) !== 137) {
+  console.error(`[fatal] Node ABI = ${process.versions.modules} (需要 137) — better-sqlite3 v13 预编译二进制不匹配，require 即段错误。`);
+  console.error('[fatal] 请改用 Node 24 启动：C:\\Users\\moxo\\node24\\node.exe server.js');
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const net = require('net');
 const cron = require('node-cron');
 const compression = require('compression');
 const { initializeDatabase, settleWeek, catchUpSettlements, getWeekStart } = require('./models/database');
@@ -23,6 +34,21 @@ const PORT = process.env.PORT || 3001;
 // Bind address: default 0.0.0.0 (LAN/mobile testing on the same network).
 // Override with HOST=127.0.0.1 to restrict to loopback only.
 const HOST = process.env.HOST || '0.0.0.0';
+
+// Port mutex (P0-2): probe the port BEFORE opening app.db. A port already in
+// use means another instance is running — exit cleanly instead of letting two
+// instances open the same SQLite file and both write the WAL. The port is the
+// cross-process lock; the probe must resolve before initializeDatabase() runs.
+function portInUse(port, host) {
+  return new Promise((resolve) => {
+    const probe = new net.Socket();
+    probe.setTimeout(800);
+    probe.once('connect', () => { probe.destroy(); resolve(true); });
+    probe.once('timeout', () => { probe.destroy(); resolve(false); });
+    probe.once('error', () => resolve(false));
+    probe.connect(port, host);
+  });
+}
 
 // Trust proxies ONLY from loopback (e.g. a local cloudflared/cpolar tunnel).
 // This lets rate limiting key off the REAL client IP via X-Forwarded-For when
@@ -71,17 +97,25 @@ if (hasDist) {
   console.log('[static] Serving frontend from', frontendDist);
 }
 
-// Initialize database
-initializeDatabase();
+async function main() {
+  // Port mutex first (see portInUse above). If another instance holds the port,
+  // bail out before any module opens app.db — no concurrent WAL writes.
+  if (await portInUse(PORT, HOST)) {
+    console.error(`[fatal] 端口 ${PORT} 已被占用 —— 疑似已有 DLG 实例在运行。退出，避免两个实例并发写 app.db。`);
+    process.exit(1);
+  }
 
-// Startup catch-up: settle any weeks missed while the server was offline
-// (cron only fires on Mondays 00:00; a downed server skips the boundary).
-try {
-  const caughtUp = catchUpSettlements();
-  if (caughtUp > 0) console.log(`[boot] Caught up ${caughtUp} missed settlement entries`);
-} catch (e) {
-  console.error('[boot] Settlement catch-up failed:', e);
-}
+  // Initialize database
+  initializeDatabase();
+
+  // Startup catch-up: settle any weeks missed while the server was offline
+  // (cron only fires on Mondays 00:00; a downed server skips the boundary).
+  try {
+    const caughtUp = catchUpSettlements();
+    if (caughtUp > 0) console.log(`[boot] Caught up ${caughtUp} missed settlement entries`);
+  } catch (e) {
+    console.error('[boot] Settlement catch-up failed:', e);
+  }
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -140,6 +174,17 @@ app.use((err, req, res, next) => {
   res.status(status).json({ error: status >= 500 ? '服务器内部错误' : '请求格式不正确' });
 });
 
-app.listen(PORT, HOST, () => {
+// Routes are registered and the request pipeline is fully assembled before we
+// bind. listen() error (e.g. port taken by a non-DLG process) → exit 1 so the
+// guard/process manager restarts us; the DB is already initialized by then, but
+// only this instance holds it — the port mutex above prevented a second opener.
+const server = app.listen(PORT, HOST, () => {
   console.log(`🎓 DLG Learning Server running on http://${HOST}:${PORT}`);
 });
+server.on('error', (err) => {
+  console.error('[fatal] listen 失败:', err);
+  process.exit(1);
+});
+}
+
+main();

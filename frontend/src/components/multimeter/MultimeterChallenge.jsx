@@ -175,6 +175,22 @@ export default function MultimeterChallenge({ node, onAnswer }) {
 
   const handleConfirm = () => {
     if (submitted) return;
+    // C10: correct_setup is no longer shipped to the client (it IS the answer),
+    // so a review card can't self-check locally. Fall back to submitting the raw
+    // setup string and letting the server re-grade it — MistakeReview calls
+    // /mistakes/review, whose verdict drives the result phase. `correct` is
+    // passed as null (unknown here) and is overridden by the server response.
+    if (!node.correct_setup) {
+      if (redTouch == null || blackTouch == null) {
+        setHint('请先把红、黑表笔都放到测试点上');
+        return;
+      }
+      setSubmitted(true);
+      setResultCorrect(null); // unknown locally; server verdict drives the UI
+      const setupStr = `档位:${dialPos}, 红:${redPort}→${hotspots[redTouch]?.label}, 黑:${blackPort}→${hotspots[blackTouch]?.label}`;
+      setTimeout(() => onAnswer && onAnswer(null, setupStr), 800);
+      return;
+    }
     // Build hint for first wrong step
     if (!dialOk) {
       setHint(`档位不对哦，提示：${dialHint(correct.dial, node.target?.type)}`);

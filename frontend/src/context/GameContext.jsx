@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api, getToken, setToken } from '../utils/api';
+import { api, getToken, setToken, onUnauthorized } from '../utils/api';
 
 const GameContext = createContext(null);
 
@@ -89,6 +89,22 @@ export function GameProvider({ children }) {
       }
     })();
     return () => { cancelled = true; };
+  }, []);
+
+  // Session-died global fallback (P32 P2-3): any 401 from a user-scoped endpoint
+  // mid-use (token revoked via logout-all / change-password on another device, DB
+  // reset) must drop the stale session and return to the auth gate — not strand
+  // the UI on a dead token. Boot-time getMe 401 and the gate's own login 401s are
+  // handled separately, so this only fires for mid-session expiry.
+  useEffect(() => {
+    const unsub = onUnauthorized(() => {
+      setToken(null);
+      setUser(null);
+      setGameState(null);
+      setCheckedInToday(false);
+      setNeedsAuth(true);
+    });
+    return unsub;
   }, []);
 
   // Explicit login/register — the ONLY ways to obtain a session now.
