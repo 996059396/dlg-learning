@@ -2,7 +2,7 @@
 
 ## v1.0.1 (未发布) — C10 错题刷币链封死 + P0-2 守护加固
 
-- **单实例守护 (P0-2)**：`dlg_server_guard.sh` / `dlg_tunnel_guard.sh` 加 pidfile + `kill -0` 存活校验（重复启动直接 exit 0，杜绝双 guard 各起一个 server 对 app.db 并发 WAL 写）；`server.js` 打开数据库前先做端口互斥探测（端口被占 ⇒ 已有实例 ⇒ 干净退出），并加 Node ABI 预检（`process.versions.modules !== 137` 时在 require better-sqlite3 之前干净 exit 1，避免 Node 20 段错误）；登录自启经注册表 `HKCU\...\CurrentVersion\Run` 落地（计划任务被本机组策略拒绝）
+- **单实例守护 (P0-2)**：`dlg_server_guard.sh` / `dlg_tunnel_guard.sh` 加 pidfile + `kill -0` 存活校验（重复启动直接 exit 0，杜绝双 guard 各起一个 server 对 app.db 并发 WAL 写）；`server.js` 打开数据库前先做端口互斥探测（端口被占 ⇒ 已有实例 ⇒ 干净退出），并加 Node ABI 预检（`process.versions.modules !== 137` 时在 require better-sqlite3 之前干净 exit 1，避免 Node 20 段错误）；登录自启经注册表 `HKCU\...\CurrentVersion\Run` 落地（计划任务被本机组策略拒绝）；**每日 DB 备份 cron**（03:47 Asia/Shanghai → `backend/models/data/backups/`，`db.backup()` WAL 一致性快照，当日幂等）+ **升级前快照脚本** `scripts/backup_db.cjs`（带 ABI 预检）
 - **多选池错题卡复习重映射**：ms_pool 错题卡入册时生成 `remap_json`（池选项 id `{A,B,C,D}` → 随机 `ms-xxxx`，旧卡首次复习兜底生成落库），`loadMistakeNode` 复习判分时应用——正确集合逐卡移动，盲猜池固定正确项 `["A","B"]` 从 100% 命中降为 ≈1/45，铸币路封死（`database.js` / `exam.js` / `game.js`）
 - **错题卡脱敏扩展 5 类题型答案键**：GET /mistakes 不再外泄 `match.pairs`、`drag_drop.target_zone/distractors`、`simulation_dial.dial_options[].is_correct/is_wrong`、`simulation_probe.correct_probes`、`multimeter_challenge.correct_setup/correct_display`；multimeter 复习卡前端降级为服务端判分（MultimeterChallenge handleConfirm 无 correct_setup 时直接提交 setupStr）
 - **practice-heal 事务化**：claim review_credit + 加心/加币原子化，杜绝「已 claim 未入账 / 重试双花」部分态

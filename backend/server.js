@@ -15,7 +15,7 @@ const fs = require('fs');
 const net = require('net');
 const cron = require('node-cron');
 const compression = require('compression');
-const { initializeDatabase, settleWeek, catchUpSettlements, getWeekStart } = require('./models/database');
+const { initializeDatabase, settleWeek, catchUpSettlements, getWeekStart, db } = require('./models/database');
 
 // Process-level safety net (D4): a startup failure (corrupt DB, unreadable
 // index.json) used to exit 1 with a stack only in the terminal — invisible under
@@ -141,6 +141,25 @@ cron.schedule('0 0 * * 1', () => {
 }, { timezone: 'Asia/Shanghai' });
 
 console.log(`[cron] Weekly settlement scheduled (Mondays 00:00 Asia/Shanghai). Current week: ${getWeekStart()}`);
+
+// === Daily DB backup (P0 清单: 每日备份 + 升级前快照) ===
+// better-sqlite3 db.backup() 在 WAL 下产出一致性快照（纯 fs copy 会丢 WAL 内容）。
+// 每日 03:47 自动备份（避开使用高峰与周一 00:00 结算）；升级前手动快照见 scripts/backup_db.cjs。
+// 备份目录默认 backend/models/data/backups（*.db 被 gitignore，不会进仓），DLG_BACKUP_DIR 可覆盖。
+const backupDir = process.env.DLG_BACKUP_DIR || path.join(__dirname, 'models', 'data', 'backups');
+if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+async function backupDatabase() {
+  const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+  const dest = path.join(backupDir, `app-${stamp}.db`);
+  if (fs.existsSync(dest)) return; // 当日已有备份（幂等，不覆盖）
+  await db.backup(dest);
+  console.log(`[backup] 每日备份完成 → ${dest}`);
+}
+cron.schedule('47 3 * * *', () => {
+  backupDatabase().catch((e) => console.error('[backup] 失败:', e));
+}, { timezone: 'Asia/Shanghai' });
+console.log(`[backup] 每日备份已调度 (03:47 Asia/Shanghai → ${backupDir})`);
 
 // SPA fallback: any non-API GET goes to index.html so client-side routes
 // (/course/..., /profile) survive a hard refresh. API 404s still fall through
