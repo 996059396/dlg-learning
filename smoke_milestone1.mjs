@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
 const PORT = 3999;
 const BASE = `http://localhost:${PORT}/api`;
@@ -16,6 +17,18 @@ let passed = 0;
 let failed = 0;
 let token = null;
 const authHeaders = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` });
+
+// 红心门禁（P1）：答错提交扣心，红心≤0 拒错题。多个反刷分测试故意全错会
+// 扣光红心，隔离 DB 直连重置，让每个测试从满心开始（不改变服务端语义）。
+const req = createRequire(import.meta.url);
+const Database = req(path.join(import.meta.dirname, 'backend', 'node_modules', 'better-sqlite3'));
+async function topUpHearts() {
+  const me = await jreq('GET', '/auth/me', null, authHeaders());
+  if (me.status !== 200 || !me.data?.id) throw new Error('cannot resolve user id for heart top-up');
+  const db = new Database(DB_PATH); db.pragma('busy_timeout = 5000');
+  db.prepare('UPDATE game_state SET hearts = 5 WHERE user_id = ?').run(me.data.id);
+  db.close();
+}
 
 async function jreq(method, url, body, headers = {}) {
   const res = await fetch(`${BASE}${url}`, {
@@ -214,6 +227,8 @@ async function run() {
   });
 
   await test('completeLesson grades server-side, persists coins', async () => {
+    // 上一测试故意全错扣光了红心；满心重置后再测（否则红心门禁 400 挡在判分前）。
+    await topUpHearts();
     // First, read the real lesson to submit matching answers.
     const unitRes = await fetch(`${BASE}/courses/electrician_basics/units/u1_meter_basics`, { headers: authHeaders() });
     const unit = await unitRes.json();
@@ -264,6 +279,8 @@ async function run() {
 
   // ── practice-heal (hearts + coins, server-computed from real reviews) ──
   await test('practice-heal grants hearts + coins from server', async () => {
+    // 前面全错提交扣光了红心；重置到满心，验证 practice-heal 只补不超 cap。
+    await topUpHearts();
     // Reward must be EARNED: review 3 due mistakes with the CORRECT answer
     // (server re-grades each and records credit only on a verified correct).
     const { data: due } = await jreq('GET', '/game/mistakes', null, authHeaders());

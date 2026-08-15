@@ -98,5 +98,5 @@ const formattedNodes = [];
   }
 });
 
-fs.writeFileSync('D:/dlg_project/parser/pilot_nodes.json', JSON.stringify(formattedNodes, null, 2));
+fs.writeFileSync(require('path').join(__dirname, 'pilot_nodes.json'), JSON.stringify(formattedNodes, null, 2));
 console.log("Pilot nodes have been formatted successfully.");

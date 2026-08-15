@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const RAW_DIR = 'D:/dlg_project';
-const PARSER_DIR = 'D:/dlg_project/parser';
+// 从环境变量取教材目录（默认脚本同目录），不硬编码开发机路径。
+const RAW_DIR = process.env.DLG_RAW_DIR || __dirname;
+const PARSER_DIR = process.env.DLG_PARSER_DIR || __dirname;
 const OUT_DIR = path.join(PARSER_DIR, 'chunks');
 
 if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });

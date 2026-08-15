@@ -436,9 +436,19 @@ async function run() {
   await test('match/drag_drop/simulation_dial/simulation_probe/multimeter 卡答案键全部剥离', async () => {
     const reg = await jA('POST', '/auth/register', { username: `题型${Date.now() % 100000}`, password: 'sec123456' });
     const ea = auth(reg.data.token);
+    const uidB7 = reg.data.user.id;
+    // 每课前补满红心（服务端 complete 红心门禁：有错题扣心，红心 0 拒错题提交）
+    const topUpHearts = () => {
+      const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+      d.prepare('UPDATE game_state SET hearts = 5 WHERE user_id = ?').run(uidB7);
+      d.close();
+    };
     // 三节课分别制造目标题型错题卡（l1_intro 同卡含 match+drag_drop）
+    await topUpHearts();
     await completeWithTypesWrong(ea, 'electrician_basics', 'u1_meter_basics', 'l1_intro', ['match', 'drag_drop']);
+    await topUpHearts();
     await completeWithTypesWrong(ea, 'electrician_basics', 'u1_meter_basics', 'l2_battery', ['simulation_dial', 'simulation_probe']);
+    await topUpHearts();
     await completeWithTypesWrong(ea, 'electrician_basics', 'u5_multimeter_advanced', 'l1_real_panel', ['multimeter_challenge']);
 
     const queue = (await jA('GET', '/game/mistakes?limit=30', null, ea)).data.mistakes;
@@ -468,6 +478,44 @@ async function run() {
       if (o.correct_display) throw new Error('multimeter_challenge 卡泄漏 correct_display');
       if (!o.target) throw new Error('multimeter_challenge 卡应保留 target 供实操渲染');
     } else throw new Error('缺 multimeter_challenge 卡');
+  });
+
+  // ── 7b. P1：complete 红心门禁（服务端扣心 + 红心 0 拒错题） ──
+  console.log('  7b. complete 红心门禁（服务端扣心 / 红心 0 拒错题 / 全对仍可过）');
+  await test('complete 门禁：答错扣心，红心 0 拒错题提交，全对仍 200', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `红心${Date.now() % 100000}`, password: 'sec123456' });
+    const ea = auth(reg.data.token);
+    const uid = reg.data.user.id;
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const hearts = () => d.prepare('SELECT hearts FROM game_state WHERE user_id = ?').get(uid)?.hearts;
+    const setHearts = (h) => d.prepare('UPDATE game_state SET hearts = ? WHERE user_id = ?').run(h, uid);
+
+    const course = 'electrician_basics', unit = 'u1_meter_basics', lessonId = 'l1_intro';
+    const lesson = (await jA('GET', `/courses/${course}/units/${unit}/lessons/${lessonId}`, null, ea)).data;
+
+    // ① 红心 0 时答错 → 400 needsHearts，进度不落库
+    setHearts(0);
+    const answers = buildAnswers(lesson);
+    answers[0].userAnswer = '__故意答错__'; // 强制至少一错
+    const blocked = await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers }, ea);
+    if (blocked.status !== 400) throw new Error(`红心 0 错题提交应 400，得 ${blocked.status}`);
+    if (!blocked.data?.needsHearts) throw new Error('400 响应应带 needsHearts: true');
+
+    // ② 红心 0 全对 → 200 放行（不卡学习）
+    setHearts(0);
+    const passAll = await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers: buildAnswers(lesson) }, ea);
+    if (passAll.status !== 200) throw new Error(`红心 0 全对应 200，得 ${passAll.status}`);
+    if (!passAll.data?.rewards?.passed) throw new Error('全对应 passed');
+
+    // ③ 红心 3、1 错 → 扣到 2，heartCost=1
+    setHearts(3);
+    const oneWrong = buildAnswers(lesson);
+    oneWrong[0].userAnswer = '__故意答错__';
+    const mixed = await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers: oneWrong }, ea);
+    if (mixed.status !== 200) throw new Error(`有红心错题提交应 200，得 ${mixed.status}`);
+    if (mixed.data.rewards.heartCost !== 1) throw new Error(`heartCost 应 1，得 ${mixed.data.rewards.heartCost}`);
+    if (hearts() !== 2) throw new Error(`答 1 错应从 3 扣到 2，得 ${hearts()}`);
+    d.close();
   });
 
   // ═══════════ 8. UNIT：rate_limit 桶重置 / clearBucket / simulation_danger 负例 ═══════════

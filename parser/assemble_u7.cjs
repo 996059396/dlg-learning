@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const EXT_DIR = 'D:/dlg_project/parser/extracted';
-const OUT_FILE = 'D:/dlg_project/backend/data/courses/electrician_basics/u7_circuit_analysis.json';
+const EXT_DIR = process.env.DLG_EXT_DIR || require('path').join(__dirname, 'extracted');
+const OUT_FILE = process.env.DLG_OUT_FILE || require('path').join(__dirname, '..', 'backend', 'data', 'courses', 'electrician_basics', 'u7_circuit_analysis.json');
 
 const LESSON_PLAN = [
   {
@@ -81,7 +81,7 @@ console.log('═'.repeat(40));
 console.log(`✅ u7_circuit_analysis.json: ${unit.lessons.length} lessons, ${totalNodes} nodes`);
 
 // Register in index.json
-const idxFile = 'D:/dlg_project/backend/data/courses/index.json';
+const idxFile = process.env.DLG_INDEX_FILE || require('path').join(__dirname, '..', 'backend', 'data', 'courses', 'index.json');
 const idx = JSON.parse(fs.readFileSync(idxFile, 'utf8'));
 const course = idx.find(c => c.id === 'electrician_basics');
 if (course && !course.units.find(u => u.id === 'u7_circuit_analysis')) {

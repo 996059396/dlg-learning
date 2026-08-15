@@ -6,7 +6,8 @@
 - **多选池错题卡复习重映射**：ms_pool 错题卡入册时生成 `remap_json`（池选项 id `{A,B,C,D}` → 随机 `ms-xxxx`，旧卡首次复习兜底生成落库），`loadMistakeNode` 复习判分时应用——正确集合逐卡移动，盲猜池固定正确项 `["A","B"]` 从 100% 命中降为 ≈1/45，铸币路封死（`database.js` / `exam.js` / `game.js`）
 - **错题卡脱敏扩展 5 类题型答案键**：GET /mistakes 不再外泄 `match.pairs`、`drag_drop.target_zone/distractors`、`simulation_dial.dial_options[].is_correct/is_wrong`、`simulation_probe.correct_probes`、`multimeter_challenge.correct_setup/correct_display`；multimeter 复习卡前端降级为服务端判分（MultimeterChallenge handleConfirm 无 correct_setup 时直接提交 setupStr）
 - **practice-heal 事务化**：claim review_credit + 加心/加币原子化，杜绝「已 claim 未入账 / 重试双花」部分态
-- **测试门禁**：安全不变量 13→16（新增多选复习 remap / 旧卡兜底 / 5 类答案键剥离断言），总断言 99→102
+- **complete 红心门禁（P1 残留项收官）**：红心惩罚移入服务端——答错每题扣一心（扣到 0 为止）；红心已耗尽且本次有错题 → 400 `needsHearts` 拒绝提交，与 /game/use-heart「红心≤0 拒绝」一致；全对提交不消耗红心，红心 0 时仍可全对通过，不卡学习。`rewards.heartCost` 回传实际扣心数（`courses.js`）
+- **测试门禁**：安全不变量 16→17（新增 complete 红心门禁：红心 0 拒错题 / 全对放行 / 答错扣心），smoke 适配红心门禁补心，总断言 102→103
 
 ## v1.0.0 (2026-08-14) — 首个公开版本
 

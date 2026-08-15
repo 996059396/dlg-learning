@@ -169,12 +169,23 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
     nodeResults.push({ node, isCorrect, userAnswer });
   });
 
+  const wrongCount = mistakes.length;
   const accuracy = Math.round((correctCount / total) * 100);
 
   // A lesson must score >= 80% to "pass": only a pass earns first-completion
   // rewards. Sub-80 attempts stay uncompleted (see below) so a retry can still
   // claim the full first-completion reward.
   const passed = accuracy >= 80;
+
+  // Complete 红心门禁（P1 残留项）：红心惩罚移入服务端。本次有错题时每错扣一心
+  // （见事务内扣心）；红心已耗尽且本次有错 → 拒绝提交，与 /game/use-heart 的
+  // 「红心≤0 拒绝」一致。全对提交不消耗红心，红心 0 时仍可全对通过，不卡学习。
+  if (wrongCount > 0) {
+    const gate = db.getGameState(userId);
+    if (gate.hearts <= 0) {
+      return res.status(400).json({ error: '红心不足，无法提交错题练习', needsHearts: true });
+    }
+  }
 
   // Save progress + mistakes + rewards atomically.
   let rewards;
@@ -232,6 +243,11 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
       const actualXP = db.addLessonXP(userId, xpEarned);
 
       const gameState = db.getGameState(userId);
+      // 服务端扣心：每答错一题扣一心，扣到 0 为止（红心经济惩罚不再依赖前端展示）。
+      if (wrongCount > 0) {
+        const heartsAfter = Math.max(0, gameState.hearts - wrongCount);
+        db.updateGameState(userId, { hearts: heartsAfter });
+      }
       let coinsEarned = 0;
       let heartReturned = false;
       let xpBoostTriggered = false;
@@ -257,6 +273,7 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
       rewards = {
         xpEarned: actualXP,
         coinsEarned,
+        heartCost: wrongCount > 0 ? Math.min(gameState.hearts, wrongCount) : 0,
         heartReturned,
         xpBoostTriggered,
         repeat: isRepeat,
