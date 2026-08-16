@@ -76,7 +76,8 @@ app.use(cors({
   credentials: true,
 }));
 // Gzip/Brotli — biggest single perf win on mobile (audit: -64% on JSON payloads).
-app.use(compression());
+// brotli 开启：现代浏览器优先，静态 .br 预压缩由 express.static 自动伺服（compare60 C06）。
+app.use(compression({ brotli: { enabled: true, quality: 11 } }));
 app.use(express.json());
 
 // ── Security headers (X07) ───────────────────────────────────────────────────
