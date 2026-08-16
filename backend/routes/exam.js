@@ -16,7 +16,8 @@ const MS_POOL = path.join(__dirname, '..', 'data', 'exam', 'multi_select.json');
 const EXAM_PASS_SCORE = 80;
 // 双模式（crosscheck5 S M4 决策落地）：
 //  - real 全真：100 题 / 120 分钟 / 仅判断+单选 / 80 分 —— 对齐真实低压电工理论机考
-//    （应急〔2025〕59 号《培训大纲和考核标准》、应急管理部令第 19 号，2026-06-01 施行）；
+//    （应急〔2025〕59 号《培训大纲和考核标准》、应急管理部令第 19 号，2026-06-01 施行；
+//    官方附件未逐字公布题量配比，实际机考随全国题库随机抽题，60/40 为近似口径）；
 //  - training 训练：100 题 / 45 分钟 / 含 10 道多选 —— 原格式，多选作训练用途。
 const EXAM_MODES = {
   real: { minutes: 120, counts: { true_false: 60, multiple_choice: 40, multi_select: 0 }, label: '全真' },
