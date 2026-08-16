@@ -117,6 +117,14 @@ if (hasDist) {
   // index.html is served separately with no-cache (D2): Vite empties dist on
   // rebuild, so a stale index.html pointing at a deleted hash asset caused a
   // 1-hour white screen for repeat visitors after every deploy.
+  // sw.js must NOT be cached long-term (crosscheck5 X M1): browsers fetch the
+  // SW periodically to pick up updates; a 1y immutable header would freeze the
+  // old service worker in place for a year. Serve it no-cache, before static.
+  app.get('/sw.js', (req, res) => {
+    res.set('Cache-Control', 'no-cache');
+    res.type('application/javascript');
+    res.sendFile(path.join(frontendDist, 'sw.js'));
+  });
   app.use(express.static(frontendDist, { maxAge: '1y', immutable: true, index: false }));
   app.get('/', (req, res) => {
     res.set('Cache-Control', 'no-cache');

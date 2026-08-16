@@ -214,9 +214,16 @@ export function GameProvider({ children }) {
 
   useEffect(() => {
     flushPending();
-    window.addEventListener('online', flushPending);
-    return () => window.removeEventListener('online', flushPending);
-  }, [flushPending]);
+    const onOnline = () => {
+      // crosscheck5 X M3：重连后必须解除离线横幅 + 刷新真实账号状态，否则 UI
+      // 一直显示「离线模式」与陈旧 gameState，直到手动刷新/重登。
+      setOffline(false);
+      refreshGameState();
+      flushPending();
+    };
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [flushPending, refreshGameState]);
 
   const useHeart = useCallback(async () => {
     if (user?.id === 'demo') {
