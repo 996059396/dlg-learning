@@ -30,6 +30,33 @@ jobs:
         working-directory: backend
         run: npm test
 
+  # 前端：vitest 单测（纯逻辑模块）+ 生产构建。
+  frontend-test:
+    name: frontend-test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 前端依赖
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+
+      - name: vitest 单测
+        working-directory: frontend
+        run: npm test
+
+      - name: 生产构建
+        working-directory: frontend
+        run: npm run build
+
   # Electron 同源桌面壳跨平台冒烟（X01）：加载构建产物，断言标题含 DLG。
   # 仅 push 触发（PR 高频迭代不重复下载 ~100MB Electron）；Linux 用 xvfb-run。
   desktop-smoke:
