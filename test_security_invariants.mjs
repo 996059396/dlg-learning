@@ -403,6 +403,32 @@ async function run() {
     if (r2.lapses !== 0 || r2.leech !== 0) throw new Error(`判对一次后应 lapses=0 leech=0，得 lapses=${r2.lapses} leech=${r2.leech}`);
   });
 
+  await test('SM-2 四档评分：判对+easy → easiness 上升（激活死字段，compare60 C03）', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `四档${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const uid = reg.data.user.id;
+    const course = 'electrician_basics', unit = 'u1_meter_basics', lessonId = 'l1_intro';
+    const lesson = (await jA('GET', `/courses/${course}/units/${unit}/lessons/${lessonId}`, null, ea)).data;
+    const ans = lesson.nodes.filter(n => n.type !== 'info').map(n => {
+      let ua = '';
+      if (n.type === 'true_false') ua = n.correct_answer ? '错误' : '正确';
+      else if (n.type === 'multiple_choice') ua = n.options.find(o => !o.is_correct)?.text || '';
+      else if (n.type === 'fill_blank') ua = 'zzz_wrong';
+      return { nodeId: n.id, userAnswer: ua };
+    });
+    await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers: ans }, ea);
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const card = d.prepare('SELECT id, correct_answer FROM mistakes WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(uid);
+    const correctAnswer = card.correct_answer || '';
+    // grade=easy 判对两次 → easiness 从 2.5 上升
+    for (let i = 0; i < 2; i++) {
+      await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: correctAnswer, grade: 'easy' }, ea);
+    }
+    const ease = d.prepare('SELECT easiness FROM mistakes WHERE id = ?').get(card.id).easiness;
+    d.close();
+    if (!(ease > 2.5)) throw new Error(`grade=easy 两次后 easiness 应 >2.5，得 ${ease}`);
+  });
+
   await test('及格卷错题入册：90/100 → passed 且 10 错题入册', async () => {
     const reg = await jA('POST', '/auth/register', { username: `部分${Date.now() % 100000}`, password: 'exam123456' });
     const ea = auth(reg.data.token);

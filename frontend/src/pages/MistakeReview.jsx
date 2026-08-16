@@ -21,6 +21,7 @@ export default function MistakeReview() {
   const [submitted, setSubmitted] = useState(false);
   const [lastSchedule, setLastSchedule] = useState(null);
   const cardStartRef = useRef(Date.now()); // 当前卡开始时间（responseTimeMs 遥测）
+  const [grade, setGrade] = useState('good'); // 难度自评：hard/good/easy（判对时激活 easiness）
   // Server-revealed review outcome. GET /mistakes ships SANITIZED cards (no
   // answer keys) so a script can't read the answer and replay it to mint coins
   // (crosscheck3 P26/P31 P1). The correct answer + verdict are returned by the
@@ -69,6 +70,7 @@ export default function MistakeReview() {
     setSubmitted(false);
     setLastSchedule(null);
     setReveal(null);
+    setGrade('good');
     cardStartRef.current = Date.now(); // 计时起点（供 responseTimeMs 遥测）
   }, [currentIndex]);
 
@@ -88,7 +90,7 @@ export default function MistakeReview() {
     // authoritative for SM-2 scheduling and practice-heal credit.
     if (user?.id && user.id !== 'demo' && current?.id) {
       try {
-        const res = await api.reviewMistake(current.id, answerStr, { responseTimeMs: Date.now() - cardStartRef.current });
+        const res = await api.reviewMistake(current.id, answerStr, { responseTimeMs: Date.now() - cardStartRef.current, grade });
         setReveal({ correct: res?.correct === true, correctAnswer: res?.correctAnswer ?? null });
         setIsCorrect(res?.correct === true);
         if (res?.mistake) setLastSchedule(res.mistake);
@@ -505,6 +507,20 @@ export default function MistakeReview() {
       </div>
 
       {/* ── Action buttons ── */}
+      {/* 难度自评（compare60 C03/C07）：判对时按此分档激活 SM-2 easiness */}
+      {phase === 'answer' && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>这题感觉：</span>
+          {[['hard', '偏难'], ['good', '一般'], ['easy', '偏易']].map(([g, label]) => (
+            <button key={g} onClick={() => setGrade(g)} style={{
+              flex: 1, padding: '7px 0', fontSize: 13, borderRadius: 'var(--radius-xs)', cursor: 'pointer',
+              border: `1.5px solid ${grade === g ? 'var(--blue)' : 'var(--border)'}`,
+              background: grade === g ? 'rgba(28,176,246,0.1)' : 'var(--bg-secondary)',
+              color: grade === g ? 'var(--blue)' : 'var(--text-secondary)',
+            }}>{label}</button>
+          ))}
+        </div>
+      )}
       {phase === 'answer' ? (
         <button
           className="btn btn-primary btn-block btn-lg"

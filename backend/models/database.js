@@ -798,7 +798,9 @@ function reviewMistake(mistakeId, userId, correct, grantCredit = true, extra = {
   const row = db.prepare('SELECT * FROM mistakes WHERE id = ? AND user_id = ?').get(mistakeId, userId);
   if (!row) return null;
 
-  const q = correct ? 4 : 2;
+  const q = correct
+    ? (extra.grade === 'easy' ? 5 : extra.grade === 'hard' ? 3 : 4)
+    : 2; // compare60 C03/C07：判对后按自评难度分档（easy→5/hard→3/默认 good→4），激活 easiness 字段
   const { easiness, interval, repetition } = _sm2(
     row.easiness ?? 2.5, row.interval_days ?? 0, row.review_count ?? 0, q
   );

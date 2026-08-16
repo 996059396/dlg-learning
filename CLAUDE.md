@@ -21,7 +21,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 ## 测试门禁（9 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 132 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 133 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 | 3 | `node ../smoke_milestone1.mjs` | 20 | 核心业务流程冒烟 |
 | 4 | `node ../test_leaderboard_v2.mjs` | 13 | 段位/周结算/排行 |
 | 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |
-| 6 | `node ../test_security_invariants.mjs` | 21 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
+| 6 | `node ../test_security_invariants.mjs` | 22 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
 | 7 | `node ../test_idempotency.mjs` | 17 | (user, client_request_id) 幂等重放不二次判分/铸币 |
 | 8 | `node ../scripts/grade_scan.cjs` | 3748 节点 100% + 3747 错答负例 | 判分自洽 + 宽容化回归 |
 | 9 | `node ../scripts/check_data_integrity.cjs` | 706 lessons | 数据完整性 |

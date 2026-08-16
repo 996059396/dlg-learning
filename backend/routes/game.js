@@ -331,6 +331,8 @@ router.post('/mistakes/review', requireAuth, reviewLimit, (req, res) => {
     responseTimeMs: typeof req.body.responseTimeMs === 'number' && Number.isFinite(req.body.responseTimeMs)
       ? Math.max(0, Math.round(req.body.responseTimeMs)) : undefined,
     sessionId: typeof req.body.sessionId === 'string' ? req.body.sessionId.slice(0, 64) : undefined,
+    // compare60 C03/C07：判对后的自评难度（hard/good/easy），激活 SM-2 easiness 字段
+    grade: ['hard', 'good', 'easy'].includes(req.body.grade) ? req.body.grade : undefined,
   });
   if (!updated) return res.status(404).json({ error: '错题不存在或无权操作' });
   res.json({
