@@ -43,6 +43,6 @@ for (const [file, { pat, expect }] of Object.entries(MANIFEST)) {
 const total = results['test_api.mjs'] + results['smoke_milestone1.mjs'] + results['test_leaderboard_v2.mjs'] +
   results['smoke_settlement.mjs'] + results['test_security_invariants.mjs'] + results['test_idempotency.mjs'];
 console.log(`总断言：${total}${total === 131 ? ' ✅' : '（漂移，需同步 docs 129→' + total + '）'}`);
-if (total !== 130) failed++;
+if (total !== 131) failed++;
 if (failed) { console.error(`❌ 门禁计数漂移 ${failed} 处——按上面「实际」值同步 8 份文档与 MANIFEST。`); process.exit(1); }
 console.log('✅ 门禁计数自检通过（文档数字 = 实测数字）。');
