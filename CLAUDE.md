@@ -21,12 +21,12 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 ## 测试门禁（9 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 127 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 129 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
 | 1 | `node ../scripts/validate_content.cjs` | 0 ERROR / 0 WARN | 扫描全部课程 JSON 结构 |
-| 2 | `node ../test_api.mjs` | 45 | 注册/登录/课程/判分/金币/检查点/SM-2 |
+| 2 | `node ../test_api.mjs` | 47 | 注册/登录/课程/判分/金币/检查点/SM-2 |
 | 3 | `node ../smoke_milestone1.mjs` | 20 | 核心业务流程冒烟 |
 | 4 | `node ../test_leaderboard_v2.mjs` | 12 | 段位/周结算/排行 |
 | 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |

@@ -691,6 +691,34 @@ async function run() {
     });
   }
 
+  // ── Metrics（crosscheck6 F：学习数据端点接线） ──
+  await test('GET /api/metrics/hardest-nodes 需登录', async () => {
+    const { status } = await jreq('GET', '/metrics/hardest-nodes');
+    if (status !== 401) throw new Error(`hardest-nodes 无 token 应 401，得 ${status}`);
+  });
+
+  await test('GET /api/metrics/me 返回本用户统计且随作答更新', async () => {
+    const reg = await jreq('POST', '/auth/register', { username: `mtr${Date.now() % 100000}`, password: 'testpass123' });
+    const h = { Authorization: `Bearer ${reg.data.token}` };
+    const { status: s0, data: d0 } = await jreq('GET', '/metrics/me', null, h);
+    if (s0 !== 200 || d0.attempts !== 0) throw new Error(`初始 me 应 0 次作答，得 ${s0}/${d0.attempts}`);
+    // 做一课（全部答对 → attempts>0）
+    const course = 'electrician_basics', unit = 'u1_meter_basics', lessonId = 'l1_intro';
+    const lesson = (await jreq('GET', `/courses/${course}/units/${unit}/lessons/${lessonId}`, null, h)).data;
+    const answers = lesson.nodes.filter(n => n.type !== 'info').map(n => {
+      let ua = '';
+      if (n.type === 'true_false') ua = n.correct_answer ? '正确' : '错误';
+      else if (n.type === 'multiple_choice') ua = n.options.find(o => o.is_correct)?.text || '';
+      else if (n.type === 'fill_blank') ua = n.answer || (n.acceptable_answers && n.acceptable_answers[0]) || '';
+      return { nodeId: n.id, userAnswer: ua };
+    });
+    await jreq('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers }, h);
+    const { data: d1 } = await jreq('GET', '/metrics/me', null, h);
+    if (!(d1.attempts > 0)) throw new Error(`作答后 me.attempts 应 >0，得 ${d1.attempts}`);
+    const { data: hd } = await jreq('GET', '/metrics/hardest-nodes', null, h);
+    if (!Array.isArray(hd.nodes)) throw new Error('hardest-nodes 应返回数组');
+  });
+
   // ─── Summary ───
   console.log('\n' + '═'.repeat(50));
   console.log(`\n📊 Results: ${passed} passed, ${failed} failed out of ${passed + failed} tests\n`);

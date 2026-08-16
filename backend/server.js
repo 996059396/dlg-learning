@@ -166,6 +166,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/game', require('./routes/game'));
 app.use('/api/exam', require('./routes/exam'));
+app.use('/api/metrics', require('./routes/metrics'));
 
 // Health check
 app.get('/api/health', (req, res) => {

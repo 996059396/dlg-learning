@@ -656,6 +656,39 @@ function getNodeStats(lessonId) {
   `).all(lessonId);
 }
 
+// 全库最难题（crosscheck6 F 方向：metrics 端点接线——getNodeStats 曾零路由调用）。
+// p-value = 正确率（难度代理），跨用户聚合，供内容校准/冲刺卷组卷。
+function getHardestNodes(limit = 20) {
+  return db.prepare(`
+    SELECT node_id, lesson_id, node_type, COUNT(*) attempts,
+           ROUND(100.0 * SUM(correct) / COUNT(*), 1) AS pct_correct
+    FROM node_results GROUP BY node_id, lesson_id, node_type
+    HAVING COUNT(*) >= 3            -- 至少 3 次作答才可信，过滤冷启动噪声
+    ORDER BY pct_correct ASC LIMIT ?
+  `).all(limit);
+}
+
+// 当前用户自己的 node_results 聚合（正确率/题数/错题数），供「我的分析」。
+function getUserNodeStats(userId) {
+  return db.prepare(`
+    SELECT COUNT(*) attempts,
+           ROUND(100.0 * SUM(correct) / COUNT(*), 1) AS pct_correct,
+           SUM(CASE WHEN correct = 0 THEN 1 ELSE 0 END) AS mistakes,
+           COUNT(DISTINCT lesson_id) AS lessons_touched
+    FROM node_results WHERE user_id = ?
+  `).get(userId);
+}
+
+// 当前用户按课聚合的薄弱排行（正确率升序前 N）。
+function getUserLessonsStats(userId, limit = 10) {
+  return db.prepare(`
+    SELECT lesson_id, COUNT(*) attempts,
+           ROUND(100.0 * SUM(correct) / COUNT(*), 1) AS pct_correct
+    FROM node_results WHERE user_id = ? GROUP BY lesson_id
+    ORDER BY pct_correct ASC LIMIT ?
+  `).all(userId, limit);
+}
+
 // Due mistakes: not mastered AND next_review_date <= today.
 // B58 A6/F3 queue tiering + priority: the combined queue is DUE REVIEWS
 // (review_count > 0, most-overdue first — "到期最久优先" per A6) followed by NEW
@@ -1197,6 +1230,9 @@ module.exports = {
   addMistake,
   addNodeResult,
   getNodeStats,
+  getHardestNodes,
+  getUserNodeStats,
+  getUserLessonsStats,
   getUnreviewedMistakes,
   getUnclaimedReviewCredit,
   claimReviewCredit,
