@@ -29,7 +29,9 @@ const UNIT = 'u1_meter_basics';
 const LESSON = 'l1_intro';
 
 let failures = 0;
+let assertCount = 0;
 function assert(cond, msg) {
+  assertCount++;
   if (cond) console.log(`  ✓ ${msg}`);
   else { failures++; console.error(`  ✗ ${msg}`); }
 }
@@ -197,7 +199,7 @@ try {
   });
   assert(r4.status === 200, `过短键不报错 (HTTP ${r4.status})`);
 
-  console.log(failures === 0 ? '\n✅ 幂等键测试全部通过' : `\n❌ ${failures} 项失败`);
+  console.log(failures === 0 ? `\n✅ 幂等键测试全部通过（${assertCount} 断言）` : `\n❌ ${failures} 项失败`);
   process.exitCode = failures === 0 ? 0 : 1;
 } catch (e) {
   console.error('测试异常:', e);

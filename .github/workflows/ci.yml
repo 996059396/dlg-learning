@@ -30,6 +30,9 @@ jobs:
         working-directory: backend
         run: npm test
 
+      - name: 门禁计数自检（crosscheck6 P：文档数字必须=实测，防漂移）
+        run: node scripts/check_gate_counts.cjs
+
   # 前端：vitest 单测（纯逻辑模块）+ 生产构建。
   frontend-test:
     name: frontend-test (${{ matrix.os }})

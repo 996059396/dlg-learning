@@ -222,9 +222,7 @@ async function main() {
   if (mineCount === 1) ok('No duplicate leaderboard rows', '1 entry as expected');
   else bad('Duplicate rows in leaderboard', `found ${mineCount} entries for one user`);
 
-  // ── J. Cron / settlement pipeline proven via [H] ──
-  console.log('\n[J] Cron registered (smoke test)');
-  ok('settleWeek invocable via admin endpoint (proven in [H])');
+  // [J] 占位断言已删除（crosscheck5 L28 / crosscheck6 P）：settleWeek 已在 [H] 用真实断言验证。
 
   // ── Summary ──
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
