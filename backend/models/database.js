@@ -267,6 +267,10 @@ function initializeDatabase() {
     // 二元判分使 easiness 恒 2.5 是死字段——用 lapses 补「慢性错误卡」识别维度）
     lapses: 'ALTER TABLE mistakes ADD COLUMN lapses INTEGER DEFAULT 0',
     leech: 'ALTER TABLE mistakes ADD COLUMN leech BOOLEAN DEFAULT 0',
+    // compare60 C03：FSRS 预留列（未来从 SM-2 平滑迁 FSRS 时用，先占位不动）
+    stability: 'ALTER TABLE mistakes ADD COLUMN stability REAL',
+    difficulty: 'ALTER TABLE mistakes ADD COLUMN difficulty REAL',
+    state: 'ALTER TABLE mistakes ADD COLUMN state INTEGER DEFAULT 0',
     // C10: 多选池错题卡选项 id 会话级重映射。池文件选项 id 恒 {A,B,C,D} 且正确项
     // 固定——错题卡若不重映射，脚本盲猜 ["A","B"] 即 100% 判对铸币。入册时生成
     // {原始id: 随机ms-xxxx} 存此列，review/卡面都用重映射后的 id 判分。

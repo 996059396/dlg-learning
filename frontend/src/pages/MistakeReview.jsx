@@ -20,6 +20,7 @@ export default function MistakeReview() {
   const [isCorrect, setIsCorrect] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [lastSchedule, setLastSchedule] = useState(null);
+  const cardStartRef = useRef(Date.now()); // 当前卡开始时间（responseTimeMs 遥测）
   // Server-revealed review outcome. GET /mistakes ships SANITIZED cards (no
   // answer keys) so a script can't read the answer and replay it to mint coins
   // (crosscheck3 P26/P31 P1). The correct answer + verdict are returned by the
@@ -68,6 +69,7 @@ export default function MistakeReview() {
     setSubmitted(false);
     setLastSchedule(null);
     setReveal(null);
+    cardStartRef.current = Date.now(); // 计时起点（供 responseTimeMs 遥测）
   }, [currentIndex]);
 
   const handleSubmitAnswer = useCallback(async () => {
@@ -86,7 +88,7 @@ export default function MistakeReview() {
     // authoritative for SM-2 scheduling and practice-heal credit.
     if (user?.id && user.id !== 'demo' && current?.id) {
       try {
-        const res = await api.reviewMistake(current.id, answerStr);
+        const res = await api.reviewMistake(current.id, answerStr, { responseTimeMs: Date.now() - cardStartRef.current });
         setReveal({ correct: res?.correct === true, correctAnswer: res?.correctAnswer ?? null });
         setIsCorrect(res?.correct === true);
         if (res?.mistake) setLastSchedule(res.mistake);

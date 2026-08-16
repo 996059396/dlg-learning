@@ -90,8 +90,8 @@ export const api = {
   practiceHeal: (correctCount) =>
     request('/game/practice-heal', { method: 'POST', body: JSON.stringify({ correctCount }) }),
   getMistakes: () => request('/game/mistakes'),
-  reviewMistake: (mistakeId, userAnswer) =>
-    request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, userAnswer }) }),
+  reviewMistake: (mistakeId, userAnswer, extra = {}) =>
+    request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, userAnswer, ...extra }) }),
   spendCoins: (amount, itemId) =>
     request('/game/spend-coins', { method: 'POST', body: JSON.stringify({ amount, itemId }) }),
   getLeaderboard: (league) => request(`/game/leaderboard/${league}`),
