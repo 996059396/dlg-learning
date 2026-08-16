@@ -424,7 +424,8 @@ export default function MistakeReview() {
                 if (phase === 'answer') setUserReanswer(e.target.value);
               }}
               onKeyDown={e => {
-                if (e.key === 'Enter' && phase === 'answer') handleSubmitAnswer();
+                // IME 组合态 Enter 是「确认候选字」不是「提交答案」，isComposing 时忽略。
+                if (e.key === 'Enter' && phase === 'answer' && !e.nativeEvent.isComposing) handleSubmitAnswer();
               }}
               placeholder="输入你的新答案..."
               disabled={phase === 'result'}

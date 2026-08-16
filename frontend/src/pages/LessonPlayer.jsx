@@ -265,7 +265,11 @@ const _fbNormalize = (s) => {
           type="text"
           value={value}
           onChange={e => !answered && setValue(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+          onKeyDown={e => {
+            // 中文输入法组合态按 Enter 只是「确认候选字」，此时提交会把半截拼音
+            // 当成答案（crosscheck4 IME 项）。isComposing 为真时忽略 Enter。
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSubmit();
+          }}
           onFocus={(e) => {
             // iOS software keyboard shrinks the visual viewport and covers the
             // confirm button below the input. Nudge the confirm button into view
