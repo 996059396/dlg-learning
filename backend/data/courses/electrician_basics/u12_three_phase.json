@@ -1,0 +1,116 @@
+{
+  "id": "u12_three_phase",
+  "title": "单元十二：三相电路基础",
+  "description": "三相电源与三相负载、相电压线电压、三相功率 P=√3·UI·cosφ —— 补齐 u11 正弦稳态后的三相知识链（对应邱关源《电路》第 12 章 / Nilsson 第 11 章）",
+  "icon": "🔌",
+  "course_id": "electrician_basics",
+  "lessons": [
+    {
+      "id": "u12a_source",
+      "title": "三相电源：相电压与线电压",
+      "description": "三相对称电源、Y/Δ 接法、线电压=√3×相电压",
+      "estimated_time": "8分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "什么是三相电源",
+          "content": "三相交流电源由三个频率相同、幅值相同、相位互差 120° 的正弦电动势组成（发电机三组绕组）。工程上用三相电是因为：传输同样功率比单相省铜、电动机可直接旋转（旋转磁场）、供电可靠性高。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["三相电源", "三相对称"],
+          "id": "u12a_source_n0"
+        },
+        {
+          "type": "info",
+          "title": "相电压 / 线电压 / Y 接与 Δ 接",
+          "content": "每相绕组两端的电压叫相电压（U相），火线（相线）之间的电压叫线电压（U线）。星形（Y）接法：线电压 = √3 × 相电压，线电流 = 相电流；三角形（Δ）接法：线电压 = 相电压，线电流 = √3 × 相电流。我国低压配电：相电压 220V、线电压 380V（220 × √3 ≈ 380）。",
+          "source": "GB/T 156-2017《标准电压》（等效 IEC 60038）",
+          "reference": "s6_diagram_substation（变压器 400/230V 语境）",
+          "knowledge_points": ["相电压", "线电压", "星形接法", "三角形接法"],
+          "id": "u12a_source_n1"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "我国低压三相四线制中，相电压 220V 与线电压 380V 的关系是？",
+          "options": [
+            { "id": "A", "text": "线电压 = 相电压 × √3 ≈ 380V", "is_correct": true },
+            { "id": "B", "text": "线电压 = 相电压 ÷ √3 ≈ 127V", "is_correct": false },
+            { "id": "C", "text": "线电压 = 相电压，二者相等", "is_correct": false },
+            { "id": "D", "text": "线电压 = 相电压 × 2 = 440V", "is_correct": false }
+          ],
+          "explanation": "Y 接法下线电压 = √3 × 相电压：220 × 1.732 ≈ 380V。火线与火线之间是 380V，火线与零线之间是 220V。",
+          "source": "GB/T 156-2017《标准电压》",
+          "knowledge_points": ["线电压", "相电压", "√3 关系"],
+          "id": "u12a_source_n2"
+        },
+        {
+          "type": "true_false",
+          "question": "三相负载做三角形（Δ）接法时，线电压等于相电压。",
+          "correct_answer": true,
+          "explanation": "Δ 接法每相绕组直接跨接在两条火线之间，所以线电压 = 相电压；线电流 = √3 × 相电流。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["三角形接法", "线电压相电压"],
+          "id": "u12a_source_n3"
+        },
+        {
+          "type": "fill_blank",
+          "question": "星形（Y）接法中，线电压是相电压的 ____ 倍（填数学符号或数值）。",
+          "answer": "√3",
+          "acceptable_answers": ["√3", "根号3", "1.732", "1.73"],
+          "explanation": "Y 接法线电压超前相电压 30°，大小为相电压的 √3 倍（220×√3≈380）。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["星形接法", "线电压相电压"],
+          "id": "u12a_source_n4"
+        }
+      ]
+    },
+    {
+      "id": "u12b_power",
+      "title": "三相功率：P=√3·UI·cosφ",
+      "description": "对称三相电路的有功功率计算",
+      "estimated_time": "8分钟",
+      "nodes": [
+        {
+          "type": "info",
+          "title": "对称三相电路的有功功率",
+          "content": "对称三相电路总功率 = 3 倍每相功率 = 3·U相·I相·cosφ。用线电压/线电流表达，Y 与 Δ 接法统一为：P = √3 · U线 · I线 · cosφ。无功功率 Q = √3·U·I·sinφ，视在功率 S = √3·U·I = √(P²+Q²)。cosφ 是每相的功率因数。",
+          "source": "邱关源《电路》（第五版）第 12 章 / Nilsson《Electric Circuits》第 11 章",
+          "knowledge_points": ["三相有功功率", "功率因数", "√3 公式"],
+          "id": "u12b_power_n0"
+        },
+        {
+          "type": "multiple_choice",
+          "question": "一台对称三相负载，线电压 380V、线电流 10A、功率因数 cosφ=0.8，三相总有功功率约为？",
+          "options": [
+            { "id": "A", "text": "P = √3 × 380 × 10 × 0.8 ≈ 5266W（约 5.3kW）", "is_correct": true },
+            { "id": "B", "text": "P = 380 × 10 × 0.8 ≈ 3040W", "is_correct": false },
+            { "id": "C", "text": "P = 3 × 380 × 10 × 0.8 ≈ 9120W", "is_correct": false },
+            { "id": "D", "text": "P = 380 × 10 ≈ 3800W", "is_correct": false }
+          ],
+          "explanation": "对称三相 P = √3·U线·I线·cosφ = 1.732 × 380 × 10 × 0.8 ≈ 5266W。选项 B 漏了 √3（那是每相功率的量级）；选项 C 把 √3 当成了 3（多乘）。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["三相有功功率", "√3 公式"],
+          "id": "u12b_power_n1"
+        },
+        {
+          "type": "true_false",
+          "question": "对称三相电路的总有功功率恒等于 3 倍每相有功功率，与负载是 Y 还是 Δ 接法无关。",
+          "correct_answer": true,
+          "explanation": "无论 Y 还是 Δ，三相总功率都等于各相功率之和；对称时 = 3×相功率，用线电压电流统一写成 P=√3·U线·I线·cosφ，两种接法都成立。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["三相有功功率", "Y/Δ 无关"],
+          "id": "u12b_power_n2"
+        },
+        {
+          "type": "fill_blank",
+          "question": "对称三相有功功率用线电压 U、线电流 I、功率因数 cosφ 表示时，P = ____·U·I·cosφ（填系数）。",
+          "answer": "√3",
+          "acceptable_answers": ["√3", "根号3", "1.732", "1.73"],
+          "explanation": "P = √3·U线·I线·cosφ，系数是 √3（≈1.732），不是 3。",
+          "source": "邱关源《电路》（第五版）第 12 章",
+          "knowledge_points": ["三相有功功率", "√3 公式"],
+          "id": "u12b_power_n3"
+        }
+      ]
+    }
+  ]
+}

@@ -119,6 +119,13 @@
         "description": "复数、相量法、阻抗导纳、功率因数、复功率、最大功率匹配",
         "lesson_count": 165,
         "estimated_total_time": "495分钟"
+      },
+      {
+        "id": "u12_three_phase",
+        "title": "单元十二：三相电路基础",
+        "description": "三相电源、相电压线电压、三相功率 P=√3·UI·cosφ（补齐 u11 后的三相知识链）",
+        "lesson_count": 2,
+        "estimated_total_time": "16分钟"
       }
     ]
   },

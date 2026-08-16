@@ -23,7 +23,7 @@ if (fs.existsSync(msPool)) files.push(msPool);
 // Update the value deliberately when a recut is intended; the scan prints the
 // live count on mismatch so the correction is copy-paste easy.
 const EXPECTED_NODE_COUNTS = {
-  'u10_opamp_dynamics.json': 1300, 'u11_ac_analysis.json': 920,
+  'u10_opamp_dynamics.json': 1300, 'u11_ac_analysis.json': 920, 'u12_three_phase.json': 9,
   'u1_meter_basics.json': 88, 'u2_circuit_basics.json': 70,
   'u3_tools.json': 57, 'u4_relays.json': 55,
   'u5_multimeter_advanced.json': 75, 'u6_circuit_theory.json': 137,
