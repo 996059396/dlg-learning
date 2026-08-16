@@ -296,7 +296,7 @@ const _fbNormalize = (s) => {
           autoFocus
           disabled={answered}
           style={answered ? {
-            borderColor: isCorrect ? '#58CC02' : '#FF4B4B',
+            borderColor: isCorrect ? 'var(--primary)' : '#FF4B4B',
             background: isCorrect ? '#F0FFF0' : '#FFF5F5',
             color: isCorrect ? '#3C8500' : '#C42626',
             fontWeight: 700,

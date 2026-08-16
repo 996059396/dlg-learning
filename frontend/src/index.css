@@ -1,7 +1,8 @@
 /* ── CSS Reset & Variables ── */
 :root {
-  --primary: #58CC02;
-  --primary-dark: #46A302;
+  --primary: #2A7E00;
+  /* 按钮 3D 底边阴影：随 --primary 成比例加深（--primary 已为对比度达标而加深） */
+  --primary-dark: #1E6200;
   --danger: #FF4B4B;
   --warning: #FFC107;
   --blue: #1CB0F6;

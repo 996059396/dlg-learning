@@ -40,7 +40,7 @@ export default function Home() {
       <div
         style={{
           background: checkedInToday
-            ? 'linear-gradient(135deg, #58CC02, #7ED321)'
+            ? 'linear-gradient(135deg, var(--primary), #338300)'
             : 'linear-gradient(135deg, #FF6B35, #FF8C42)',
           borderRadius: 'var(--radius)',
           padding: '20px',

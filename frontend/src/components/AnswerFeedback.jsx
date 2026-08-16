@@ -20,7 +20,7 @@ const AnswerFeedback = ({
   const palette = isCorrect
     ? {
         bg: '#E5F6D0',
-        border: '#58CC02',
+        border: 'var(--primary)',
         text: '#3C8500',
         emoji: '🎉',
         title: '答对了！',

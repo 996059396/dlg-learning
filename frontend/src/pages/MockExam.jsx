@@ -155,7 +155,7 @@ export default function MockExam() {
                         {h.status === 'expired' ? ' · ⏰ 超时' : ''}
                       </div>
                     </div>
-                    <span style={{ fontSize: 18, color: h.passed ? '#58CC02' : 'var(--danger)' }}>{h.passed ? '+' : ''}{h.score}</span>
+                    <span style={{ fontSize: 18, color: h.passed ? 'var(--primary)' : 'var(--danger)' }}>{h.passed ? '+' : ''}{h.score}</span>
                   </div>
                 ))}
               </div>
@@ -167,7 +167,7 @@ export default function MockExam() {
   }
 
   if (phase === 'result' && result) {
-    const passColor = result.passed ? '#58CC02' : 'var(--danger)';
+    const passColor = result.passed ? 'var(--primary)' : 'var(--danger)';
     return (
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 16px' }}>
         <div style={{ textAlign: 'center', margin: '20px 0 24px' }}>
@@ -188,7 +188,7 @@ export default function MockExam() {
         <h2 style={{ fontSize: 18, marginBottom: 12 }}>逐题解析</h2>
         <div style={{ display: 'grid', gap: 12 }}>
           {result.results.map((r, i) => (
-            <div key={i} style={{ background: 'var(--bg-secondary)', padding: '12px 14px', borderRadius: 'var(--radius-sm)', borderLeft: `4px solid ${r.correct ? '#58CC02' : 'var(--danger)'}` }}>
+            <div key={i} style={{ background: 'var(--bg-secondary)', padding: '12px 14px', borderRadius: 'var(--radius-sm)', borderLeft: `4px solid ${r.correct ? 'var(--primary)' : 'var(--danger)'}` }}>
               <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 4 }}>
                 {i + 1} · {TYPE_LABEL[session.questions[i]?.type]} {r.correct ? '✅ 对' : '❌ 错'}
               </div>
@@ -196,7 +196,7 @@ export default function MockExam() {
               {!r.correct && r.userAnswer && (
                 <div style={{ fontSize: 13, color: 'var(--danger)' }}>你的答案：{r.userAnswer}</div>
               )}
-              <div style={{ fontSize: 13, color: '#58CC02' }}>正确答案：{r.correctAnswer}</div>
+              <div style={{ fontSize: 13, color: 'var(--primary)' }}>正确答案：{r.correctAnswer}</div>
               {session.questions[i]?.explanation ? (
                 <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{session.questions[i].explanation}</div>
               ) : null}
