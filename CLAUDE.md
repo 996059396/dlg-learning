@@ -19,9 +19,9 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 - 生产部署：`node:24-slim`（Docker）或 `setup_24.x`（nodesource）
 - 测试脚本首行会校验 Node 主版本，低于 22 直接退出
 
-## 测试门禁（8 段链，`cd backend && npm test`）
+## 测试门禁（9 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 109 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 126 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
@@ -31,8 +31,9 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 | 4 | `node ../test_leaderboard_v2.mjs` | 12 | 段位/周结算/排行 |
 | 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |
 | 6 | `node ../test_security_invariants.mjs` | 19 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
-| 7 | `node ../scripts/grade_scan.cjs` | 3742 节点 100% | 判分自洽 |
-| 8 | `node ../scripts/check_data_integrity.cjs` | 704 lessons | 数据完整性 |
+| 7 | `node ../test_idempotency.mjs` | 17 | (user, client_request_id) 幂等重放不二次判分/铸币 |
+| 8 | `node ../scripts/grade_scan.cjs` | 3742 节点 100% + 3741 错答负例 | 判分自洽 + 宽容化回归 |
+| 9 | `node ../scripts/check_data_integrity.cjs` | 704 lessons | 数据完整性 |
 
 > 门禁链数字若有变动，需同步更新本文件、`README.md`、`docs/快速开始.md`、`docs/测试说明.md`。
 
