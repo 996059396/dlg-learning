@@ -296,8 +296,12 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete',
         coinsEarned = Math.round(xpBase / 2); // 5 coins, actually persisted now
         db.updateGameState(userId, { coins: gameState.coins + coinsEarned });
 
-        if (gameState.hearts < gameState.max_hearts && Math.random() < 0.5) {
-          db.updateGameState(userId, { hearts: gameState.hearts + 1 });
+        // 50% 返还心必须基于「扣心之后」的实时值（crosscheck6 B high：
+        // 原用扣心前的 gameState，+1 会整体覆盖扣心结果——答错不扣反加，
+        // 0 心被拉回可绕开红心门禁）。
+        const fresh = db.getGameState(userId);
+        if (fresh.hearts < fresh.max_hearts && Math.random() < 0.5) {
+          db.updateGameState(userId, { hearts: fresh.hearts + 1 });
           heartReturned = true;
         }
         if (accuracy >= 100 && Math.random() < 0.3) {

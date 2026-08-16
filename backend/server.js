@@ -169,7 +169,8 @@ app.use('/api/exam', require('./routes/exam'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  // lastBackupAt 供探活/监控检查「备份新鲜度」（crosscheck6 P high：03:47 漏跑曾静默 2 天）
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), lastBackupAt });
 });
 
 // === Weekly settlement cron ===
@@ -193,17 +194,27 @@ console.log(`[cron] Weekly settlement scheduled (Mondays 00:00 Asia/Shanghai). C
 const backupDir = process.env.DLG_BACKUP_DIR || path.join(__dirname, 'models', 'data', 'backups');
 if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
 
+let lastBackupAt = null;
 async function backupDatabase() {
   const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
   const dest = path.join(backupDir, `app-${stamp}.db`);
-  if (fs.existsSync(dest)) return; // 当日已有备份（幂等，不覆盖）
+  if (fs.existsSync(dest)) { lastBackupAt = fs.statSync(dest).mtime.toISOString(); return; } // 当日已有（幂等）
   await db.backup(dest);
+  lastBackupAt = new Date().toISOString();
   console.log(`[backup] 每日备份完成 → ${dest}`);
 }
 cron.schedule('47 3 * * *', () => {
   backupDatabase().catch((e) => console.error('[backup] 失败:', e));
 }, { timezone: 'Asia/Shanghai' });
 console.log(`[backup] 每日备份已调度 (03:47 Asia/Shanghai → ${backupDir})`);
+// 启动补跑（crosscheck6 P high）：03:47 若机器睡眠/停机，node-cron 会静默跳过——
+// 自 5011bb9 上线 2 天零产出。启动时若当日备份缺失则立即补一次。
+backupDatabase().then((d) => {
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  if (lastBackupAt && lastBackupAt.slice(0, 10) === new Date().toISOString().slice(0, 10)) {
+    console.log('[backup] 启动补跑完成（当日备份已就绪）');
+  }
+}).catch((e) => console.error('[backup] 启动补跑失败:', e.message));
 
 // SPA fallback: any non-API GET goes to index.html so client-side routes
 // (/course/..., /profile) survive a hard refresh. API 404s still fall through

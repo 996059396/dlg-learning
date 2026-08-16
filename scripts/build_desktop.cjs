@@ -27,6 +27,29 @@ function run(cmd, args, opts = {}) {
   return r;
 }
 
+// ── 0) 红线预检：源码树必须不含任何 *.db（crosscheck6 P3 critical——
+//    安装包曾内嵌真实 app.db 含密码哈希。含 db 直接 fail）。 ────────────────
+const leaked = [];
+(function walkDbs(d) {
+  for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+    const p = path.join(d, e.name);
+    if (e.isDirectory()) {
+      // 跳过 node_modules/.git；backend/models/data 是开发库目录，extraResources
+      // 已排除它——预检范围与安装包内容一致（防的是泄漏，不是开发库存在）。
+      if (e.name === 'node_modules' || e.name === '.git') continue;
+      if (p.endsWith(path.join('backend', 'models', 'data'))) continue;
+      walkDbs(p);
+    }
+    else if (/\.(db|db-wal|db-shm)$/i.test(e.name)) leaked.push(p);
+  }
+})(ROOT);
+if (leaked.length) {
+  console.error(`❌ 红线：打包源树含 ${leaked.length} 个数据库文件，中止构建（安装包不得携带用户数据）：`);
+  for (const p of leaked) console.error('   ' + p);
+  process.exit(1);
+}
+console.log('· 红线预检通过：源码树无 *.db');
+
 // ── 1) 前端构建 ──────────────────────────────────────────────────────────────
 if (!fs.existsSync(path.join(ROOT, 'frontend', 'dist', 'index.html'))) {
   console.log('· 构建 frontend/dist …');
@@ -64,9 +87,11 @@ if (LOCAL_NODE24 && fs.existsSync(path.join(LOCAL_NODE24, 'node.exe'))) {
   console.log('· Node 24 解压完成');
 }
 
-// ── 3) electron-builder（程序化 API，避开 npx/.cmd 跨平台调用问题）──────────
+// ── 3) electron-builder（程序化 API：config 传 package.json build 字段，cwd 非法——
+//    electron-builder JS API 只认 config/targets，传 cwd 会 checkBuildRequestOptions 抛错）─
 console.log('· electron-builder …');
 const builder = require(path.join(DESKTOP, 'node_modules', 'electron-builder'));
-await builder.build({ cwd: DESKTOP });
+process.chdir(DESKTOP);
+await builder.build({ config: require(path.join(DESKTOP, 'package.json')).build });
 console.log('\n✅ 安装包产物在 desktop/release/（见文件清单）。');
 })();

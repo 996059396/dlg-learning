@@ -588,7 +588,10 @@ async function run() {
     const mixed = await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers: oneWrong }, ea);
     if (mixed.status !== 200) throw new Error(`有红心错题提交应 200，得 ${mixed.status}`);
     if (mixed.data.rewards.heartCost !== 1) throw new Error(`heartCost 应 1，得 ${mixed.data.rewards.heartCost}`);
-    if (hearts() !== 2) throw new Error(`答 1 错应从 3 扣到 2，得 ${hearts()}`);
+    // 扣心后 50% 返还随机：3 - 1 = 2，返还则 3。绝不允许 4（旧 bug：返还分支用扣心前
+    // 值 +1 整体覆盖，答错不扣反加，可从 2 → 3 或 0 被拉回 2——crosscheck6 B high）。
+    const h = hearts();
+    if (h !== 2 && h !== 3) throw new Error(`答 1 错从 3 扣后应 2（或返还 3），得 ${h}`);
     d.close();
   });
 

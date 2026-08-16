@@ -112,9 +112,15 @@ async function startBackend() {
   }
   const nodeExe = await resolveNode();
   ownsBackend = true;
+  // DB 必须落在每用户的 userData 目录（crosscheck6 P3/C8 critical：安装包若把
+  // 内嵌 resources/backend/models/data/app.db 当数据源，会读/写到只读且含开发数据的
+  // 库，且多用户共享一个损坏库）。server.js 尊重 DLG_DB_PATH，空目录自动建。
+  const userDataDir = app.getPath('userData');
+  fs.mkdirSync(userDataDir, { recursive: true });
+  const dbPath = path.join(userDataDir, 'app.db');
   backend = spawn(nodeExe, [path.join(BACKEND_DIR, 'server.js')], {
     cwd: BACKEND_DIR,
-    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port) },
+    env: { ...process.env, HOST: '127.0.0.1', PORT: String(port), DLG_DB_PATH: dbPath },
     stdio: 'ignore',
   });
   backend.on('error', (err) => { if (!quitting) console.error('[dlg-desktop] 后端 spawn 失败:', err); });

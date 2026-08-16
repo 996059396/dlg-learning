@@ -21,19 +21,19 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 ## 测试门禁（9 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 126 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 127 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
 | 1 | `node ../scripts/validate_content.cjs` | 0 ERROR / 0 WARN | 扫描全部课程 JSON 结构 |
-| 2 | `node ../test_api.mjs` | 44 | 注册/登录/课程/判分/金币/检查点/SM-2 |
+| 2 | `node ../test_api.mjs` | 45 | 注册/登录/课程/判分/金币/检查点/SM-2 |
 | 3 | `node ../smoke_milestone1.mjs` | 20 | 核心业务流程冒烟 |
 | 4 | `node ../test_leaderboard_v2.mjs` | 12 | 段位/周结算/排行 |
 | 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |
 | 6 | `node ../test_security_invariants.mjs` | 19 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
 | 7 | `node ../test_idempotency.mjs` | 17 | (user, client_request_id) 幂等重放不二次判分/铸币 |
-| 8 | `node ../scripts/grade_scan.cjs` | 3742 节点 100% + 3741 错答负例 | 判分自洽 + 宽容化回归 |
-| 9 | `node ../scripts/check_data_integrity.cjs` | 704 lessons | 数据完整性 |
+| 8 | `node ../scripts/grade_scan.cjs` | 3748 节点 100% + 3747 错答负例 | 判分自洽 + 宽容化回归 |
+| 9 | `node ../scripts/check_data_integrity.cjs` | 706 lessons | 数据完整性 |
 
 > 门禁链数字若有变动，需同步更新本文件、`README.md`、`docs/快速开始.md`、`docs/测试说明.md`。
 
@@ -44,7 +44,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 - **DB 不透明 token**：`backend/middleware/auth.js`，会话 token SHA-256 哈希入库，Session 表不可逆。
 - **限流**：`backend/middleware/rate_limit.js` 内存固定窗口桶。`DLG_RATE_MAX_<scope>` 环境变量可覆盖上限（测试套件用它放开 auth-ip/register）。prod 不设则用默认。register 独立桶 5/15min/IP、auth-ip 20/15min、login-user 5/15min/IP+账号、login-user-global 20/15min/账号（跨 IP 兜底）、change-pw 10/15min。
 - **错题卡脱敏**：`routes/game.js` sanitizeMistakeForClient 删除 `correct_answer/answer/acceptable_answers/explanation/correct_order/options[].is_correct` + 5 类题型答案键（`match.pairs`、`drag_drop.target_zone/distractors`、`simulation_dial.dial_options[].is_correct/is_wrong`、`simulation_probe.correct_probes`、`multimeter_challenge.correct_setup/correct_display`），答案仅在提交复习后揭示。任何新增答案键必须同步进脱敏名单与 `test_security_invariants.mjs` 的 BANNED 列表。
-- **模拟考**：`/exam/start` 生成 100 题（60 判断 + 30 单选 + 10 多选），multi_select 选项 id **会话级随机重映射**（`ms-xxxx` 格式，防 `{A,B}` 盲刷），`/exam/submit` 服务端判分，score≥80 及格、xp30、首过 30 币、及格卷错题入册。**错题卡复习再重映射**：ms_pool 错题卡入册时生成 `remap_json`（池选项 id → 随机 `ms-xxxx`，旧卡首次复习兜底生成），`loadMistakeNode` 应用它，复习判分看到的正确集合逐卡移动——盲猜池固定正确项 `["A","B"]` 无法铸币。
+- **模拟考**：`/exam/start` 双模式（默认 `real` 全真：100 题 60 判断 + 40 单选 / 120 分钟 / 80 及格，对齐应急〔2025〕59 号；`training` 训练：100 题含 10 多选 / 45 分钟），multi_select 选项 id **会话级随机重映射**（`ms-xxxx` 格式，防 `{A,B}` 盲刷），`/exam/submit` 服务端判分，score≥80 及格、xp30、首过 30 币、及格卷错题入册。**错题卡复习再重映射**：ms_pool 错题卡入册时生成 `remap_json`（池选项 id → 随机 `ms-xxxx`，旧卡首次复习兜底生成），`loadMistakeNode` 应用它，复习判分看到的正确集合逐卡移动——盲猜池固定正确项 `["A","B"]` 无法铸币。
 - **simulation_danger**：判分只接受精确的 `安全操作` 或规范形式 `安全操作（先换表笔再测量）`，**不做子串匹配**（否则「不安全操作」会被「安全操作」误判为对）。
 - **判分归一化** `grading.js _normalize`：半角化 → Ω 哨兵屏蔽(U+E000) → **m/M SI 前缀大小写屏蔽(U+E001)** → toLowerCase → 去空白。改它时同步前端镜像。
 - **测试设施**：`test_api.mjs` / `test_security_invariants.mjs` 用 spawn 独立 server（`PORT=399x`、`DLG_DB_PATH=临时库`、放开 `DLG_RATE_MAX_auth-ip`），不碰真实 `app.db`。
