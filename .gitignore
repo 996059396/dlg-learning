@@ -26,3 +26,7 @@ Thumbs.db
 
 # 一次性临时脚本（crosscheck5 建议）
 _tmp_*
+
+# 桌面构建产物/内嵌运行时（electron-builder 输出, 勿入库）
+desktop/release/
+desktop/vendor/

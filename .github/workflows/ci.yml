@@ -127,3 +127,6 @@ jobs:
 
       - name: test_pwa_e2e（安全头 + PWA 离线，生产单源 3100）
         run: node test_pwa_e2e.mjs
+
+      - name: test_mobile_viewport（390px 移动视口横扫无溢出）
+        run: node test_mobile_viewport.mjs

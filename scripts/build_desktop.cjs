@@ -34,7 +34,7 @@ if (!fs.existsSync(path.join(ROOT, 'frontend', 'dist', 'index.html'))) {
 } else console.log('· frontend/dist 已存在');
 
 // ── 2) 内嵌 Node 24 ──────────────────────────────────────────────────────────
-// 优先用本机已装 node24（LOCAL_NODE24 指向其目录，如 C:\Users\moxo\node24）；
+// 优先用本机已装 node24（LOCAL_NODE24 指向其目录，如本地 node24 解压目录）；
 // 未提供则从 nodejs.org 下载当前平台 Node 24。
 const LOCAL_NODE24 = process.env.LOCAL_NODE24 || '';
 if (LOCAL_NODE24 && fs.existsSync(path.join(LOCAL_NODE24, 'node.exe'))) {
