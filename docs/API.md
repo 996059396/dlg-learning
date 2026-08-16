@@ -100,7 +100,7 @@ x-admin-token: <ADMIN_TOKEN>
   ```json
   {
     "answers": [
-      { "nodeId": "u1a1_q3", "userAnswer": "正确" },
+      { "nodeId": "l1_intro_n1", "userAnswer": "正确" },
       { "nodeIndex": 0, "userAnswer": 30 }
     ],
     "client_request_id": "offline-sync-xxx-8to64chars-no-slash"   // 可选，幂等键
@@ -108,14 +108,14 @@ x-admin-token: <ADMIN_TOKEN>
   ```
   - 节点寻址：优先按 `nodeId`（全局唯一、稳定），旧客户端按 `nodeIndex` 兜底。
   - `userAnswer` 必须是标量（string/number/boolean/null），否则 `400`。
-- **服务端判分**：逐节点用 `gradeNode` 重判，`gradeable` 为 false 时一律判错（**fail-closed**，客户端 `correct` 字段不被信任）。按题型取不同答案键（`correct_answer` / `acceptable_answers` / `options[].is_correct` / `pairs` / `correct_order` / `target_zone` / `correct_probes` / `correct_setup` / `dial_options` / `correct_answer` 等）。
+- **服务端判分**：逐节点用 `gradeNode` 重判，`gradeable` 为 false 时一律判错（**fail-closed**，客户端 `correct` 字段不被信任）。按题型取不同答案键（`answer`（fill_blank 主键）/ `acceptable_answers` / `correct_answer` / `options[].is_correct` / `pairs` / `correct_order` / `target_zone` / `correct_probes` / `correct_setup` / `dial_options[].is_correct` 等）。
 - 通过线：**accuracy ≥ 80** 才算 pass；sub-80 不计首次完成（可重试仍拿全额首次奖励）。
 - **红心门禁**：本次有错题且红心 ≤ 0 → `400 { "error": "红心不足，无法提交错题练习", "needsHearts": true }`（全对提交不消耗红心）。
 - **幂等键**：`client_request_id`（8–64 字符、不含 `/`）。同一 (user, client_request_id) 重放返回**首次提交的完整响应**（`submission_receipts` 表，与奖励同事务写入），不重判、不重复发奖。回执 30 天自动清理。
 - 响应（也是回执内容）：
   ```json
   {
-    "progress": { "id":1, "lesson_id":"u1_meter_basics/u1a_basics/u1a1", "completed":1, "score":4, "max_score":4, "accuracy":100, "completed_at":"...", "attempts":1 },
+    "progress": { "id":1, "lesson_id":"electrician_basics/u1_meter_basics/l1_intro", "completed":1, "score":4, "max_score":4, "accuracy":100, "completed_at":"...", "attempts":1 },
     "accuracy": 100,
     "rewards": {
       "xpEarned": 15, "coinsEarned": 5, "heartCost": 0,
@@ -196,7 +196,7 @@ x-admin-token: <ADMIN_TOKEN>
 #### POST /api/exam/start
 - 每场：**100 题**（60 判断 + 30 单选 + 10 多选）/ **45 分钟** / **80 分及格**。
 - 题源：考证课程 `electrician_exam`（s1–s13）全部判断/单选节点随机抽样；多选从独立池 `backend/data/exam/multi_select.json`（39 题，选项 A–D 带 `is_correct`）随机取 10。
-- **防作弊**：多选题选项顺序随机，且每个选项 id 重映射为会话随机 `ms-xxxx`（判分按 id 而非字母），固定盲猜 `["A","B"]` 命中率约 1/45。
+- **防作弊**：多选题选项顺序随机，且每个选项 id 重映射为会话随机 `ms-xxxx`（判分按 id 而非字母）；盲猜固定 2 选项子集的命中率约 1/6（4 选 2 中恰好正确对，`C(4,2)=6`），正确项分布非恒 `{A,B}` 后固定 id 命中率实际更低。
 - 返回题面已脱敏（无 `is_correct`/`correct_answer`/`explanation` 等答案键），每题带 `index`。
 - 每用户最多一场 live：开新场会 `expired` 旧场；完成/过期会话 30 天后自动清理（题面 ~32KB/场，防止表无限膨胀）。
 - 响应：`{ sessionId, total:100, minutes:45, passScore:80, expiresAt, questions:[脱敏题] }`。
@@ -214,7 +214,7 @@ x-admin-token: <ADMIN_TOKEN>
 
 - 统一错误体：`{ "error": "人类可读信息" }`（必要时含 `needsHearts` / `retryAfterMs` 等补充字段）。
 - 常见状态码：
-  - `400` 参数缺失/格式错（含红心不足、题库不足）
+  - `400` 参数缺失/格式错（含红心不足）
   - `401` 未登录或会话过期
   - `403` 管理口令错误/无权
   - `404` 资源不存在（含错题非本人）

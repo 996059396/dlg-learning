@@ -39,7 +39,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 ## 架构关键点（务必遵守）
 
 - **判分真源在服务端**：`backend/lib/grading.js`，前端不可篡改。前端 `LessonPlayer.jsx` 有镜像 `_fbNormalize` 本地判对，必须保持「本地判对 = 服务端判对」一致。判分结果逐节点落库 `node_results`。
-- **服务端经济**：金币/xp/生命全部由服务端结算（`routes/courses.js`、`routes/game.js`、`routes/shop.js`），客户端只能提交行为、不能自报奖励。
+- **服务端经济**：金币/xp/生命全部由服务端结算（`routes/courses.js`、`routes/game.js`、`lib/shop.js`），客户端只能提交行为、不能自报奖励。
 - **DB 不透明 token**：`backend/middleware/auth.js`，会话 token SHA-256 哈希入库，Session 表不可逆。
 - **限流**：`backend/middleware/rate_limit.js` 内存固定窗口桶。`DLG_RATE_MAX_<scope>` 环境变量可覆盖上限（测试套件用它放开 auth-ip/register）。prod 不设则用默认。register 独立桶 5/15min/IP、auth-ip 20/15min、login-user 5/15min/IP+账号、login-user-global 20/15min/账号（跨 IP 兜底）、change-pw 10/15min。
 - **错题卡脱敏**：`routes/game.js` sanitizeMistakeForClient 删除 `correct_answer/answer/acceptable_answers/explanation/correct_order/options[].is_correct` + 5 类题型答案键（`match.pairs`、`drag_drop.target_zone/distractors`、`simulation_dial.dial_options[].is_correct/is_wrong`、`simulation_probe.correct_probes`、`multimeter_challenge.correct_setup/correct_display`），答案仅在提交复习后揭示。任何新增答案键必须同步进脱敏名单与 `test_security_invariants.mjs` 的 BANNED 列表。

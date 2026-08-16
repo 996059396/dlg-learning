@@ -120,7 +120,7 @@ users 1 ── n exam_sessions       (用户 ── 模拟考会话)
 | --- | --- | --- | --- |
 | id | INTEGER | PK AUTOINCREMENT | |
 | user_id | TEXT | NOT NULL, FK→users | |
-| mistake_id | INTEGER | NOT NULL, FK→mistakes | |
+| mistake_id | INTEGER | NOT NULL | 无 FK 声明（应用层维护；全仓无 `REFERENCES mistakes`） |
 | claimed | INTEGER | DEFAULT 0 | 是否已兑现 |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | |
 
@@ -133,7 +133,7 @@ users 1 ── n exam_sessions       (用户 ── 模拟考会话)
 | --- | --- | --- | --- |
 | id | INTEGER | PK AUTOINCREMENT | |
 | user_id | TEXT | NOT NULL, FK→users | |
-| mistake_id | INTEGER | NOT NULL, FK→mistakes | |
+| mistake_id | INTEGER | NOT NULL | 无 FK 声明（应用层维护；全仓无 `REFERENCES mistakes`） |
 | reviewed_at | TEXT | NOT NULL | 完整 ISO 时间戳（可度量留存，非仅日期） |
 | quality | INTEGER | NOT NULL | SM-2 质量（判对 4 / 判错 2） |
 | correct | INTEGER | NOT NULL | 服务端判定结果 |
@@ -178,7 +178,7 @@ users 1 ── n exam_sessions       (用户 ── 模拟考会话)
 | 列 | 类型 | 约束/默认 | 说明 |
 | --- | --- | --- | --- |
 | id | INTEGER | PK AUTOINCREMENT | |
-| user_id | TEXT | NOT NULL, FK→users | |
+| user_id | TEXT | NOT NULL | 无 FK 声明（应用层维护） |
 | week_start | TEXT | NOT NULL | |
 | league_from | TEXT | | 原段位 |
 | league_to | TEXT | | 结算后段位 |
@@ -194,7 +194,7 @@ users 1 ── n exam_sessions       (用户 ── 模拟考会话)
 | 列 | 类型 | 约束/默认 | 说明 |
 | --- | --- | --- | --- |
 | id | INTEGER | PK AUTOINCREMENT | |
-| user_id | TEXT | NOT NULL, FK→users | |
+| user_id | TEXT | NOT NULL | 无 FK 声明（应用层维护） |
 | lesson_id | TEXT | NOT NULL | 归属课（考试遥测归原课，`exam/ms_pool` 归池） |
 | node_id | TEXT | NOT NULL | 题目 id |
 | node_type | TEXT | NOT NULL | 题型 |
@@ -225,7 +225,7 @@ users 1 ── n exam_sessions       (用户 ── 模拟考会话)
 | 列 | 类型 | 约束/默认 | 说明 |
 | --- | --- | --- | --- |
 | id | TEXT | PK | `crypto.randomBytes(8).toString('hex')` |
-| user_id | TEXT | NOT NULL, FK→users | |
+| user_id | INTEGER | NOT NULL | ⚠️ 代码实际为 `INTEGER`（users.id 是 TEXT UUID，类型不匹配，故**无 FK 声明**——弱类型缺口，已记录） |
 | started_at | TEXT | NOT NULL | ISO |
 | expires_at | TEXT | NOT NULL | start + 45 分钟 |
 | status | TEXT | DEFAULT 'active' | active / completed / expired |

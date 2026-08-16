@@ -73,6 +73,12 @@ export async function registerUser() {
         let data = '';
         res.on('data', d => data += d);
         res.on('end', () => {
+          // 429（register 桶 5/15min/IP）必须显式失败——静默注入 undefined token
+          // 会让后续用例在 AuthScreen 下全 FAIL 且报错极具误导性（crosscheck5 C3）。
+          if (res.statusCode === 429) {
+            reject(new Error(`注册被限流(429): 多套 e2e 连跑触发了 register 桶。等 15 分钟或起一个带 DLG_RATE_MAX_register 的自启后端（ensureBackend）。`));
+            return;
+          }
           try { resolve({ username: uname, ...JSON.parse(data) }); }
           catch (e) { reject(new Error('注册失败: ' + data)); }
         });
@@ -98,7 +104,8 @@ export async function injectProgress(page, progressObj) {
 }
 
 // ── On-demand servers (self-contained scripts) ───────────────────────────────
-const NODE24 = process.env.DLG_NODE24 || 'C:\\Users\\moxo\\node24\\node.exe';
+// 可移植（crosscheck5 X7）：默认用当前解释器（node24 跑脚本即 node24），勿硬编码本机路径
+const NODE24 = process.env.DLG_NODE24 || process.execPath;
 
 export function portOpen(port) {
   return new Promise(resolve => {

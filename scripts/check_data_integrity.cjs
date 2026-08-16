@@ -79,7 +79,8 @@ for (const row of db.prepare('SELECT id, user_id, lesson_id FROM progress').all(
 //     box then shows the same card twice and review_credit mint is doubled.
 for (const row of db.prepare(`
   SELECT user_id, lesson_id, node_id, COUNT(*) c, GROUP_CONCAT(id) ids
-  FROM mistakes GROUP BY user_id, lesson_id, node_id HAVING c > 1
+  FROM mistakes WHERE node_id IS NOT NULL
+  GROUP BY user_id, lesson_id, node_id HAVING c > 1
 `).all()) {
   problems.push(`mistakes 重复卡: (${row.user_id}, ${row.lesson_id}, ${row.node_id}) ×${row.c} [ids=${row.ids}]`);
 }

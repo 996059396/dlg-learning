@@ -203,7 +203,8 @@
           "fail_msg": "档位或表笔位置不对：220V 是交流电（V~），不是直流；且 ACV_200 无法覆盖 220V，会显示溢出 OL",
           "id": "l1_real_panel_n10",
           "correct_display": "220.5 V",
-          "explanation": "家用 220V 是交流电，应拨 ACV_750：200V 档量程不足会溢出，750V 是覆盖它的最近上档。红笔插 V/Ω 孔接火线 L，黑笔永远插 COM 孔接零线 N，交流电两笔对调读数不变。"
+          "explanation": "家用 220V 是交流电，应拨 ACV_750：200V 档量程不足会溢出，750V 是覆盖它的最近上档。红笔插 V/Ω 孔接火线 L，黑笔永远插 COM 孔接零线 N，交流电两笔对调读数不变。",
+          "allow_swap": true
         },
         {
           "type": "true_false",
@@ -417,7 +418,8 @@
           "fail_msg": "档位偏小或类型错：ACV_200 测 220V 会显示 OL；千万不要用 DCV 档测交流电！",
           "id": "l2_dial_selection_n7",
           "correct_display": "219.8 V",
-          "explanation": "220V 是交流电，须用 ACV_750：ACV_200 被 220V 超出会显示 OL，750V 才是覆盖它的最近上档。红笔插 V/Ω 孔接火线 L、黑笔插 COM 孔接零线 N，切勿用直流档测交流，否则读不到数。"
+          "explanation": "220V 是交流电，须用 ACV_750：ACV_200 被 220V 超出会显示 OL，750V 才是覆盖它的最近上档。红笔插 V/Ω 孔接火线 L、黑笔插 COM 孔接零线 N，切勿用直流档测交流，否则读不到数。",
+          "allow_swap": true
         },
         {
           "type": "true_false",
@@ -601,7 +603,8 @@
           "fail_msg": "档位错：220V 是交流电（V~）；ACV_200 不够覆盖；DCV 档完全测不出",
           "id": "l3_voltage_measure_n5",
           "correct_display": "220.3 V",
-          "explanation": "220V 属交流电，拨到 V~ 区选 ACV_750：ACV_200 量程小于 220V 会溢出，750V 是最近上档。红笔插 V/Ω 孔、黑笔插 COM 孔，分别接火线 L 与零线 N；直流档测交流毫无读数。"
+          "explanation": "220V 属交流电，拨到 V~ 区选 ACV_750：ACV_200 量程小于 220V 会溢出，750V 是最近上档。红笔插 V/Ω 孔、黑笔插 COM 孔，分别接火线 L 与零线 N；直流档测交流毫无读数。",
+          "allow_swap": true
         },
         {
           "type": "multimeter_challenge",
@@ -1479,7 +1482,8 @@
           "fail_msg": "测带电高压必须 ACV_750 + 红笔 V/Ω 孔 + 黑笔 COM 孔，单手操作",
           "id": "l6_repair_scenario_n10",
           "correct_display": "220.5 V",
-          "explanation": "配电箱内属带电环境，须用 ACV_750：200V 档覆盖不了 220V。红笔插 V/Ω 孔接空开下接线柱、黑笔插 COM 孔接 N 汇流排，单手戴绝缘手套操作；测到 220V 说明空开正常，故障在下游。"
+          "explanation": "配电箱内属带电环境，须用 ACV_750：200V 档覆盖不了 220V。红笔插 V/Ω 孔接空开下接线柱、黑笔插 COM 孔接 N 汇流排，单手戴绝缘手套操作；测到 220V 说明空开正常，故障在下游。",
+          "allow_swap": true
         },
         {
           "type": "multiple_choice",

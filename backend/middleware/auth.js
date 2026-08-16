@@ -27,9 +27,9 @@ function optionalAuth(req, res, next) {
   next();
 }
 
-// Admin gate for privileged endpoints (settlement, content management).
-// ADMIN_TOKEN must come from the environment — NO default value (the old
-// public 'dlg-admin-2026' default was a live backdoor). Compare in constant time.
+// Admin gate for privileged endpoints (settlement).
+// ADMIN_TOKEN must come from the environment — NO default value (an old public
+// default value was a live backdoor; now fail-closed 503 when unset). Constant-time compare.
 function requireAdmin(req, res, next) {
   const adminToken = process.env.ADMIN_TOKEN;
   if (!adminToken) {

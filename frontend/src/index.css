@@ -105,7 +105,8 @@ textarea:focus-visible {
 }
 
 .btn-primary:hover {
-  background: #4CAD00;
+  /* hover 用加深色，白字对比度 7.5:1（#4CAD00 只有 2.89:1，crosscheck5 C8） */
+  background: var(--primary-dark);
 }
 
 .btn-danger {

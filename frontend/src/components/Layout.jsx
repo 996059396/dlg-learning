@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast, gameState, offline } = useGame();
+  const { toast, gameState, offline, user } = useGame();
   const headerRef = useRef(null);
 
   const isLessonPage = location.pathname.includes('/lesson/');

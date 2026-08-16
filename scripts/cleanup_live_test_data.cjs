@@ -24,7 +24,9 @@ const BACKUP = process.env.DLG_BACKUP_DIR
   || path.join(__dirname, '..', 'backend', 'models', 'data', 'backups');
 
 function isTestUser(username) {
-  return /^(e2e_|mm_e2e_|v10|v22|x05)/.test(username || '');
+  // 加边界：只命中完整的测试号模式（e2e_ / mm_e2e_ / v10数字 / v22_ / x05_），
+  // 避免把「v10号学员」「x05pro」这类真实用户名误删（crosscheck5 C4）。
+  return /^(e2e_|mm_e2e_|x05_|v22_|v10(?=[0-9_]))/.test(username || '');
 }
 
 // 0) Backup first — destructive-op red line.
@@ -44,9 +46,12 @@ const report = { dedupDeleted: 0, testUsers: 0, mistakesDeleted: 0, rowsDeleted:
 
 const tx = db.transaction(() => {
   // 1) Dedupe mistake cards: keep MIN(id) per (user, lesson, node).
+  // 只对 node_id NOT NULL 的组去重——addMistake 对无 node_id 的旧卡以 node_index
+  // 去重，SQLite GROUP BY 把 NULL 归一组，同课多张 NULL 卡会被误删（crosscheck5 C3）。
   const dupGroups = db.prepare(`
     SELECT MIN(id) keep_id, GROUP_CONCAT(id) ids, COUNT(*) c
-    FROM mistakes GROUP BY user_id, lesson_id, node_id HAVING c > 1
+    FROM mistakes WHERE node_id IS NOT NULL
+    GROUP BY user_id, lesson_id, node_id HAVING c > 1
   `).all();
   for (const g of dupGroups) {
     const toDelete = String(g.ids).split(',').map(Number).filter(id => id !== g.keep_id);
