@@ -66,7 +66,12 @@ async function chooseBackend() {
 // 逐个用 `node -e "process.versions.modules"` 实测 ABI，通过才用。
 function probeAbi(nodeExe) {
   return new Promise((resolve) => {
-    if (!nodeExe || !fs.existsSync(nodeExe)) return resolve(null);
+    if (!nodeExe) return resolve(null);
+    // 只有「路径形式」（含 / 或 \）才做 existsSync 预检；裸命令名（如 'node'）
+    // 靠 PATH 解析，existsSync 会在 CWD 找不到同名文件而误杀它（CI 三平台因此
+    // 报「未找到 Node 24」，本机则因候选#2 绝对路径存在而侥幸通过）。
+    const isPath = /[\\/]/.test(nodeExe);
+    if (isPath && !fs.existsSync(nodeExe)) return resolve(null);
     const child = spawn(nodeExe, ['-e', 'process.stdout.write(String(process.versions.modules))'], {
       stdio: ['ignore', 'pipe', 'ignore'],
     });
