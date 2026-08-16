@@ -15986,7 +15986,12 @@
             "δ"
           ],
           "explanation": "t<0 为零、t=0 冲激 δ(t)、t>0+ 从 −1/(RC) 处按指数衰减回零。画图时冲激用带 (1) 标注的箭头。",
-          "id": "u10_opamp_dynamics_l61_p3_n5"
+          "id": "u10_opamp_dynamics_l61_p3_n5",
+          "source": "邱关源《电路》（第五版）动态电路·冲激响应",
+          "knowledge_points": [
+            "RC 电路冲激响应",
+            "电容电流 iC"
+          ]
         },
         {
           "type": "fill_blank",

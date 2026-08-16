@@ -152,6 +152,15 @@ for (const file of files) {
       if (!node.type) { err(`${ctx}: 缺失 type`); return; }
       if (!VALID_NODE_TYPES.has(node.type)) { err(`${ctx}: 非法 type="${node.type}"`); return; }
 
+      // 结构化引用元数据（crosscheck5 S M6，可选）：source/reference/knowledge_points
+      // 存在则校验类型；缺失不阻断（历史节点逐步补齐）。
+      if (node.source !== undefined && typeof node.source !== 'string') err(`${ctx}: source 必须为字符串`);
+      if (node.reference !== undefined && typeof node.reference !== 'string') err(`${ctx}: reference 必须为字符串`);
+      if (node.knowledge_points !== undefined) {
+        if (!Array.isArray(node.knowledge_points) || node.knowledge_points.some(k => typeof k !== 'string'))
+          err(`${ctx}: knowledge_points 必须为字符串数组`);
+      }
+
       switch (node.type) {
         case 'info':
           if (!node.title) warn(`${ctx} (info): 缺 title`);
