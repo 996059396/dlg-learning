@@ -29,3 +29,42 @@ jobs:
       - name: 全量门禁（内容校验 + 接口/里程碑/排行/结算/安全不变量 + 判分扫描 + 数据完整性）
         working-directory: backend
         run: npm test
+
+  # Electron 同源桌面壳跨平台冒烟（X01）：加载构建产物，断言标题含 DLG。
+  # 仅 push 触发（PR 高频迭代不重复下载 ~100MB Electron）；Linux 用 xvfb-run。
+  desktop-smoke:
+    name: desktop-smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 后端依赖
+        working-directory: backend
+        run: npm install --no-audit --no-fund
+
+      - name: 前端构建
+        working-directory: frontend
+        run: npm install --no-audit --no-fund && npm run build
+
+      - name: 桌面依赖（含 Electron 二进制）
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+
+      - name: 冒烟（Linux xvfb，加 --no-sandbox 绕 CI 缺 SUID sandbox）
+        if: runner.os == 'Linux'
+        working-directory: desktop
+        run: xvfb-run -a ./node_modules/.bin/electron . --smoke --no-sandbox
+
+      - name: 冒烟（Windows / macOS）
+        if: runner.os != 'Linux'
+        working-directory: desktop
+        run: ./node_modules/.bin/electron . --smoke
