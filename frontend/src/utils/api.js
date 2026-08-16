@@ -35,6 +35,10 @@ async function request(url, options = {}) {
     const err = await res.json().catch(() => ({ error: 'Network error' }));
     const e = new Error(err.error || `HTTP ${res.status}`);
     e.status = res.status;
+    // Surface server body fields (e.g. needsHearts from the complete endpoint's
+    // red-heart gate) so callers can branch on them (offlineQueue uses it to
+    // distinguish "blocked, restore hearts" from "permanent failure").
+    if (err.needsHearts != null) e.needsHearts = err.needsHearts;
     if (res.status === 401 && !SESSION_401_EXCLUDED.has(url.split('?')[0])) {
       for (const fn of [...unauthorizedHandlers]) {
         try { fn(); } catch (handlerErr) { console.error('unauthorized handler failed:', handlerErr); }

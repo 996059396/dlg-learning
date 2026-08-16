@@ -303,6 +303,74 @@ async function run() {
     if (sub.data.coinEarned !== 30) throw new Error(`coinEarned=${sub.data.coinEarned}`);
   });
 
+  await test('模拟考重复交卷 → 409 且不重复铸币（会话幂等）', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `双交${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const start = await jA('POST', '/exam/start', {}, ea);
+    const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
+    const qrow = db.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
+    const uid = db.prepare('SELECT user_id FROM exam_sessions WHERE id = ?').get(start.data.sessionId).user_id;
+    db.close();
+    const answers = buildExamAllCorrect(JSON.parse(qrow.questions_json));
+    const sub = await jA('POST', '/exam/submit', { sessionId: start.data.sessionId, answers }, ea);
+    if (sub.status !== 200) throw new Error(`首次交卷: ${sub.status} ${JSON.stringify(sub.data).slice(0, 120)}`);
+    const dup = await jA('POST', '/exam/submit', { sessionId: start.data.sessionId, answers }, ea);
+    if (dup.status !== 409) throw new Error(`重复交卷应 409, got ${dup.status}`);
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const xp = d.prepare('SELECT xp FROM game_state WHERE user_id = ?').get(uid)?.xp ?? 0;
+    const coins = d.prepare('SELECT coins FROM game_state WHERE user_id = ?').get(uid)?.coins ?? 0;
+    d.close();
+    if (xp !== 30) throw new Error(`重复交卷后 xp=${xp}，应保持 30（未重复铸币）`);
+    if (coins !== 530) throw new Error(`重复交卷后 coins=${coins}，应保持 530（未重复铸币）`);
+  });
+
+  await test('错题复习 credit 幂等：同卡正确复习不重复记 credit', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `复习卡${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const start = await jA('POST', '/exam/start', {}, ea);
+    const db0 = new Database(DB_PATHS.A); db0.pragma('busy_timeout = 5000');
+    const qrow = db0.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
+    const uid = db0.prepare('SELECT user_id FROM exam_sessions WHERE id = ?').get(start.data.sessionId).user_id;
+    db0.close();
+    const questions = JSON.parse(qrow.questions_json);
+    // 挑一个 MC/TF 题故意答错（其余全对）→ 一张可复查的错题卡
+    const wrongIdx = questions.findIndex(n => n.type === 'multiple_choice' || n.type === 'true_false');
+    if (wrongIdx < 0) throw new Error('模拟考卷无 MC/TF 题，无法造复查卡');
+    const answers = questions.map((node, i) => {
+      const right = i !== wrongIdx;
+      let userAnswer;
+      if (node.type === 'true_false') {
+        userAnswer = right ? (node.correct_answer ? '正确' : '错误') : (node.correct_answer ? '错误' : '正确');
+      } else if (node.type === 'multiple_choice') {
+        const pick = right ? node.options.find(o => o.is_correct) : node.options.find(o => !o.is_correct);
+        userAnswer = pick?.text || '';
+      } else if (node.type === 'multi_select') {
+        userAnswer = JSON.stringify(node.options.filter(o => o.is_correct).map(o => o.id));
+      } else {
+        userAnswer = '';
+      }
+      return { index: i, userAnswer };
+    });
+    const sub = await jA('POST', '/exam/submit', { sessionId: start.data.sessionId, answers }, ea);
+    if (sub.status !== 200) throw new Error(`交卷失败: ${sub.status} ${JSON.stringify(sub.data).slice(0, 120)}`);
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const card = d.prepare('SELECT id, correct_answer FROM mistakes WHERE user_id = ? AND node_id = ?').get(uid, questions[wrongIdx].id);
+    if (!card) throw new Error('错题卡未入册');
+    const correctAnswer = card.correct_answer || '';
+    const r1 = await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: correctAnswer }, ea);
+    if (r1.status !== 200 || r1.data.correct !== true) {
+      throw new Error(`首次复习应判对: ${r1.status} ${JSON.stringify(r1.data).slice(0, 140)}`);
+    }
+    const c1 = d.prepare('SELECT COUNT(*) c FROM review_credit WHERE user_id = ? AND mistake_id = ?').get(uid, card.id).c;
+    if (c1 !== 1) throw new Error(`首轮 credit=${c1}, 应 1`);
+    // 重放同一张卡的正确复习 → 去重，credit 仍为 1（不可重复铸币）
+    const r2 = await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: correctAnswer }, ea);
+    if (r2.status !== 200) throw new Error(`重放复习: ${r2.status}`);
+    const c2 = d.prepare('SELECT COUNT(*) c FROM review_credit WHERE user_id = ? AND mistake_id = ?').get(uid, card.id).c;
+    d.close();
+    if (c2 !== 1) throw new Error(`重放后 credit=${c2}, 应仍为 1（幂等去重）`);
+  });
+
   await test('及格卷错题入册：90/100 → passed 且 10 错题入册', async () => {
     const reg = await jA('POST', '/auth/register', { username: `部分${Date.now() % 100000}`, password: 'exam123456' });
     const ea = auth(reg.data.token);
@@ -398,11 +466,17 @@ async function run() {
 
     // 用该卡 remap 后的真实正确 id 集合 → 判对（正常复习路径仍可获 credit）
     const db3 = new Database(DB_PATHS.A); db3.pragma('busy_timeout = 5000');
-    const remapRow = db3.prepare('SELECT remap_json FROM mistakes WHERE id = ?').get(first.id);
+    const remapRow = db3.prepare('SELECT remap_json, node_id FROM mistakes WHERE id = ?').get(first.id);
     db3.close();
     const remap = JSON.parse(remapRow.remap_json);
-    // 池文件正确项恒 {A,B} → remap 后正确集合 = [remap.A, remap.B]
-    const real = await jA('POST', '/game/mistakes/review', { mistakeId: first.id, userAnswer: JSON.stringify([remap.A, remap.B]) }, ea);
+    // 池已扩至 30+、正确项分布不再恒为 {A,B}（crosscheck4 #12）：按卡 node_id 从池
+    // 文件取真实正确项，再经 remap 映射到会话随机 id 提交，才代表「记住了正确知识」
+    // 的正常复习路径。原写法硬编码 [remap.A, remap.B] 只对全 A+B 池成立。
+    const msPool = JSON.parse(req('fs').readFileSync(path.join(import.meta.dirname, 'backend', 'data', 'exam', 'multi_select.json'), 'utf8'));
+    const msNode = msPool.find(n => n.id === remapRow.node_id);
+    if (!msNode) throw new Error(`池中找不到节点 ${remapRow.node_id}`);
+    const trueSet = msNode.options.filter(o => o.is_correct).map(o => remap[o.id]);
+    const real = await jA('POST', '/game/mistakes/review', { mistakeId: first.id, userAnswer: JSON.stringify(trueSet) }, ea);
     if (real.data.correct !== true) throw new Error(`remap 正确集合判错：${JSON.stringify(real.data)}`);
   });
 

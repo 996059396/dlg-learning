@@ -186,6 +186,20 @@ function initializeDatabase() {
     );
     CREATE INDEX IF NOT EXISTS idx_node_results_lesson_node ON node_results(lesson_id, node_id);
     CREATE INDEX IF NOT EXISTS idx_node_results_node ON node_results(node_id);
+
+    -- X02: idempotency receipts for OFFLINE lesson completion sync. The offline
+    -- queue re-sends raw answers with a client_request_id after reconnect; a
+    -- replayed request must return the ORIGINAL response instead of re-grading,
+    -- or a retry after a lost response would double-mint rewards. The receipt is
+    -- written in the SAME transaction as the rewards (see routes/courses.js).
+    CREATE TABLE IF NOT EXISTS submission_receipts (
+      user_id TEXT NOT NULL,
+      client_request_id TEXT NOT NULL,
+      response_json TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, client_request_id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
   `);
 
   // Defensive migration: add columns if upgrading an existing DB
@@ -923,10 +937,16 @@ function effectiveZones(total, rules) {
     return { promote: rawPromote, demote: rawDemote };
   }
   const scale = room / (rawPromote + rawDemote);
-  return {
-    promote: Math.floor(rawPromote * scale),
-    demote: Math.floor(rawDemote * scale),
-  };
+  let promote = Math.floor(rawPromote * scale);
+  let demote = Math.floor(rawDemote * scale);
+  // total=2 floor semantics (crosscheck4 #9): with room=1 both zones floor to 0,
+  // so the champion of a 2-player league never advances — a dead-end even at the
+  // floor leagues. Guarantee at least the top spot promotes when the rules allow
+  // promotion and there's room; demote then shrinks so promote+demote never
+  // overlap (at least one middle rank still stays put).
+  if (rawPromote > 0 && promote === 0) promote = 1;
+  demote = Math.min(demote, Math.max(0, room - promote));
+  return { promote, demote };
 }
 
 // Mutex guard: settlement is idempotent and can be triggered from cron, admin,
@@ -947,6 +967,23 @@ function settleWeek(targetWeekStart = null, force = false) {
   if (ws >= currentWeek) {
     console.warn(`[settleWeek] Refusing to settle active week ${ws} (current=${currentWeek}) — only finished weeks can be settled`);
     return { weekStart: ws, settled: [], skipped: true, reason: 'active-week' };
+  }
+  // crosscheck4 #9: force may ONLY re-settle the most recent finished week that
+  // still has unsettled rows. Re-running an OLDER (already-settled) week
+  // recomputes each user's tier from stale data and OVERWRITES their CURRENT
+  // league in game_state — a user promoted to gold in a later week gets rolled
+  // back to the tier this old week assigned. The latest unsettled week re-runs
+  // deterministically over the same frozen rows, so force there is idempotent.
+  if (force) {
+    const latestUnsettled = db.prepare(`
+      SELECT week_start FROM leaderboard
+      WHERE settled_at IS NULL AND week_start < ?
+      ORDER BY week_start DESC LIMIT 1
+    `).get(currentWeek);
+    if (!latestUnsettled || latestUnsettled.week_start !== ws) {
+      console.warn(`[settleWeek] force 只允许重算最新未结算周（${latestUnsettled?.week_start ?? '无'}），拒绝 ${ws}`);
+      return { weekStart: ws, settled: [], skipped: true, reason: 'force-not-latest-unsettled' };
+    }
   }
   if (settling) {
     console.log(`[settleWeek] Already settling — skipping ${ws}`);
@@ -1003,6 +1040,14 @@ function settleWeek(targetWeekStart = null, force = false) {
           // Update user's league in game_state
           if (nextLeague !== league) {
             db.prepare('UPDATE game_state SET league = ? WHERE user_id = ?').run(nextLeague, row.user_id);
+            // crosscheck4 #9: catch-up 延迟结算时，当周（以及任何尚未结算的后续
+            // 周）的 leaderboard 行仍记着旧段位。把该用户所有未结算周的 league
+            // 同步到新段位，否则当周排行滞留在过时段位，且后续周会按错误段位
+            // 结算。只动 week_start > ws 的未结算行，绝不影响正在结算的 ws。
+            db.prepare(`
+              UPDATE leaderboard SET league = ?
+              WHERE user_id = ? AND week_start > ? AND settled_at IS NULL
+            `).run(nextLeague, row.user_id, ws);
           }
 
           // Insert history

@@ -19,6 +19,9 @@
   --radius-sm: 10px;
   --radius-xs: 8px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* Measured at runtime by Layout (header height). MockExam's sticky HUD sits
+     below it so the app-header (z-index:100) never overlaps the countdown. */
+  --app-header-h: 48px;
 }
 
 * {
@@ -168,6 +171,7 @@ textarea:focus-visible {
   padding: 12px 16px;
   background: white;
   border-bottom: 1px solid var(--border);
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -182,7 +186,7 @@ textarea:focus-visible {
 .app-content {
   flex: 1;
   padding: 16px;
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
 }
 
@@ -403,6 +407,14 @@ textarea:focus-visible {
   background: #F0F8FF;
 }
 
+/* Long option text wraps inside the flex row instead of overflowing the
+   app-container on narrow phones (flex items default to min-width:auto, which
+   keeps unbreakable content at full width and pushes it past the edge). */
+.option-btn > span:last-child {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
 .option-btn:active {
   transform: scale(0.98);
 }
@@ -455,6 +467,7 @@ textarea:focus-visible {
   width: 100%;
   max-width: 480px;
   padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   background: white;
   border-top: 1px solid var(--border);
   box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
@@ -1031,4 +1044,16 @@ textarea:focus-visible {
 }
 @keyframes auth-spin {
   to { transform: rotate(360deg); }
+}
+
+/* X02 offline banner — thin amber strip so an offline session is honest about
+   cached identity + queued completions, without hiding behind the header. */
+.offline-banner {
+  background: #7A5C00;
+  color: #FFF3D6;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 6px 12px;
+  z-index: 120;
 }

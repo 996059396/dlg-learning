@@ -43,3 +43,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </RootBoundary>
   </React.StrictMode>
 );
+
+// PWA shell (X02): register the service worker for offline lesson support.
+// Registration lives in the bundled module rather than an inline <script> —
+// the production CSP is script-src 'self', which blocks inline scripts.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.error('[SW] registration failed:', err);
+    });
+  });
+}

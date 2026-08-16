@@ -5,7 +5,7 @@
 /* === Container === */
 .mm-body {
   position: relative;
-  width: 320px;
+  width: min(320px, 100%);
   background: linear-gradient(160deg, #f5c526 0%, #e6a812 50%, #c98a08 100%);
   border-radius: 18px;
   padding: 14px 14px 18px;
@@ -19,7 +19,7 @@
 }
 
 .mm-body.compact {
-  width: 240px;
+  width: min(240px, 100%);
   padding: 10px 10px 14px;
   border-radius: 14px;
 }
@@ -156,16 +156,15 @@
 /* === Dial === */
 .mm-dial-wrap {
   position: relative;
-  width: 260px;
-  height: 260px;
+  width: min(260px, 100%);
+  aspect-ratio: 1 / 1;
   margin: 14px auto 6px;
 }
 
 .mm-body.compact .mm-dial-wrap {
   /* Slightly larger than the 200px baseline: with only the candidate dial
      positions rendered (~5–6 labels) each gets a ≥44px tap target. */
-  width: 230px;
-  height: 230px;
+  width: min(230px, 100%);
   margin: 10px auto 4px;
 }
 
@@ -241,6 +240,11 @@
 .mm-dial-label {
   position: absolute;
   transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 28px;
   font-size: 9px;
   font-weight: 800;
   color: #f5e5a0;
@@ -254,11 +258,24 @@
   z-index: 3;
   transition: all 0.15s;
   letter-spacing: 0.3px;
+  touch-action: manipulation;
 }
 
 .mm-body.compact .mm-dial-label {
   font-size: 9px;
   padding: 2px 4px;
+}
+
+/* Touch devices: real-world multimeter realism is preserved by keeping the
+   labels visually compact, but the tap target is padded up to the 44px floor. */
+@media (pointer: coarse) {
+  .mm-dial-label {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 12px;
+  }
 }
 
 .mm-dial-label:hover {
@@ -421,7 +438,7 @@
 .mm-hotspot {
   position: absolute;
   min-width: 56px;
-  height: 36px;
+  min-height: 44px;
   padding: 0 10px;
   border: 2px dashed #888;
   border-radius: 10px;
@@ -433,7 +450,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 88%;
+  overflow-wrap: break-word;
   transition: all 0.15s;
+  touch-action: manipulation;
 }
 .mm-hotspot:hover {
   border-color: #2196F3;
@@ -458,6 +478,8 @@
   background: #f5f7fa;
   border-radius: 8px;
   font-size: 12px;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
 }
 
 .mm-step-row.done {
@@ -522,12 +544,14 @@
 
 .mm-pick-probe-btn {
   padding: 6px 12px;
+  min-height: 40px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   border: 2px solid;
   background: white;
+  touch-action: manipulation;
 }
 .mm-pick-probe-btn.red {
   border-color: #d63232;

@@ -210,20 +210,23 @@ export default function MockExam() {
   // active
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 16px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 5, background: 'var(--bg)', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--border)' }}>
+      {/* Sticky below the app-header (z-index:100). top: var(--app-header-h)
+          keeps the countdown/submit bar from being covered by the header when
+          the question list scrolls (measured at runtime by Layout). */}
+      <div style={{ position: 'sticky', top: 'var(--app-header-h, 48px)', zIndex: 5, background: 'var(--bg)', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
           <div style={{ fontSize: 15, fontWeight: 700 }}>
             ⏱ <span style={{ color: remaining < 300 ? 'var(--danger)' : 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>{fmt(remaining)}</span>
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>已答 {answeredCount}/{session.total}</div>
-          <button onClick={() => { if (window.confirm('确定交卷吗？未答题目按错处理。')) submit(); }} disabled={submitting} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', padding: '8px 16px', cursor: 'pointer', fontWeight: 700 }}>
+          <button onClick={() => { if (window.confirm('确定交卷吗？未答题目按错处理。')) submit(); }} disabled={submitting} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', padding: '10px 16px', minHeight: 40, cursor: 'pointer', fontWeight: 700 }}>
             {submitting ? '判卷中…' : '交卷'}
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 30px)', gap: 4, marginTop: 8, maxHeight: 88, overflowY: 'auto', scrollbarWidth: 'thin' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 36px)', gap: 4, marginTop: 8, maxHeight: 136, overflowY: 'auto', scrollbarWidth: 'thin' }}>
           {session.questions.map((q) => (
             <button key={q.index} onClick={() => document.getElementById(`q${q.index}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-              style={{ height: 28, borderRadius: 6, border: '1px solid var(--border)', background: answers[q.index] != null ? 'var(--primary)' : 'transparent', color: answers[q.index] != null ? '#fff' : 'var(--text-secondary)', fontSize: 12, cursor: 'pointer' }}>
+              style={{ minHeight: 40, borderRadius: 6, border: '1px solid var(--border)', background: answers[q.index] != null ? 'var(--primary)' : 'transparent', color: answers[q.index] != null ? '#fff' : 'var(--text-secondary)', fontSize: 12, cursor: 'pointer' }}>
               {q.index + 1}
             </button>
           ))}
@@ -254,7 +257,7 @@ export default function MockExam() {
                     <label key={o.id} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '8px 10px', borderRadius: 'var(--radius-xs)', background: isMs ? (msVal.includes(o.id) ? 'var(--primary)' : 'transparent') : (answers[q.index] === o.text ? 'var(--primary)' : 'transparent'), color: isMs ? (msVal.includes(o.id) ? '#fff' : 'var(--text)') : (answers[q.index] === o.text ? '#fff' : 'var(--text)'), cursor: 'pointer', border: isMs ? (msVal.includes(o.id) ? 'none' : '1px solid var(--border)') : (answers[q.index] === o.text ? 'none' : '1px solid var(--border)') }}>
                       <input type={isMs ? 'checkbox' : 'radio'} name={`q${q.index}`} checked={isMs ? msVal.includes(o.id) : answers[q.index] === o.text} onChange={() => isMs ? toggleMs(q.index, o.id) : setAnswer(q.index, o.text)} className="sr-only" />
                       <span style={{ fontWeight: 700, minWidth: 18 }}>{o.id}.</span>
-                      <span>{o.text}</span>
+                      <span style={{ minWidth: 0 }}>{o.text}</span>
                     </label>
                   ))
                 )}
@@ -263,7 +266,7 @@ export default function MockExam() {
           );
         })}
       </div>
-      <button onClick={() => { if (window.confirm('确定交卷吗？')) submit(); }} disabled={submitting} style={{ width: '100%', margin: '20px 0 40px', background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius)', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>
+      <button onClick={() => { if (window.confirm('确定交卷吗？')) submit(); }} disabled={submitting} style={{ width: '100%', margin: '20px 0 0', marginBottom: 'calc(40px + env(safe-area-inset-bottom, 0px))', background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius)', border: 'none', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>
         {submitting ? '判卷中…' : `交卷（已答 ${answeredCount}/${session.total}）`}
       </button>
     </div>

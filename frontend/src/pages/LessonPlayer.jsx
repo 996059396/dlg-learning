@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
+import { enqueueOfflineCompletion } from '../utils/offlineQueue';
 import { useGame } from '../context/GameContext';
 import MultimeterChallenge from '../components/multimeter/MultimeterChallenge';
 import AnswerFeedback from '../components/AnswerFeedback';
@@ -265,6 +266,28 @@ const _fbNormalize = (s) => {
           value={value}
           onChange={e => !answered && setValue(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+          onFocus={(e) => {
+            // iOS software keyboard shrinks the visual viewport and covers the
+            // confirm button below the input. Nudge the confirm button into view
+            // once the keyboard has settled (visualViewport stops shrinking).
+            if (!window.visualViewport) return;
+            let lastH = window.visualViewport.height;
+            const deadline = Date.now() + 800;
+            const tick = () => {
+              const vv = window.visualViewport;
+              if (!vv) return;
+              if (vv.height < lastH - 1 && Date.now() < deadline) {
+                lastH = vv.height;
+                requestAnimationFrame(tick);
+                return;
+              }
+              if (vv.height < window.innerHeight * 0.85) {
+                const btn = e.target.closest('.question-node')?.querySelector('.fill-confirm-btn');
+                btn?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+              }
+            };
+            requestAnimationFrame(tick);
+          }}
           placeholder="输入答案..."
           autoFocus
           disabled={answered}
@@ -278,7 +301,7 @@ const _fbNormalize = (s) => {
       </div>
       {!answered && (
         <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-          <button className="btn btn-primary btn-block" onClick={handleSubmit}>
+          <button className="btn btn-primary btn-block fill-confirm-btn" onClick={handleSubmit}>
             确认答案
           </button>
           {!showHint && (
@@ -1104,12 +1127,14 @@ export default function LessonPlayer() {
     const mistakes = finalResults.filter(r => !r.correct);
 
     // Show immediate local feedback (XP/coins not final until server confirms)
-    setRewards({
+    const localRewards = {
       xpEarned: accuracy >= 100 ? 15 : accuracy >= 80 ? 12 : 10,
       coinsEarned: Math.round(5 + accuracy / 20),
       heartReturned: accuracy >= 80,
       xpBoostTriggered: accuracy >= 100 && Math.random() < 0.3,
-    });
+      gradedServerSide: false,
+    };
+    setRewards(localRewards);
 
     // Submit to backend — server re-grades answers, persists rewards + game state.
     if (usr?.id && usr.id !== 'demo') {
@@ -1127,9 +1152,31 @@ export default function LessonPlayer() {
         if (res.gameState && sgs) sgs(res.gameState);
         if (ar) ar(res.rewards);
       } catch (e) {
-        console.error('Failed to submit lesson:', e);
-        if (st) st('提交失败，本课成绩未保存', 'error');
-        if (ar) ar(null);
+        // X02: 网络失败（离线）→ 本地暂存 raw answers + client_request_id，联网后
+        // 重放给服务端重新判分；服务端按 (user, key) 幂等，重放不二次铸币。
+        // 判定「离线」：api 的网络错误没有 status（HTTP 错误一定带 status）。
+        if (e && e.status == null) {
+          console.warn('[offline] 提交失败，入队待同步:', e);
+          enqueueOfflineCompletion({
+            userId: usr.id,
+            courseId: cid,
+            unitId: uid,
+            lessonId: lid,
+            answers: finalResults.map(r => ({
+              nodeId: r.nodeId,
+              nodeIndex: r.nodeIndex,
+              userAnswer: r.userAnswer,
+              correct: r.correct,
+            })),
+            localRewards,
+          });
+          setRewards(localRewards);
+          if (st) st('当前离线，成绩已本地暂存，联网后自动同步', 'info');
+        } else {
+          console.error('Failed to submit lesson:', e);
+          if (st) st('提交失败，本课成绩未保存', 'error');
+          if (ar) ar(null);
+        }
       }
     } else {
       // Demo mode progress tracking (no server)

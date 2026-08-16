@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api, getToken, setToken, onUnauthorized } from '../utils/api';
+import { flushOfflineQueue } from '../utils/offlineQueue';
+import { readCachedUser, writeCachedUser, clearCachedUser } from '../utils/sessionCache';
 
 const GameContext = createContext(null);
 
@@ -46,6 +48,10 @@ export function GameProvider({ children }) {
   const [authMode, setAuthMode] = useState('login');
   const [authError, setAuthError] = useState(null);
   const [authBusy, setAuthBusy] = useState(false);
+  // X02 offline mode: true when the identity was restored from the session cache
+  // because the network is down — the UI shows a banner and queued completions
+  // are flushed on reconnect.
+  const [offline, setOffline] = useState(false);
 
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
@@ -69,7 +75,22 @@ export function GameProvider({ children }) {
         } catch (err) {
           if (err.status === 401) {
             setToken(null);
+            clearCachedUser();
             if (!cancelled) setNeedsAuth(true);
+            return;
+          }
+          // Network failure (X02): restore the last-known identity so offline
+          // lesson completions queue under the real account instead of dropping
+          // to demo. The token is still present; it's simply unverifiable now.
+          const cached = readCachedUser();
+          if (cached) {
+            if (!cancelled) {
+              setUser({ id: cached.id, username: cached.username, avatar: cached.avatar });
+              setGameState(cached.gameState || DEMO_STATE);
+              if (cached.checkedInToday) setCheckedInToday(true);
+              setOffline(true);
+            }
+            console.warn('[boot] 网络不可用，使用缓存身份（离线模式）:', cached.username);
             return;
           }
           throw err;
@@ -78,6 +99,13 @@ export function GameProvider({ children }) {
         setUser(data);
         setGameState(gsFrom(data));
         if (data.last_streak_date === shanghaiToday()) setCheckedInToday(true);
+        writeCachedUser({
+          id: data.id,
+          username: data.username,
+          avatar: data.avatar,
+          gameState: gsFrom(data),
+          checkedInToday: data.last_streak_date === shanghaiToday(),
+        });
       } catch (err) {
         console.error('Failed to load user:', err);
         if (!cancelled) {
@@ -99,9 +127,11 @@ export function GameProvider({ children }) {
   useEffect(() => {
     const unsub = onUnauthorized(() => {
       setToken(null);
+      clearCachedUser();
       setUser(null);
       setGameState(null);
       setCheckedInToday(false);
+      setOffline(false);
       setNeedsAuth(true);
     });
     return unsub;
@@ -119,8 +149,16 @@ export function GameProvider({ children }) {
       const data = await api.getMe();
       setUser(data);
       setGameState(gsFrom(data));
+      setOffline(false);
       if (data.last_streak_date === shanghaiToday()) setCheckedInToday(true);
       setNeedsAuth(false);
+      writeCachedUser({
+        id: data.id,
+        username: data.username,
+        avatar: data.avatar,
+        gameState: gsFrom(data),
+        checkedInToday: data.last_streak_date === shanghaiToday(),
+      });
     } catch (e) {
       setAuthError(e.message);
     } finally {
@@ -132,9 +170,11 @@ export function GameProvider({ children }) {
   const logout = useCallback(async () => {
     try { await api.logout(); } catch (e) { /* best-effort revoke */ }
     setToken(null);
+    clearCachedUser();
     setUser(null);
     setGameState(null);
     setCheckedInToday(false);
+    setOffline(false);
     setNeedsAuth(true);
   }, []);
 
@@ -146,6 +186,32 @@ export function GameProvider({ children }) {
       console.error('Failed to refresh game state:', e);
     }
   }, [user]);
+
+  // X02 offline sync: on boot and whenever the connection returns, replay the
+  // current user's queued offline lesson completions. The server re-grades them
+  // and dedupes by client_request_id, so a reconnect never double-mints.
+  const flushPending = useCallback(async () => {
+    if (!user?.id || user.id === 'demo') return;
+    try {
+      const summary = await flushOfflineQueue(user.id);
+      if (summary.total > 0) {
+        const parts = [];
+        if (summary.synced > 0) parts.push(`已同步 ${summary.synced} 条`);
+        if (summary.blocked > 0) parts.push(`${summary.blocked} 条需处理（红心不足）`);
+        if (summary.failed > 0) parts.push(`${summary.failed} 条稍后自动重试`);
+        showToast(`离线成绩${parts.length ? parts.join('，') : '已处理'}`, summary.synced > 0 ? 'success' : 'info');
+        if (summary.synced > 0) refreshGameState();
+      }
+    } catch (e) {
+      console.error('[offlineQueue] flush failed:', e);
+    }
+  }, [user, showToast, refreshGameState]);
+
+  useEffect(() => {
+    flushPending();
+    window.addEventListener('online', flushPending);
+    return () => window.removeEventListener('online', flushPending);
+  }, [flushPending]);
 
   const useHeart = useCallback(async () => {
     if (user?.id === 'demo') {
@@ -217,7 +283,7 @@ export function GameProvider({ children }) {
   }, [showToast]);
 
   const value = {
-    user, gameState, loading, toast, checkedInToday,
+    user, gameState, loading, toast, checkedInToday, offline,
     showToast, refreshGameState, useHeart, spendCoins,
     checkIn, applyRewards, setGameState,
     needsAuth, authMode, setAuthMode, authError, authBusy,

@@ -1,0 +1,15 @@
+{
+  "name": "dlg-desktop",
+  "productName": "DLG电工",
+  "version": "0.1.0",
+  "description": "DLG 电工学习系统 —— Electron 同源桌面壳（内嵌 Node24 启动后端，加载构建产物，零前端改动）",
+  "main": "main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke"
+  },
+  "devDependencies": {
+    "electron": "36.5.0"
+  }
+}

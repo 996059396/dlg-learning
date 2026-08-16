@@ -8,7 +8,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 - **前端**：React 18 + Vite（`frontend/`，开发端口 5173，`/api` 代理到后端 3001）
 - **后端**：Express + better-sqlite3（`backend/`，端口 3001，单文件 SQLite）
-- **内容**：`backend/data/courses/` 下 JSON（3 课程 / 28 单元 / 703 微课 / 4991 节点），实时读盘，改完刷新即生效
+- **内容**：`backend/data/courses/` 下 JSON（3 课程 / 28 单元 / 703 微课 + 模拟考多选池 = **704 课时 / 5020 节点**），实时读盘，改完刷新即生效
 
 ## ⚠️ Node 版本硬性要求（≥ 24）
 
@@ -21,7 +21,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 ## 测试门禁（8 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 102 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 109 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
@@ -29,9 +29,9 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 | 2 | `node ../test_api.mjs` | 44 | 注册/登录/课程/判分/金币/检查点/SM-2 |
 | 3 | `node ../smoke_milestone1.mjs` | 20 | 核心业务流程冒烟 |
 | 4 | `node ../test_leaderboard_v2.mjs` | 12 | 段位/周结算/排行 |
-| 5 | `node ../smoke_settlement.mjs` | 10 | 周结算事务/幂等 |
-| 6 | `node ../test_security_invariants.mjs` | 16 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
-| 7 | `node ../scripts/grade_scan.cjs` | 3713 节点 100% | 判分自洽 |
+| 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |
+| 6 | `node ../test_security_invariants.mjs` | 19 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例 |
+| 7 | `node ../scripts/grade_scan.cjs` | 3742 节点 100% | 判分自洽 |
 | 8 | `node ../scripts/check_data_integrity.cjs` | 704 lessons | 数据完整性 |
 
 > 门禁链数字若有变动，需同步更新本文件、`README.md`、`docs/快速开始.md`、`docs/测试说明.md`。

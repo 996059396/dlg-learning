@@ -79,6 +79,34 @@ app.use(cors({
 app.use(compression());
 app.use(express.json());
 
+// ── Security headers (X07) ───────────────────────────────────────────────────
+// Applied to every response (API + static). CSP is tuned for the Vite
+// production build: script-src 'self' (bundled modules only — no inline
+// scripts, no eval; SW registration lives in main.jsx for exactly this
+// reason), style-src 'unsafe-inline' (React inline style attributes are
+// pervasive in the SPA), img-src data: for the data-URI favicon. The SPA is
+// never embedded (frame-ancestors none + DENY); Permissions-Policy blocks
+// every device permission the app doesn't use.
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), midi=()');
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; '));
+  next();
+});
+
 // Serve the built frontend if present (P0 C — the dist was an orphan: the API
 // never served it, so the production app had no host). In dev the Vite server
 // still proxies; here the backend becomes the single origin for production.
@@ -93,6 +121,14 @@ if (hasDist) {
   app.get('/', (req, res) => {
     res.set('Cache-Control', 'no-cache');
     res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+  // PWA (X02): explicit content-type for the manifest so install/audit tools see
+  // application/manifest+json even on older express/send mime lookups. sw.js is
+  // served by express.static above (its .js mime is always correct).
+  app.get('/manifest.webmanifest', (req, res) => {
+    res.set('Cache-Control', 'no-cache');
+    res.type('application/manifest+json');
+    res.sendFile(path.join(frontendDist, 'manifest.webmanifest'));
   });
   console.log('[static] Serving frontend from', frontendDist);
 }

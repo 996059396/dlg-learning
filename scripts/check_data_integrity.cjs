@@ -74,6 +74,16 @@ for (const row of db.prepare('SELECT id, user_id, lesson_id FROM progress').all(
   }
 }
 
+// 2b) mistakes: duplicate (user_id, lesson_id, node_id) cards. addMistake guards
+//     on that triple, so duplicates mean a write path bypassed it — the medical
+//     box then shows the same card twice and review_credit mint is doubled.
+for (const row of db.prepare(`
+  SELECT user_id, lesson_id, node_id, COUNT(*) c, GROUP_CONCAT(id) ids
+  FROM mistakes GROUP BY user_id, lesson_id, node_id HAVING c > 1
+`).all()) {
+  problems.push(`mistakes 重复卡: (${row.user_id}, ${row.lesson_id}, ${row.node_id}) ×${row.c} [ids=${row.ids}]`);
+}
+
 // 3) users 计数哨兵: 账号表不能被意外清空。
 const userCount = db.prepare('SELECT COUNT(*) c FROM users').get().c;
 if (userCount < 1) problems.push('users 表为空 (0 行) — 账号数据丢失或表损坏');

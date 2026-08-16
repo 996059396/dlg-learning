@@ -1,3 +1,4 @@
+import { useRef, useLayoutEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
 
@@ -11,14 +12,36 @@ const NAV_ITEMS = [
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast, gameState } = useGame();
+  const { toast, gameState, offline } = useGame();
+  const headerRef = useRef(null);
 
   const isLessonPage = location.pathname.includes('/lesson/');
 
+  // Publish the real app-header height so in-page sticky bars (MockExam HUD)
+  // can park below it instead of being covered (header z-index:100). Measures
+  // before paint so the variable is correct on first render, and again on
+  // resize/zoom for font-scale changes.
+  useLayoutEffect(() => {
+    const publish = () => {
+      const el = headerRef.current;
+      if (el) {
+        document.documentElement.style.setProperty('--app-header-h', `${el.offsetHeight}px`);
+      }
+    };
+    publish();
+    window.addEventListener('resize', publish);
+    return () => window.removeEventListener('resize', publish);
+  }, [isLessonPage]);
+
   return (
     <div className="app-container">
+      {offline && (
+        <div className="offline-banner" role="status">
+          📡 离线模式：课程可继续学习，成绩将在联网后自动同步
+        </div>
+      )}
       {!isLessonPage && (
-        <header className="app-header">
+        <header ref={headerRef} className="app-header">
           <div className="logo">⚡ DLG电工</div>
           <div className="hud-bar">
             <div className="hud-item hud-hearts">

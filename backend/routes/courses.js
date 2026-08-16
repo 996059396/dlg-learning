@@ -116,10 +116,17 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
   const lesson = loadLesson(courseId, unitId, lessonId);
   if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
 
-  const { answers } = req.body;
+  const { answers, client_request_id } = req.body;
   if (!Array.isArray(answers)) {
     return res.status(400).json({ error: 'answers array required (server-side grading)' });
   }
+  // X02 offline-sync idempotency key. Optional; a replay of the same
+  // (user, client_request_id) returns the ORIGINAL response without re-grading.
+  // Bounded: 8–64 chars, no slashes (a slash would make the request path
+  // ambiguous and the string never appears in any URL).
+  const reqId = (typeof client_request_id === 'string' && client_request_id.length >= 8 && client_request_id.length <= 64 && !client_request_id.includes('/'))
+    ? client_request_id
+    : null;
   // Malformed input guard (D4): better-sqlite3 throws on non-scalar bindings
   // (object/array ids) — surface a clean 400 instead of a 500, and reject
   // entries that aren't plain objects before they reach any prepared statement.
@@ -134,6 +141,26 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
   }
   const userId = req.userId;
   const lessonIdFull = `${courseId}/${unitId}/${lessonId}`;
+
+  // X02 replay short-circuit: the offline queue re-sends the same key after a
+  // lost response. The receipt row holds the response JSON that was already
+  // persisted (rewards, progress, gameState snapshots) — return it verbatim so
+  // the retry neither re-grades nor re-mints. A receipt can't be forged: it is
+  // keyed by (user_id, client_request_id) and only written inside the grading
+  // transaction below.
+  if (reqId) {
+    const receipt = db.db.prepare(
+      'SELECT response_json FROM submission_receipts WHERE user_id = ? AND client_request_id = ?'
+    ).get(userId, reqId);
+    if (receipt) {
+      try {
+        return res.json(JSON.parse(receipt.response_json));
+      } catch (e) {
+        // Corrupt receipt (shouldn't happen) — fall through and re-grade fresh.
+        console.error('[complete] corrupt receipt for', reqId, e);
+      }
+    }
+  }
 
   // Grade each question node (type !== 'info') server-side.
   // Addressing: PRIMARY key is the node's stable node.id (globally unique), sent
@@ -189,6 +216,7 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
 
   // Save progress + mistakes + rewards atomically.
   let rewards;
+  let responseBody;
   try {
     const tx = db.db.transaction(() => {
       const existing = db.db.prepare(
@@ -280,25 +308,42 @@ router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, 
         passed,
         gradedServerSide: true,
       };
+
+      // Assemble the response INSIDE the transaction so the receipt stores the
+      // exact snapshot that the rewards were minted against — a replay of the
+      // same client_request_id must return byte-identical rewards, never a
+      // re-grade with drifting gameState.
+      const responseBody = {
+        progress: db.db.prepare(
+          'SELECT * FROM progress WHERE user_id = ? AND lesson_id = ?'
+        ).get(userId, lessonIdFull),
+        accuracy,
+        rewards,
+        mistakesCount: mistakes.length,
+        gameState: db.getGameState(userId),
+      };
+
+      // X02: persist the idempotency receipt in the same transaction as the
+      // rewards. Retention: purge this user's receipts older than 30 days so
+      // the table doesn't grow unbounded (offline queues flush within minutes).
+      if (reqId) {
+        db.db.prepare(
+          "DELETE FROM submission_receipts WHERE user_id = ? AND created_at < datetime('now', '-30 days')"
+        ).run(userId);
+        db.db.prepare(
+          'INSERT INTO submission_receipts (user_id, client_request_id, response_json) VALUES (?, ?, ?)'
+        ).run(userId, reqId, JSON.stringify(responseBody));
+      }
+      return responseBody;
     });
-    tx();
+    responseBody = tx();
   } catch (e) {
     // Never echo e.message back — it can leak SQL table/column names (D3).
     console.error('[complete] transaction failed:', e);
     return res.status(500).json({ error: '提交失败，请重试' });
   }
 
-  const progress = db.db.prepare(
-    'SELECT * FROM progress WHERE user_id = ? AND lesson_id = ?'
-  ).get(userId, lessonIdFull);
-
-  res.json({
-    progress,
-    accuracy,
-    rewards,
-    mistakesCount: mistakes.length,
-    gameState: db.getGameState(userId),
-  });
+  res.json(responseBody);
 });
 
 module.exports = router;

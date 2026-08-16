@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.2 (未发布) — docs 四大件 + e2e 鉴权修复 + 数据卫生
+
+- **docs 四大件收官（#98）**：`docs/API.md`（接口全契约）/ `docs/数据库schema.md`（13 表 + 迁移策略）/ `docs/课程设计.md`（3 课程 704 课时 / 5020 节点、13 题型分布、知识图谱 586 条汇总、引用链 137 条）/ `docs/运维手册.md`（单实例约束、env 全表、备份回滚、升级流程）。40 项标准号联网核验（openstd.samr.gov.cn / IEC webstore），勘误 17 处，含两处硬错误：**GB 13398-2008 实为绝缘管棒标准（验电器应为 DL/T 740-2014）**、**GB/T 13870.1 现行为 2022 版**。
+- **多选池扩至 39（#97）**：`multi_select.json` 10→39 题，覆盖考证 8 条知识点线；正确项分布不再恒 `{A,B}`。`grade_scan` 期望值同步 3742 节点。
+- **断言数校正 102→109**：结算 10→14、安全不变量 16→19（CLAUDE.md / README / 快速开始 / 内容结构 / 测试说明 同步）。
+- **浏览器 e2e 注入鉴权（#100）**：`test_answer_feedback.mjs` / `test_truefalse_fix.mjs` 在 X08 身份门后全部失效，现复用 `e2e_helpers.injectAuth` 注册注入 token + 前端进度预解锁；MC 正确项改从认证 lesson API 动态解析（内容轮换不再失效）。6/6 + 3/3 全绿。
+- **live 数据卫生（#99）**：`check_data_integrity.cjs` 新增**重复错题卡检查**（抓出 live 库 5 对重复卡）；`scripts/cleanup_live_test_data.cjs`（幂等、备份优先）清掉 22 个测试用户（e2e_/mm_e2e_/v10*/v22*/x05_*）及全部依赖行，live 仅剩演示用户「小电工」。
+- **公开仓快照脚本化（#99）**：`scripts/sync_public_snapshot.cjs` 固化「git archive + 排除清单 + 镜像 + push」流程，排除 71 项内部/版权物；脚本自身不入公开仓（避免暴露内部文件名）。
+- **测试门禁**：全量 109 断言 + 判分 3742 节点 100% + canary 704 课时零孤儿全绿（Node 24）。
+
 ## v1.0.1 (未发布) — C10 错题刷币链封死 + P0-2 守护加固
 
 - **单实例守护 (P0-2)**：`dlg_server_guard.sh` / `dlg_tunnel_guard.sh` 加 pidfile + `kill -0` 存活校验（重复启动直接 exit 0，杜绝双 guard 各起一个 server 对 app.db 并发 WAL 写）；`server.js` 打开数据库前先做端口互斥探测（端口被占 ⇒ 已有实例 ⇒ 干净退出），并加 Node ABI 预检（`process.versions.modules !== 137` 时在 require better-sqlite3 之前干净 exit 1，避免 Node 20 段错误）；登录自启经注册表 `HKCU\...\CurrentVersion\Run` 落地（计划任务被本机组策略拒绝）；**每日 DB 备份 cron**（03:47 Asia/Shanghai → `backend/models/data/backups/`，`db.backup()` WAL 一致性快照，当日幂等）+ **升级前快照脚本** `scripts/backup_db.cjs`（带 ABI 预检）

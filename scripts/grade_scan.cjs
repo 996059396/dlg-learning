@@ -37,7 +37,7 @@ const EXPECTED_NODE_COUNTS = {
   's12_lv_switchgear.json': 50, 's13_mock_exam.json': 50,
   'e0_elementary.json': 133, 'e1_middle_school.json': 143,
   'e2_high_school.json': 145, 'e3_transition.json': 147,
-  'multi_select.json': 10,
+  'multi_select.json': 39,
 };
 // simulation_dial dial_options carry real dial angles (°). Two options at the
 // same / overlapping angle is an authoring error (duplicate positions, labels

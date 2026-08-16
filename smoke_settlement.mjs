@@ -208,5 +208,74 @@ await test('mistake queue is tiered: due reviews first, offset pages everything'
   if (page2.some(m => m.review_count !== 0)) throw new Error('page2 should be the remaining new cards');
 });
 
+// ── crosscheck4 #9: 2-player league floor semantics ──
+// room=1 scaled both zones to 0, so the champion of a 2-player league never
+// advanced — a dead-end even at the floor. The top spot must still promote
+// when the league's rules allow promotion.
+await test('2-player league: champion still promotes (no floor dead-end)', () => {
+  const week = db.getWeekStart(Date.now() - 35 * 86400 * 1000); // 5 weeks ago
+  const a = 'user-two-a', b = 'user-two-b';
+  db.db.prepare('INSERT INTO users (id, username) VALUES (?, ?)').run(a, '双人甲');
+  db.db.prepare('INSERT INTO users (id, username) VALUES (?, ?)').run(b, '双人乙');
+  db.db.prepare('INSERT INTO game_state (user_id, league) VALUES (?, ?)').run(a, 'bronze');
+  db.db.prepare('INSERT INTO game_state (user_id, league) VALUES (?, ?)').run(b, 'bronze');
+  db.db.prepare('INSERT INTO leaderboard (user_id, week_start, xp_earned, league) VALUES (?, ?, ?, ?)').run(a, week, 300, 'bronze');
+  db.db.prepare('INSERT INTO leaderboard (user_id, week_start, xp_earned, league) VALUES (?, ?, ?, ?)').run(b, week, 100, 'bronze');
+  const res = db.settleWeek(week);
+  const champ = res.settled.find(s => s.rank === 1);
+  if (champ?.change !== 'promoted') throw new Error(`2-player champion should promote, got ${champ?.change}`);
+  if (db.getGameState(a).league !== 'silver') throw new Error('champion league not advanced');
+  const loser = res.settled.find(s => s.rank === 2);
+  if (loser?.change !== 'stay') throw new Error(`2-player runner-up should stay, got ${loser?.change}`);
+});
+
+// ── crosscheck4 #9: force 只能重算最新未结算周 ──
+// force 重跑一个已结算的旧周会用陈旧数据覆写用户当前段位（回卷）。所有已结算
+// 周都齐了之后，force 必须拒绝；只有最新未结算周允许 force 幂等重算。
+await test('force 只允许重算最新未结算周：全结算后旧周 force 拒绝', () => {
+  const oldWeek = db.getWeekStart(Date.now() - 49 * 86400 * 1000); // 7 周前，从未播种
+  const res = db.settleWeek(oldWeek, true);
+  if (res.skipped !== true || res.reason !== 'force-not-latest-unsettled') {
+    throw new Error(`force 旧周应拒绝, got ${JSON.stringify(res)}`);
+  }
+  const hist = db.db.prepare('SELECT COUNT(*) c FROM league_history WHERE week_start=?').get(oldWeek).c;
+  if (hist !== 0) throw new Error(`拒绝后仍产生了 ${hist} 条 history`);
+});
+
+await test('force 对最新未结算周放行（幂等重算）', () => {
+  const week = db.getWeekStart(Date.now() - 42 * 86400 * 1000); // 6 weeks ago = 最新未结算
+  const uid = 'user-force-ok';
+  db.db.prepare('INSERT INTO users (id, username) VALUES (?, ?)').run(uid, 'force放行');
+  db.db.prepare('INSERT INTO game_state (user_id, league) VALUES (?, ?)').run(uid, 'silver');
+  db.db.prepare('INSERT INTO leaderboard (user_id, week_start, xp_earned, league) VALUES (?, ?, ?, ?)').run(uid, week, 300, 'silver');
+  const res = db.settleWeek(week, true);
+  if (res.skipped === true) throw new Error(`最新未结算周 force 应放行, got ${JSON.stringify(res)}`);
+  if (res.settled.length !== 1) throw new Error(`应结算 1 行, got ${res.settled.length}`);
+});
+
+// ── crosscheck4 #9: catch-up 延迟结算后同步未结算周 league ──
+// 服务器宕机两周：W-2 与 W-1 都未结算，当前周进行中。结算 W-2（bronze→silver）
+// 后，W-1 与当前周的 leaderboard 行仍记着旧段位 → 必须迁到 silver，否则当周
+// 排行滞留在过时段位、后续周按错误段位结算。已结算的 W-2 行本身保持不变。
+await test('catch-up 结算后：未结算周 leaderboard 同步到新段位', () => {
+  const w2 = db.getWeekStart(Date.now() - 14 * 86400 * 1000); // 两周前（W-2）
+  const w1 = db.getWeekStart(Date.now() - 7 * 86400 * 1000);  // 上周（W-1）
+  const cur = db.getWeekStart();
+  const uid = 'user-catchup';
+  db.db.prepare('INSERT INTO users (id, username) VALUES (?, ?)').run(uid, '追算');
+  db.db.prepare('INSERT INTO game_state (user_id, league) VALUES (?, ?)').run(uid, 'bronze');
+  for (const ws of [w2, w1, cur]) {
+    db.db.prepare('INSERT INTO leaderboard (user_id, week_start, xp_earned, league) VALUES (?, ?, ?, ?)').run(uid, ws, 500, 'bronze');
+  }
+  const res = db.settleWeek(w2);
+  if (db.getGameState(uid).league !== 'silver') throw new Error('W-2 结算未晋升 silver');
+  for (const ws of [w1, cur]) {
+    const row = db.db.prepare('SELECT league FROM leaderboard WHERE user_id=? AND week_start=?').get(uid, ws);
+    if (row?.league !== 'silver') throw new Error(`未结算周 ${ws} league=${row?.league}, 应已同步为 silver`);
+  }
+  const w2row = db.db.prepare('SELECT league FROM leaderboard WHERE user_id=? AND week_start=?').get(uid, w2);
+  if (w2row.league !== 'bronze') throw new Error('已结算周行不应被改写');
+});
+
 console.log(`\nResult: ${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
