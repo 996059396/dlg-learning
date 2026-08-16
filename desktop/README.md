@@ -37,7 +37,24 @@ npm run smoke
 
 > 前端构建产物由 `frontend/dist` 提供。源码改动后先 `cd frontend && npm run build` 再启动壳。
 
-## 分发打包（后续）
+## 分发打包（三平台安装包，2026-08-16 实测）
 
-`electron-builder` 打包三平台（`--win --mac --linux`），Node 24 可执行文件随包分发
-（`extraResources`），`resolveNode()` 已预留候选顺序，届时加入打包路径即可。
+`scripts/build_desktop.cjs`（仓库根运行）三步：确保 `frontend/dist` → 准备内嵌 Node 24 → electron-builder。
+
+```bash
+node scripts/build_desktop.cjs   # 产物在 desktop/release/
+```
+
+| 平台 | 产物 | 说明 |
+| --- | --- | --- |
+| Windows | `DLG电工 Setup 0.1.0.exe`（nsis）+ `DLG电工 0.1.0.exe`（portable） | 已实测：105MB，内嵌 node24/backend/dist |
+| macOS | `.dmg` + `.zip` | 需在 macOS/CI 上构建（mac 交叉编译受限） |
+| Linux | `.AppImage` + `.deb` | 需在 Linux/CI 上构建 |
+
+关键设计（可维护性）：
+- **内嵌 Node 24**：`extraResources` 把 `desktop/vendor/node24` 与 `backend/`、`frontend/dist` 解包进 `resources/`——分发环境无需预装 Node。`resolveNode()` 候选顺序：`resources/node24`（安装态）→ `desktop/vendor/node24`（开发态）→ `DLG_NODE24` → PATH。
+- **node24 来源**：`build_desktop.cjs` 优先复制本机 `C:\Users\moxo\node24`，否则从 nodejs.org 下载当前平台 Node 24 zip（`latest-v24.x`）。
+- **backend 精简**：`extraResources` filter 只带运行所需（server.js + 6 个依赖 + models/routes/lib/middleware/data），不带 devDependencies。
+- 版本号 `desktop/package.json`（当前 0.1.0）与 `electron-builder` 的 `build.appId` 一起改。
+
+> 注意：`--smoke` 冒烟在打包后同样可用（`release/win-unpacked/DLG电工.exe --smoke`），CI desktop-smoke job 验证的即是这一形态。

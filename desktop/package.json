@@ -7,9 +7,52 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "smoke": "electron . --smoke"
+    "smoke": "electron . --smoke",
+    "build": "node ../scripts/build_desktop.cjs"
   },
   "devDependencies": {
-    "electron": "^36.9.5"
+    "electron": "^36.9.5",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.dlg.electrician",
+    "productName": "DLG电工",
+    "files": ["main.cjs"],
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": [
+          "server.js",
+          "package.json",
+          "models/**",
+          "routes/**",
+          "lib/**",
+          "middleware/**",
+          "data/**",
+          "node_modules/better-sqlite3/**",
+          "node_modules/compression/**",
+          "node_modules/express/**",
+          "node_modules/cors/**",
+          "node_modules/node-cron/**",
+          "node_modules/uuid/**"
+        ]
+      },
+      {
+        "from": "../frontend/dist",
+        "to": "frontend/dist"
+      },
+      {
+        "from": "vendor/node24",
+        "to": "node24"
+      }
+    ],
+    "win": { "target": ["nsis", "portable"] },
+    "mac": { "target": ["dmg", "zip"], "category": "public.app-category.education" },
+    "linux": { "target": ["AppImage", "deb"], "category": "Education" }
   }
 }

@@ -13,9 +13,19 @@ const { readJSON } = require('../lib/content_cache');
 
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
 const MS_POOL = path.join(__dirname, '..', 'data', 'exam', 'multi_select.json');
-const EXAM_MINUTES = 45;
 const EXAM_PASS_SCORE = 80;
-const COUNTS = { true_false: 60, multiple_choice: 30, multi_select: 10 };
+// 双模式（crosscheck5 S M4 决策落地）：
+//  - real 全真：100 题 / 120 分钟 / 仅判断+单选 / 80 分 —— 对齐真实低压电工理论机考
+//    （应急〔2025〕59 号《培训大纲和考核标准》、应急管理部令第 19 号，2026-06-01 施行）；
+//  - training 训练：100 题 / 45 分钟 / 含 10 道多选 —— 原格式，多选作训练用途。
+const EXAM_MODES = {
+  real: { minutes: 120, counts: { true_false: 60, multiple_choice: 40, multi_select: 0 }, label: '全真' },
+  training: { minutes: 45, counts: { true_false: 60, multiple_choice: 30, multi_select: 10 }, label: '训练' },
+};
+function resolveMode(req) {
+  const m = String((req.body && req.body.mode) || (req.query && req.query.mode) || 'real');
+  return EXAM_MODES[m] ? m : 'real';
+}
 
 // Idempotent schema bootstrap (route module load time).
 db.db.exec(`
@@ -91,19 +101,21 @@ function sanitizeForClient(node) {
   return copy;
 }
 
-// POST /api/exam/start — generate a fresh exam session.
+// POST /api/exam/start — generate a fresh exam session. ?mode=real|training
 router.post('/start', requireAuth, (req, res) => {
+  const mode = resolveMode(req);
+  const { minutes, counts } = EXAM_MODES[mode];
   const course = loadExamPool();
   const tfs = course.filter(n => n.type === 'true_false');
   const mcs = course.filter(n => n.type === 'multiple_choice');
   let mss = [];
-  if (fs.existsSync(MS_POOL)) {
+  if (counts.multi_select > 0 && fs.existsSync(MS_POOL)) {
     mss = readJSON(MS_POOL).map(n => ({ ...n, _lessonId: 'exam/ms_pool' }));
   }
   const questions = [
-    ...shuffle(tfs).slice(0, COUNTS.true_false),
-    ...shuffle(mcs).slice(0, COUNTS.multiple_choice),
-    ...shuffle(mss).slice(0, COUNTS.multi_select),
+    ...shuffle(tfs).slice(0, counts.true_false),
+    ...shuffle(mcs).slice(0, counts.multiple_choice),
+    ...shuffle(mss).slice(0, counts.multi_select),
   ];
   // Anti-cheat (60-agent round 2): the multi-select pool's correct answers all
   // sit at A/B, so a blind "check first two boxes" scores 10/10 on that section.
@@ -128,7 +140,7 @@ router.post('/start', requireAuth, (req, res) => {
   }
   const id = crypto.randomBytes(8).toString('hex');
   const startedAt = new Date();
-  const expiresAt = new Date(startedAt.getTime() + EXAM_MINUTES * 60 * 1000);
+  const expiresAt = new Date(startedAt.getTime() + minutes * 60 * 1000);
   // Expire stale active sessions, run DB hygiene, and insert the new session in
   // ONE transaction (P29): previously each statement autocommitted separately, so
   // a failure after the expire-UPDATE but before the INSERT stranded the user
@@ -155,8 +167,9 @@ router.post('/start', requireAuth, (req, res) => {
 
   res.json({
     sessionId: id,
+    mode,
     total: questions.length,
-    minutes: EXAM_MINUTES,
+    minutes,
     passScore: EXAM_PASS_SCORE,
     expiresAt: expiresAt.toISOString(),
     questions: questions.map((q, i) => ({ ...sanitizeForClient(q), index: i })),

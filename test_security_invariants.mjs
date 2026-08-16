@@ -394,7 +394,7 @@ async function run() {
   await test('multi_select 选项 id 每会话随机，按新 id 全对判对', async () => {
     const reg = await jA('POST', '/auth/register', { username: `多选${Date.now() % 100000}`, password: 'exam123456' });
     const ea = auth(reg.data.token);
-    const start = await jA('POST', '/exam/start', {}, ea);
+    const start = await jA('POST', '/exam/start', { mode: 'training' }, ea);
     const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
     const row = db.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
     db.close();
@@ -417,7 +417,7 @@ async function run() {
     const ea = auth(reg.data.token);
     const userId = reg.data.user?.id;
     if (!userId) throw new Error('register 响应缺 user.id');
-    const start = await jA('POST', '/exam/start', {}, ea);
+    const start = await jA('POST', '/exam/start', { mode: 'training' }, ea);
     const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
     const row = db.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
     db.close();

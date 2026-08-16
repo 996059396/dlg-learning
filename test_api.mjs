@@ -637,18 +637,29 @@ async function run() {
     const examAuth = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${examToken}` });
     const examAuthHeaders = examAuth();
 
-    await test('POST /exam/start returns 100 questions (60/30/10) with no answer leak', async () => {
+    await test('POST /exam/start 全真模式(默认) → 100题 60判断/40单选/0多选，无答案泄漏', async () => {
       const { status, data } = await jreq('POST', '/exam/start', {}, examAuthHeaders);
       if (status !== 200) throw new Error(`expected 200, got ${status}: ${JSON.stringify(data).slice(0,120)}`);
       if (data.total !== 100) throw new Error(`expected 100 questions, got ${data.total}`);
+      if (data.mode !== 'real' || data.minutes !== 120) throw new Error(`expected real/120min, got mode=${data.mode} min=${data.minutes}`);
       const byType = {};
       for (const q of data.questions) byType[q.type] = (byType[q.type] || 0) + 1;
-      if (byType.true_false !== 60 || byType.multiple_choice !== 30 || byType.multi_select !== 10)
-        throw new Error(`composition wrong: ${JSON.stringify(byType)}`);
+      if (byType.true_false !== 60 || byType.multiple_choice !== 40 || (byType.multi_select || 0) !== 0)
+        throw new Error(`real-mode composition wrong: ${JSON.stringify(byType)}`);
       const leaked = data.questions.some(q =>
         q.correct_answer !== undefined || q.explanation !== undefined ||
         (q.options || []).some(o => o.is_correct !== undefined));
       if (leaked) throw new Error('sanitized questions leaked correct answers');
+    });
+
+    await test('POST /exam/start mode=training → 60判断/30单选/10多选/45min（训练保留）', async () => {
+      const { status, data } = await jreq('POST', '/exam/start', { mode: 'training' }, examAuthHeaders);
+      if (status !== 200) throw new Error(`expected 200, got ${status}`);
+      if (data.mode !== 'training' || data.minutes !== 45) throw new Error(`expected training/45min, got mode=${data.mode} min=${data.minutes}`);
+      const byType = {};
+      for (const q of data.questions) byType[q.type] = (byType[q.type] || 0) + 1;
+      if (byType.true_false !== 60 || byType.multiple_choice !== 30 || byType.multi_select !== 10)
+        throw new Error(`training composition wrong: ${JSON.stringify(byType)}`);
     });
 
     await test('POST /exam/submit all-wrong → low score, not passed, mistakes ingested', async () => {

@@ -82,10 +82,16 @@ function probeAbi(nodeExe) {
   });
 }
 async function resolveNode() {
+  // 候选顺序：内嵌 Node（安装包分发场景）→ DLG_NODE24 → PATH。
+  // 内嵌位置：开发态 desktop/vendor/node24，安装态 process.resourcesPath/node24
+  //（electron-builder extraResources 解包到 resources/，见 desktop/package.json build.extraResources）。
+  const bundled = [
+    path.join(__dirname, 'vendor', 'node24', process.platform === 'win32' ? 'node.exe' : 'bin/node'),
+    path.join(process.resourcesPath || '', 'node24', process.platform === 'win32' ? 'node.exe' : 'bin/node'),
+  ];
   const candidates = [
+    ...bundled,
     process.env.DLG_NODE24,
-    // 不再硬编码本机开发机路径（crosscheck5 P M7：公开仓可移植性）——PATH 上的
-    // node 若 ABI 137 即够用；本机可通过 DLG_NODE24 指向 node24。
     'node',                               // PATH 兜底（能过 ABI 预检才算数）
   ];
   for (const c of candidates) {

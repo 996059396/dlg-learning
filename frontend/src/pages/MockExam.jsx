@@ -26,6 +26,9 @@ export default function MockExam() {
   const timerRef = useRef(null);
   const submitRef = useRef(null);
   const [msOptions, setMsOptions] = useState({}); // { [questionIndex]: shuffled options }
+  // 全真/训练双模式（crosscheck5 S M4）：real=100题/120min/仅判断+单选（默认，对齐真实机考）；
+  // training=100题/45min/含多选（训练用途）。
+  const [mode, setMode] = useState('real');
 
   useEffect(() => {
     api.examHistory().then(h => setHistory(h?.sessions || [])).catch(() => setHistory([]));
@@ -34,7 +37,7 @@ export default function MockExam() {
   const start = async () => {
     setError('');
     try {
-      const s = await api.startExam();
+      const s = await api.startExam(mode);
       setSession(s);
       setAnswers(new Array(s.total).fill(null));
       setPhase('active');
@@ -110,19 +113,23 @@ export default function MockExam() {
   const answeredCount = answers.filter(a => a != null).length;
 
   if (phase === 'intro') {
+    const info = mode === 'real'
+      ? { title: '🧯 模拟考（全真模式）', desc: '对齐真实低压电工理论机考（应急〔2025〕59号）：判断 + 单选 = 100 题，限时 120 分钟，80 分及格。', cards: [['📝', '判断 60 题', '正确 / 错误'], ['🔢', '单选 40 题', '四选一']] }
+      : { title: '🧯 模拟考（训练模式）', desc: '训练用途：判断 + 单选 + 多选 = 100 题，限时 45 分钟，80 分及格（含多选训练，非真实机考格式）。', cards: [['📝', '判断 60 题', '正确 / 错误'], ['🔢', '单选 30 题', '四选一'], ['☑️', '多选 10 题', '漏选、错选均不得分']] };
     return (
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '0 16px' }}>
-        <h1 style={{ fontSize: 26, marginBottom: 12 }}>🧯 全真模拟考</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>
-          按照低压电工考证真题格式组卷：<b>判断 60 + 单选 30 + 多选 10 = 100 题</b>，
-          限时 <b>45 分钟</b>，<b>80 分及格</b>。交卷后立即显示成绩与逐题解析，错题自动加入「错题医疗箱」复习。
-        </p>
+        <h1 style={{ fontSize: 26, marginBottom: 12 }}>{info.title}</h1>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>{info.desc}</p>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          {[['real', '全真模式 120分钟'], ['training', '训练模式 45分钟']].map(([m, label]) => (
+            <button key={m} onClick={() => setMode(m)} style={{
+              flex: 1, padding: '10px 0', borderRadius: 'var(--radius-sm)', border: `2px solid ${mode === m ? 'var(--primary)' : 'var(--border)'}`,
+              background: mode === m ? 'rgba(42,126,0,0.08)' : 'var(--bg-secondary)', color: mode === m ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: 700, cursor: 'pointer', fontSize: 14,
+            }}>{label}</button>
+          ))}
+        </div>
         <div style={{ display: 'grid', gap: 10, marginBottom: 24 }}>
-          {[
-            ['📝', '判断 60 题', '正确 / 错误'],
-            ['🔢', '单选 30 题', '四选一'],
-            ['☑️', '多选 10 题', '漏选、错选均不得分'],
-          ].map(([icon, t, d]) => (
+          {info.cards.map(([icon, t, d]) => (
             <div key={t} style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'var(--bg-secondary)', padding: '12px 14px', borderRadius: 'var(--radius-sm)' }}>
               <span style={{ fontSize: 22 }}>{icon}</span>
               <div><div style={{ fontWeight: 700 }}>{t}</div><div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{d}</div></div>
