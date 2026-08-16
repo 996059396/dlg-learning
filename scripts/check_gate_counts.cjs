@@ -33,11 +33,13 @@ for (const [file, { pat, expect }] of Object.entries(MANIFEST)) {
   const m = out.match(pat);
   const actual = m ? parseInt(m[1], 10) : -1;
   results[file] = actual;
-  if (actual !== expect) {
+  // check_data_integrity 在 fresh clone（无 app.db）时打印 skip 并 exit 0——跳过算通过。
+  const skipped = file === 'check_data_integrity.cjs' && /No app\.db found|skipped/i.test(out);
+  if (actual !== expect && !skipped) {
     failed++;
     console.error(`❌ ${file}: 预期 ${expect}，实际 ${actual === -1 ? '(未匹配)' : actual}`);
   } else {
-    console.log(`✅ ${file}: ${actual}`);
+    console.log(`✅ ${file}: ${skipped ? 'skip(fresh clone)' : actual}`);
   }
 }
 const total = results['test_api.mjs'] + results['smoke_milestone1.mjs'] + results['test_leaderboard_v2.mjs'] +
