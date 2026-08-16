@@ -37,7 +37,9 @@ export default function Layout() {
     <div className="app-container">
       {offline && (
         <div className="offline-banner" role="status">
-          📡 离线模式：课程可继续学习，成绩将在联网后自动同步
+          {user?.id === 'demo'
+            ? '📡 演示模式：未登录，离线可试学，成绩不会保存'
+            : '📡 离线模式：课程可继续学习，成绩将在联网后自动同步'}
         </div>
       )}
       {!isLessonPage && (

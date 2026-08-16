@@ -109,8 +109,13 @@ export function GameProvider({ children }) {
       } catch (err) {
         console.error('Failed to load user:', err);
         if (!cancelled) {
+          // 静默降级 demo（crosscheck4 Phase4）：网络失败且无缓存身份时，降级要
+          // 显式可见——banner 提示演示模式、成绩不会保存，而不是让用户误以为在
+          // 真账号里学习（真离线由 X02 缓存身份路径处理并自动同步）。
           setUser(DEMO_USER);
           setGameState(DEMO_STATE);
+          setOffline(true);
+          showToast('暂时无法连接，已进入演示模式（未登录，成绩不会保存）', 'warn');
         }
       } finally {
         if (!cancelled) setLoading(false);
