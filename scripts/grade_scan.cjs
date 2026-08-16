@@ -69,7 +69,57 @@ function correctAnswer(n) {
     default: return null;
   }
 }
-let graded = 0, bad = 0;
+
+// 构造一个「必错」答案（crosscheck5 X M9 错答负例）：若无法构造保证错的答案返回
+// null 跳过。判分若把这些错答判对，说明 grading 出现宽容化回归（如 SI 前缀 M/m
+// 融合、全角归一化失效），门禁必须变红。
+function wrongAnswer(n) {
+  switch (n.type) {
+    case 'multiple_choice': {
+      const wrong = (n.options || []).find(o => !o.is_correct);
+      return wrong ? wrong.text : null;
+    }
+    case 'multi_select': {
+      const corr = (n.options || []).filter(o => o.is_correct);
+      if (corr.length === 0) return null;
+      // 正确集 ≥2 → 只选 1 个必错；=1 → 空集必错
+      return corr.length >= 2 ? JSON.stringify([String(corr[0].id || corr[0].text)]) : JSON.stringify([]);
+    }
+    case 'true_false': return n.correct_answer ? '错误' : '正确';
+    case 'fill_blank': {
+      const a = (n.answer || (n.acceptable_answers && n.acceptable_answers[0]) || '');
+      return a ? ('✗' + a + '✗') : null; // 前缀标记经归一化仍在，必不等
+    }
+    case 'match': {
+      const pairs = n.pairs || [];
+      const rights = new Set(pairs.map(p => p.right));
+      if (pairs.length >= 2 && rights.size === pairs.length) {
+        // 右列错位：left[i] 配 right[(i+1)%n]（右列全异才保证错）
+        return pairs.map((p, i) => `${p.left} = ${pairs[(i + 1) % pairs.length].right}`).join(', ');
+      }
+      return '左 = 右'; // 1 对或右列有重复 → 给垃圾串
+    }
+    case 'sort': {
+      const order = (n.correct_order || []).map(id => (n.items || []).find(i => i.id === id)?.text).filter(Boolean);
+      if (order.length >= 2) return [...order].reverse().join(' → ');
+      return null;
+    }
+    case 'drag_drop': return (n.target_zone?.label || 'X') + '✗';
+    case 'simulation_dial': {
+      const wrong = (n.dial_options || []).find(o => !o.is_correct);
+      return wrong ? wrong.label : null;
+    }
+    case 'simulation_danger': return '不安全操作';
+    case 'simulation_probe': {
+      if (!n.correct_probes) return null;
+      if (n.allow_swap) return null; // allow_swap 时红黑对调判对，不适用
+      return `红:${n.correct_probes.black}, 黑:${n.correct_probes.red}`;
+    }
+    case 'multimeter_challenge': return `档位:WRONG_DIAL, 红:X, 黑:Y`;
+    default: return null;
+  }
+}
+let graded = 0, negGraded = 0, bad = 0;
 const actualCounts = {}; // basename -> total node count (incl. info)
 console.log(`scan root: ${ROOT} (${files.length} files)`);
 for (const f of files) {
@@ -106,6 +156,14 @@ for (const f of files) {
     try { r = gradeNode(n, ans); } catch (e) { bad++; console.log('GRADE-ERR', n.id, e.message); continue; }
     graded++;
     if (!r.correct) { bad++; console.log('WRONG-GRADE', n.id, n.type, JSON.stringify(String(ans).slice(0, 60))); }
+    // 错答负例（crosscheck5 X M9）：构造必错答案，判分若判对即宽容化回归
+    const wrong = wrongAnswer(n);
+    if (wrong !== null && wrong !== undefined) {
+      let wr;
+      try { wr = gradeNode(n, wrong); } catch (e) { bad++; console.log('WRONG-GRADE-ERR', n.id, e.message); continue; }
+      negGraded++;
+      if (wr.correct) { bad++; console.log('NEGATIVE-FAIL', n.id, n.type, `错答被判对: ${JSON.stringify(String(wrong).slice(0, 60))}`); }
+    }
   }
 }
 // Per-file node-count canary.
@@ -119,9 +177,9 @@ for (const base of Object.keys(actualCounts)) {
   if (EXPECTED_NODE_COUNTS[base] === undefined) { bad++; console.log('COUNT-UNLISTED-FILE', base, `实际 ${actualCounts[base]} 节点但未登记——请在 EXPECTED_NODE_COUNTS 补一行`); }
 }
 console.log('=== grading scan v2 ===');
-console.log('graded nodes:', graded, '| non-100%:', bad);
+console.log('graded nodes:', graded, '| negative-tested:', negGraded, '| non-100%:', bad);
 if (bad > 0) {
-  console.error(`❌ ${bad} node(s) do not self-grade 100% — content/grading bug.`);
+  console.error(`❌ ${bad} node(s) fail — content/grading bug or a wrong-answer graded as correct (grading regression).`);
   process.exit(1);
 }
-console.log('✅ every gradeable node self-grades 100%.');
+console.log('✅ every gradeable node self-grades 100%, and all constructed wrong answers are rejected.');
