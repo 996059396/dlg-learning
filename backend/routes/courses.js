@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth } = require('../middleware/auth');
+const { rateLimit } = require('../middleware/rate_limit');
 const { gradeNode, extractAnswer } = require('../lib/grading');
 const { readJSON, changeKey } = require('../lib/content_cache');
 
@@ -97,8 +98,13 @@ router.get('/:courseId/units/:unitId', (req, res) => {
 // acceptable_answers, is_correct) that the lesson player needs for instant
 // inline feedback — that content must not be scrapable without a session. The
 // rewards path is independently server-graded, so seeing an answer never mints
-// coins; this only closes the anonymous-answer-key hole.
-router.get('/:courseId/units/:unitId/lessons/:lessonId', requireAuth, (req, res) => {
+// coins; this only closes the anonymous-answer-key hole. Rate-limited to slow
+// full-repo answer dumps (a learner loads ≤ a few dozen lessons/session; a
+// scraper pulls 704 in seconds) — rate-limit ≠ real anti-cheat, the accepted
+// residual is documented in CLAUDE.md.
+router.get('/:courseId/units/:unitId/lessons/:lessonId',
+  rateLimit({ windowMs: 15 * 60 * 1000, max: 240, scope: 'lesson-views', key: (req) => req.ip }),
+  requireAuth, (req, res) => {
   const { courseId, unitId, lessonId } = req.params;
   const lesson = loadLesson(courseId, unitId, lessonId);
   if (!lesson) return res.status(404).json({ error: 'Lesson not found' });

@@ -239,6 +239,7 @@ x-admin-token: <ADMIN_TOKEN>
 | `change-pw` | 15 分钟 | 10 | `IP\|用户名` | 改密原密码暴力 |
 | `practice-heal` | 15 分钟 | 10 | `IP\|userId` | 复习兑奖 |
 | `mistake-review` | 15 分钟 | 30 | `IP\|userId` | 错题复习 |
+| `lesson-views` | 15 分钟 | 240 | IP | 完整一课（含答案键）——正常学习每会话只加载数十课，240/15min 挡住整库答案批量抓取 |
 | `admin` | 15 分钟 | 30 | IP | 管理结算 |
 
 - 命中返回 `429 { "error": "请求过于频繁，请稍后再试", "retryAfterMs }` + `Retry-After` 头。
