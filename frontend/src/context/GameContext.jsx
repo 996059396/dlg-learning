@@ -236,6 +236,13 @@ export function GameProvider({ children }) {
       setGameState(gsFrom(result));
       return { success: true };
     } catch (e) {
+      // crosscheck5 X H4：网络错误（无 status，非「红心不足」400）时离线学习不能
+      // 被当成红心不足堵死入口——本地扣减放行进课（离线扣心不持久，联网重放时
+      // 服务端按 /complete 红心门禁重新结算）。
+      if (!e.status && gameState.hearts > 0) {
+        setGameState(s => ({ ...s, hearts: s.hearts - 1 }));
+        return { success: true, offline: true };
+      }
       return { success: false, error: e.message };
     }
   }, [user, gameState]);
