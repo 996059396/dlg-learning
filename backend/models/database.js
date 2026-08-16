@@ -39,6 +39,8 @@ function initializeDatabase() {
       expires_at DATETIME NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
+    -- crosscheck6 B medium：logout-all / createSession 上限清理按 user_id 查，需索引
+    CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 
     -- Game state per user
     CREATE TABLE IF NOT EXISTS game_state (
@@ -436,6 +438,7 @@ function addLessonXP(userId, amount) {
 // ── Auth: sessions & passwords ──
 // Session tokens are opaque random strings; only their SHA-256 hash is stored.
 const SESSION_TTL_MS = 30 * 24 * 3600 * 1000; // 30 days
+const MAX_SESSIONS_PER_USER = 20; // 每用户会话上限（防僵尸 token 撑爆 sessions 表）
 // Absolute lifetime cap: sliding renewal extends a session to at most 90 days
 // from creation, so an account that goes dark eventually (and safely) expires.
 const SESSION_MAX_MS = 90 * 24 * 3600 * 1000;
@@ -447,8 +450,18 @@ function _hashToken(token) {
 function createSession(userId) {
   const token = crypto.randomBytes(32).toString('hex');
   const now = new Date().toISOString();
+  // 认证加固（crosscheck6 B medium）：清理过期会话 + 每用户会话上限
+  //（防 sessions 表被僵尸 token 撑爆，同时保住滑动续期语义）。
+  db.prepare('DELETE FROM sessions WHERE user_id = ? AND expires_at < ?').run(userId, now);
   db.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)')
     .run(_hashToken(token), userId, now, new Date(Date.now() + SESSION_TTL_MS).toISOString());
+  // 插入后收紧到上限（保最新 MAX 条），确保 ≤ MAX。
+  const cnt = db.prepare('SELECT COUNT(*) c FROM sessions WHERE user_id = ?').get(userId).c;
+  if (cnt > MAX_SESSIONS_PER_USER) {
+    db.prepare(`DELETE FROM sessions WHERE user_id = ? AND token_hash NOT IN (
+      SELECT token_hash FROM sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT ?)`)
+      .run(userId, userId, MAX_SESSIONS_PER_USER);
+  }
   return token;
 }
 

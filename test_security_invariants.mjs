@@ -181,7 +181,7 @@ async function completeWithTypesWrong(ea, course, unit, lessonId, wrongTypes) {
 }
 
 async function run() {
-  const serverA = spawnServer(PORTS.A, DB_PATHS.A, { 'DLG_RATE_MAX_register': '1000' });
+  const serverA = spawnServer(PORTS.A, DB_PATHS.A, { 'DLG_RATE_MAX_register': '1000', 'DLG_RATE_MAX_login-user-global': '100' });
   // B: register 保持 prod 5/15min；C: register 放开但 login-user 调高 (绕过 per-account 锁，让全局桶先触顶)
   const serverB = spawnServer(PORTS.B, DB_PATHS.B);
   const serverC = spawnServer(PORTS.C, DB_PATHS.C, { 'DLG_RATE_MAX_register': '1000', 'DLG_RATE_MAX_login-user': '100' });
@@ -535,6 +535,20 @@ async function run() {
     const updated = db2.prepare('SELECT remap_json FROM mistakes WHERE id = ?').get(mistakeId);
     db2.close();
     if (!updated?.remap_json) throw new Error('旧卡复习后未兜底生成 remap_json');
+  });
+
+  await test('会话上限：单用户 22 次登录 sessions ≤ 20（crosscheck6 B medium）', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `会话${Date.now() % 100000}`, password: 'sec123456' });
+    const ea = auth(reg.data.token);
+    // 22 次登录（每次签发新会话）
+    for (let i = 0; i < 22; i++) {
+      const r = await jA('POST', '/auth/login', { username: reg.data.user.username, password: 'sec123456' }, {});
+      if (r.status !== 200) throw new Error(`第 ${i + 1} 次登录失败: ${r.status}`);
+    }
+    const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
+    const c = db.prepare('SELECT COUNT(*) c FROM sessions WHERE user_id = ?').get(reg.data.user.id).c;
+    db.close();
+    if (c > 20) throw new Error(`22 次登录后 sessions=${c}，应 ≤ 20（上限生效）`);
   });
 
   // ═══════════ 7. C10：错题卡 5 类题型答案键剥离 ═══════════
