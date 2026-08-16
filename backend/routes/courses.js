@@ -117,7 +117,13 @@ router.get('/:courseId/units/:unitId/lessons/:lessonId',
 // idempotent (full on first completion, review bonus on repeat) and coins are
 // written to the DB in a transaction — no more client-reported accuracy, no
 // more phantom coins that vanish on refresh.
-router.post('/:courseId/units/:unitId/lessons/:lessonId/complete', requireAuth, (req, res) => {
+// Rate-limited (crosscheck5 C medium): /complete returns correctAnswer for each
+// wrong node (:196), so it is an answer-key channel too. The heart economy (5
+// per fresh account) and register bucket already bound mass scraping; this
+// closes the per-IP burst. Generous: 200/15min ≈ 13/min, far above a learner.
+router.post('/:courseId/units/:unitId/lessons/:lessonId/complete',
+  rateLimit({ windowMs: 15 * 60 * 1000, max: 200, scope: 'complete-submit', key: (req) => req.ip }),
+  requireAuth, (req, res) => {
   const { courseId, unitId, lessonId } = req.params;
   const lesson = loadLesson(courseId, unitId, lessonId);
   if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
