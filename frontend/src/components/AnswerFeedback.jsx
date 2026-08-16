@@ -19,14 +19,14 @@ const AnswerFeedback = ({
 }) => {
   const palette = isCorrect
     ? {
-        bg: '#E5F6D0',
+        bg: 'var(--tint-success-2)',
         border: 'var(--primary)',
         text: '#3C8500',
         emoji: '🎉',
         title: '答对了！',
       }
     : {
-        bg: '#FFE5E5',
+        bg: 'var(--tint-danger-2)',
         border: '#FF4B4B',
         text: '#C0392B',
         emoji: '😞',

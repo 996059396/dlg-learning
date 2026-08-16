@@ -108,7 +108,7 @@ export default function Leaderboard() {
       {/* Spectator banner */}
       {!isViewingOwnLeague && (
         <div style={{
-          background: '#FFF3E0', color: '#8B5A00',
+          background: 'var(--tint-orange)', color: '#8B5A00',
           padding: '10px 14px', borderRadius: 'var(--radius-xs)',
           marginBottom: 12, fontSize: 13, fontWeight: 600,
         }}>
@@ -203,12 +203,12 @@ export default function Leaderboard() {
             let rowBg = 'transparent';
             let rowBorder = '1px solid var(--border)';
             if (isMe) {
-              rowBg = inPromo ? '#E5F6D0' : inDemo ? '#FFE5E5' : '#FFF8E1';
+              rowBg = inPromo ? 'var(--tint-success-2)' : inDemo ? 'var(--tint-danger-2)' : 'var(--tint-warning)';
               rowBorder = `2px solid ${inPromo ? 'var(--primary)' : inDemo ? 'var(--danger)' : 'var(--gold)'}`;
             } else if (inPromo) {
-              rowBg = '#F0FFF0';
+              rowBg = 'var(--tint-success-3)';
             } else if (inDemo) {
-              rowBg = '#FFF5F5';
+              rowBg = 'var(--tint-danger)';
             }
 
             return (

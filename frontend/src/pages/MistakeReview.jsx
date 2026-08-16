@@ -248,7 +248,7 @@ export default function MistakeReview() {
         {/* Show original wrong answer (collapsed) */}
         <div style={{
           padding: 10,
-          background: '#FFF5F5',
+          background: 'var(--tint-danger)',
           borderRadius: 'var(--radius-xs)',
           marginBottom: 16,
           fontSize: 13,
@@ -304,7 +304,7 @@ export default function MistakeReview() {
                     key={opt.id}
                     className={`option-btn ${sel ? 'selected' : ''} ${phase === 'result' && isCorrectOpt ? 'correct' : ''}`}
                     style={{
-                      backgroundColor: phase === 'answer' && sel ? '#F0F8FF' : undefined,
+                      backgroundColor: phase === 'answer' && sel ? 'var(--tint-info)' : undefined,
                       borderColor: phase === 'answer' && sel ? 'var(--blue)' : undefined,
                     }}
                     onClick={() => {
@@ -335,7 +335,7 @@ export default function MistakeReview() {
                       : ''
                   }`}
                   style={{
-                    backgroundColor: phase === 'answer' && userReanswer === opt.text ? '#F0F8FF' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === opt.text ? 'var(--tint-info)' : undefined,
                     borderColor: phase === 'answer' && userReanswer === opt.text ? 'var(--blue)' : undefined,
                   }}
                   onClick={() => {
@@ -353,7 +353,7 @@ export default function MistakeReview() {
                <button
                   className={`option-btn`}
                   style={{
-                    backgroundColor: phase === 'answer' && userReanswer === '正确' ? '#F0F8FF' : phase === 'result' && correctAnswer === '正确' ? '#E5F6D0' : phase === 'result' && userReanswer === '正确' ? '#FFE5E5' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === '正确' ? 'var(--tint-info)' : phase === 'result' && correctAnswer === '正确' ? 'var(--tint-success-2)' : phase === 'result' && userReanswer === '正确' ? 'var(--tint-danger-2)' : undefined,
                     borderColor: phase === 'answer' && userReanswer === '正确' ? 'var(--blue)' : phase === 'result' && correctAnswer === '正确' ? 'var(--primary)' : phase === 'result' && userReanswer === '正确' ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer('正确'); }}
@@ -364,7 +364,7 @@ export default function MistakeReview() {
                 <button
                   className={`option-btn`}
                    style={{
-                    backgroundColor: phase === 'answer' && userReanswer === '错误' ? '#F0F8FF' : phase === 'result' && correctAnswer === '错误' ? '#E5F6D0' : phase === 'result' && userReanswer === '错误' ? '#FFE5E5' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === '错误' ? 'var(--tint-info)' : phase === 'result' && correctAnswer === '错误' ? 'var(--tint-success-2)' : phase === 'result' && userReanswer === '错误' ? 'var(--tint-danger-2)' : undefined,
                     borderColor: phase === 'answer' && userReanswer === '错误' ? 'var(--blue)' : phase === 'result' && correctAnswer === '错误' ? 'var(--primary)' : phase === 'result' && userReanswer === '错误' ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer('错误'); }}
@@ -388,7 +388,7 @@ export default function MistakeReview() {
                   key={i}
                   className="option-btn"
                   style={{
-                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === correctAnswer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? '#FFE5E5' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? 'var(--tint-info)' : phase === 'result' && opt.label === correctAnswer ? 'var(--tint-success-2)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--tint-danger-2)' : undefined,
                     borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === correctAnswer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer(opt.label); }}
@@ -405,7 +405,7 @@ export default function MistakeReview() {
                   key={i}
                   className="option-btn"
                    style={{
-                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? '#F0F8FF' : phase === 'result' && opt.label === correctAnswer ? '#E5F6D0' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? '#FFE5E5' : undefined,
+                    backgroundColor: phase === 'answer' && userReanswer === opt.label ? 'var(--tint-info)' : phase === 'result' && opt.label === correctAnswer ? 'var(--tint-success-2)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--tint-danger-2)' : undefined,
                     borderColor: phase === 'answer' && userReanswer === opt.label ? 'var(--blue)' : phase === 'result' && opt.label === correctAnswer ? 'var(--primary)' : phase === 'result' && userReanswer === opt.label && userReanswer !== correctAnswer ? 'var(--danger)' : undefined,
                   }}
                   onClick={() => { if (phase === 'answer') setUserReanswer(opt.label); }}
@@ -440,7 +440,7 @@ export default function MistakeReview() {
             {/* User's new answer feedback */}
             <div style={{
               padding: 12,
-              background: isCorrect ? '#E8F5E9' : '#FFF5F5',
+              background: isCorrect ? 'var(--tint-success)' : 'var(--tint-danger)',
               borderRadius: 'var(--radius-xs)',
               marginBottom: 12,
             }}>
@@ -458,7 +458,7 @@ export default function MistakeReview() {
             {hasCorrectAnswer ? (
               <div style={{
                 padding: 12,
-                background: '#E8F5E9',
+                background: 'var(--tint-success)',
                 borderRadius: 'var(--radius-xs)',
               }}>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>正确答案：</div>
@@ -469,7 +469,7 @@ export default function MistakeReview() {
             ) : (
               <div style={{
                 padding: 12,
-                background: '#FFF8E1',
+                background: 'var(--tint-warning)',
                 borderRadius: 'var(--radius-xs)',
                 fontSize: 13,
                 color: '#666',
@@ -483,7 +483,7 @@ export default function MistakeReview() {
               <div style={{
                 marginTop: 12,
                 padding: 10,
-                background: lastSchedule.mastered ? '#E8F5E9' : '#F0F8FF',
+                background: lastSchedule.mastered ? 'var(--tint-success)' : 'var(--tint-info)',
                 borderRadius: 'var(--radius-xs)',
                 fontSize: 13,
               }}>
@@ -525,7 +525,7 @@ export default function MistakeReview() {
       <div style={{
         marginTop: 16,
         padding: 12,
-        background: '#FFF8E1',
+        background: 'var(--tint-warning)',
         borderRadius: 'var(--radius-xs)',
         fontSize: 13,
         color: 'var(--text-secondary)',

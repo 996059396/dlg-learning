@@ -1,4 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="104" fill="#1F1F1F"/>
-  <text x="256" y="352" text-anchor="middle" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji" font-size="300">⚡</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1C2A48"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#43C663"/>
+      <stop offset="1" stop-color="#2A8F44"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 底：深海军蓝圆角方 -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- 表盘外圈（万用表意象）：下半弧 + 指针刻度 -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#2E3B57" stroke-width="26"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="#3E4E72" stroke-width="3"/>
+  <!-- 顶部刻度线（-60° 到 +60° 若干道） -->
+  <g stroke="#4A5C85" stroke-width="7" stroke-linecap="round">
+    <line x1="256" y1="72"  x2="256" y2="94"/>
+    <line x1="196" y1="91"  x2="206" y2="110"/>
+    <line x1="316" y1="91"  x2="306" y2="110"/>
+    <line x1="144" y1="146" x2="160" y2="159"/>
+    <line x1="368" y1="146" x2="352" y2="159"/>
+  </g>
+
+  <!-- 指针（琥珀色，指向右上） -->
+  <line x1="256" y1="256" x2="364" y2="146" stroke="#E8A33D" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="15" fill="#E8A33D"/>
+  <circle cx="256" cy="256" r="6" fill="#111827"/>
+
+  <!-- 闪电（品牌绿 + 琥珀描边，主视觉） -->
+  <path d="M298 150 L168 292 h86 L214 390 L344 224 h-88 Z" fill="url(#bolt)" stroke="#E8A33D" stroke-width="12" stroke-linejoin="round"/>
 </svg>

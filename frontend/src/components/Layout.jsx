@@ -1,6 +1,7 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
+import { cycleTheme, currentTheme } from '../utils/theme';
 
 const NAV_ITEMS = [
   { path: '/', icon: '🏠', label: '学习' },
@@ -14,6 +15,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { toast, gameState, offline, user } = useGame();
   const headerRef = useRef(null);
+  const [theme, setTheme] = useState(currentTheme);
 
   const isLessonPage = location.pathname.includes('/lesson/');
 
@@ -44,7 +46,10 @@ export default function Layout() {
       )}
       {!isLessonPage && (
         <header ref={headerRef} className="app-header">
-          <div className="logo">⚡ DLG电工</div>
+          <div className="logo">
+            <img src="/icon.svg" alt="" width="22" height="22" style={{ display: 'block' }} />
+            DLG电工
+          </div>
           <div className="hud-bar">
             <div className="hud-item hud-hearts">
               ❤️ {gameState?.hearts ?? 5}
@@ -55,6 +60,16 @@ export default function Layout() {
             <div className="hud-item hud-xp">
               ⚡ {gameState?.xp ?? 0}
             </div>
+            <button
+              onClick={() => { cycleTheme(); setTheme(currentTheme()); }}
+              title={`主题：${theme === 'light' ? '浅色' : theme === 'dark' ? '深色' : '跟随系统'}（点击切换）`}
+              style={{
+                background: 'transparent', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
+                fontSize: 15, cursor: 'pointer', padding: '3px 7px', lineHeight: 1,
+              }}
+            >
+              {theme === 'dark' ? '🌙' : theme === 'light' ? '☀️' : '🌓'}
+            </button>
           </div>
         </header>
       )}

@@ -144,7 +144,7 @@ export default function Home() {
 
       {/* Medical Kit shortcut */}
       <div style={{
-        marginTop: 24, padding: 16, background: '#FFF5F5',
+        marginTop: 24, padding: 16, background: 'var(--tint-danger)',
         borderRadius: 'var(--radius)', display: 'flex',
         alignItems: 'center', gap: 12, cursor: 'pointer',
       }} onClick={() => navigate('/review')}>

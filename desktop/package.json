@@ -51,8 +51,8 @@
         "to": "node24"
       }
     ],
-    "win": { "target": ["nsis", "portable"] },
-    "mac": { "target": ["dmg", "zip"], "category": "public.app-category.education" },
-    "linux": { "target": ["AppImage", "deb"], "category": "Education" }
+    "win": { "target": ["nsis", "portable"], "icon": "icon.ico" },
+    "mac": { "target": ["dmg", "zip"], "category": "public.app-category.education", "icon": "icon.png" },
+    "linux": { "target": ["AppImage", "deb"], "category": "Education", "icon": "icon.png" }
   }
 }

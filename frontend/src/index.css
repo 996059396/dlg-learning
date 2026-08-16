@@ -19,10 +19,66 @@
   --radius: 16px;
   --radius-sm: 10px;
   --radius-xs: 8px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font: "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, "Segoe UI", system-ui, sans-serif;
+  /* 标题/品牌用字：同族加重 + 微字距，靠字重与间距做层级（中文场景无法外链 webfont） */
+  --font-display: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   /* Measured at runtime by Layout (header height). MockExam's sticky HUD sits
      below it so the app-header (z-index:100) never overlaps the countdown. */
   --app-header-h: 48px;
+}
+
+/* 深色模式（用户决策）：系统偏好 或 [data-theme="dark"] 显式切换都生效 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a24;
+    --bg-secondary: #1c2432;
+    --text: #e8eaf0;
+    --text-secondary: #a7b0c0;
+    --border: #2c3544;
+    --shadow: 0 2px 8px rgba(0,0,0,0.45);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+    --danger: #ff6b6b;
+    --warning: #ffd05c;
+    --tint-danger: #3a2222;
+    --tint-danger-2: #3d2323;
+    --tint-warning: #3a3120;
+    --tint-info: #1f2d3a;
+    --tint-success: #1e3223;
+    --tint-success-2: #24331a;
+    --tint-success-3: #1f2f1f;
+    --tint-orange: #3a2b1e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141a24;
+  --bg-secondary: #1c2432;
+  --text: #e8eaf0;
+  --text-secondary: #a7b0c0;
+  --border: #2c3544;
+  --shadow: 0 2px 8px rgba(0,0,0,0.45);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+  --danger: #ff6b6b;
+  --warning: #ffd05c;
+  --tint-danger: #3a2222;
+  --tint-danger-2: #3d2323;
+  --tint-warning: #3a3120;
+  --tint-info: #1f2d3a;
+  --tint-success: #1e3223;
+  --tint-success-2: #24331a;
+  --tint-success-3: #1f2f1f;
+  --tint-orange: #3a2b1e;
+}
+
+/* 语义反馈底色（浅色默认，深色覆盖） */
+:root {
+  --tint-danger: #FFF5F5;
+  --tint-danger-2: #FFE5E5;
+  --tint-warning: #FFF8E1;
+  --tint-info: #F0F8FF;
+  --tint-success: #E8F5E9;
+  --tint-success-2: #E5F6D0;
+  --tint-success-3: #F0FFF0;
+  --tint-orange: #FFF3E0;
 }
 
 * {
@@ -180,9 +236,19 @@ textarea:focus-visible {
 }
 
 .app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 800;
   color: var(--primary);
+  letter-spacing: 0.03em;
+}
+.app-header .logo svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .app-content {

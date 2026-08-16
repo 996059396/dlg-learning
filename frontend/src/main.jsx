@@ -2,6 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { applyTheme } from './utils/theme';
+
+// 渲染前应用主题（避免首帧闪白/闪黑）
+applyTheme();
 
 // Top-level error boundary: a render exception anywhere used to unmount #root
 // and white-screen the whole SPA (e.g. the MockExam multi-select crash). Catch

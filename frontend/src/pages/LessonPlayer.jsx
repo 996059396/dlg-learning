@@ -297,7 +297,7 @@ const _fbNormalize = (s) => {
           disabled={answered}
           style={answered ? {
             borderColor: isCorrect ? 'var(--primary)' : '#FF4B4B',
-            background: isCorrect ? '#F0FFF0' : '#FFF5F5',
+            background: isCorrect ? 'var(--tint-success-3)' : 'var(--tint-danger)',
             color: isCorrect ? '#3C8500' : '#C42626',
             fontWeight: 700,
           } : undefined}
@@ -323,7 +323,7 @@ const _fbNormalize = (s) => {
         <div style={{
           marginTop: 12,
           padding: 12,
-          background: '#FFF8E1',
+          background: 'var(--tint-warning)',
           borderRadius: 'var(--radius-xs)',
           fontSize: 13,
           color: '#666',
@@ -476,7 +476,7 @@ function SimulationDial({ node, onAnswer }) {
         <div style={{
           marginTop: 12,
           padding: 14,
-          background: selected?.is_correct ? '#E8F5E9' : '#FFF5F5',
+          background: selected?.is_correct ? 'var(--tint-success)' : 'var(--tint-danger)',
           borderRadius: 'var(--radius-xs)',
           fontSize: 14,
           fontWeight: 600,
@@ -629,7 +629,7 @@ function SimulationProbe({ node, onAnswer }) {
         <div style={{
           marginTop: 12,
           padding: 12,
-          background: isCorrect ? '#E8F5E9' : '#FFF5F5',
+          background: isCorrect ? 'var(--tint-success)' : 'var(--tint-danger)',
           borderRadius: 'var(--radius-xs)',
           fontSize: 14,
         }}>
@@ -744,7 +744,7 @@ function DangerSim({ node, onAnswer }) {
         <div style={{
           marginTop: 12,
           padding: 16,
-          background: '#FFF5F5',
+          background: 'var(--tint-danger)',
           border: '2px solid var(--danger)',
           borderRadius: 'var(--radius-sm)',
           animation: dangerShown ? 'pulse-danger 0.5s ease-in-out' : 'none',
