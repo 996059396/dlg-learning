@@ -14,7 +14,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 
 if (Number(process.versions.node.split('.')[0]) < 22) {
-  console.error(`[fatal] DLG tests require Node >= 22; got Node ${process.version}. Use C:\\Users\\moxo\\node24\\node.exe`);
+  console.error(`[fatal] DLG tests require Node >= 22; got Node ${process.version}. Use a Node 24 binary.`);
   process.exit(1);
 }
 

@@ -84,7 +84,8 @@ function probeAbi(nodeExe) {
 async function resolveNode() {
   const candidates = [
     process.env.DLG_NODE24,
-    'C:\\Users\\moxo\\node24\\node.exe', // 本机开发机
+    // 不再硬编码本机开发机路径（crosscheck5 P M7：公开仓可移植性）——PATH 上的
+    // node 若 ABI 137 即够用；本机可通过 DLG_NODE24 指向 node24。
     'node',                               // PATH 兜底（能过 ABI 预检才算数）
   ];
   for (const c of candidates) {

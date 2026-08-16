@@ -14,7 +14,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 **本仓库必须用 Node ≥ 24。** `better-sqlite3@13.0.3` 的预编译二进制在 Node 20 上会段错误（segfault）。
 
-- 本机测试用：`PATH="/c/Users/moxo/node24:$PATH" npm test`（或 `C:\Users\moxo\node24\node.exe`）
+- 本机测试用：`PATH="/path/to/node24:$PATH" npm test`（`node24` 指 Node 24 二进制所在目录，或用 nvm 切到 24）
 - `backend/package.json` 的 `engines.node` 已设 `>=24`
 - 生产部署：`node:24-slim`（Docker）或 `setup_24.x`（nodesource）
 - 测试脚本首行会校验 Node 主版本，低于 22 直接退出

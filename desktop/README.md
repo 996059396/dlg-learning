@@ -25,7 +25,7 @@ cd desktop && npm install
 ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ npm install
 # 版本号精确锁定（36.5.0，不用 ^）以命中本机 electron 缓存，避免每次解析最新版重新下载。
 
-# 需要 Node 24 可执行文件。本机开发机已有 C:\Users\moxo\node24\node.exe；
+# 需要 Node 24 可执行文件。设 DLG_NODE24 指向 node24 的 node.exe，或确保 PATH 上的 node 是 ABI 137（Node 24）即可；
 # 其他机器请装 Node 24 并设置 DLG_NODE24 指向它的 node.exe，或让 `node` 在 PATH 上且 ABI=137。
 
 # 启动桌面壳

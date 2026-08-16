@@ -4,7 +4,7 @@
 // with guidance BEFORE any module that touches better-sqlite3 is loaded.
 if (Number(process.versions.modules) !== 137) {
   console.error(`[fatal] Node ABI = ${process.versions.modules} (需要 137) — better-sqlite3 v13 预编译二进制不匹配，require 即段错误。`);
-  console.error('[fatal] 请改用 Node 24 启动：C:\\Users\\moxo\\node24\\node.exe server.js');
+  console.error('[fatal] 请改用 Node 24（ABI 137）启动 server.js，例如用本机 node24 二进制或 nvm 切到 Node 24。');
   process.exit(1);
 }
 

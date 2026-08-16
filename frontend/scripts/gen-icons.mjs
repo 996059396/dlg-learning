@@ -4,7 +4,7 @@
 // (some browsers/OS launchers won't rasterize SVG manifest icons).
 //
 // Usage: run from repo root with the repo's node:
-//   C:\Users\moxo\node24\node.exe frontend/scripts/gen-icons.mjs
+//   用 Node 24 运行：node frontend/scripts/gen-icons.mjs
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

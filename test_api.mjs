@@ -14,9 +14,9 @@ import { createRequire } from 'node:module';
 // Fail fast with a clear message if the running Node is too old for
 // better-sqlite3@13 (Node>=22 ABI). Under Node 20 the module load below crashes
 // with a segfault / NODE_MODULE_VERSION error; this guard replaces that with a
-// readable hint. Run with C:\Users\moxo\node24\node.exe.
+// readable hint. Run with Node 24 (better-sqlite3 v13 ABI 137), e.g. via nvm or a node24 binary.
 if (Number(process.versions.node.split('.')[0]) < 22) {
-  console.error(`[fatal] DLG tests require Node >= 22 (better-sqlite3 v13 ABI); got Node ${process.version}. Use the Node 24 binary (C:\\Users\\moxo\\node24\\node.exe).`);
+  console.error(`[fatal] DLG tests require Node >= 22 (better-sqlite3 v13 ABI 137); got Node ${process.version}. Use a Node 24 binary.`);
   process.exit(1);
 }
 
