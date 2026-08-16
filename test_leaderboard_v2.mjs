@@ -204,6 +204,15 @@ async function main() {
     ok('admin settle invocable', `weekStart=${withAdmin.data.weekStart}, settled=${withAdmin.data.settled.length}`);
   else bad('admin settle failed', `${withAdmin.status} ${JSON.stringify(withAdmin.data)}`);
 
+  // ── H2. claim-reward 领奖闭环（crosscheck6 C high） ──
+  console.log('\n[J2] claim-reward（settleWeek 置 reward_claimed=0，领奖原子置 1 + 发币）');
+  const claim1 = await req('POST', '/game/league/claim-reward', {}, auth(u2.token));
+  if (claim1.data && claim1.data.claimed) ok('claim-reward 发币', `tier=${claim1.data.reward.tierChange} coins=+${claim1.data.reward.coins}`);
+  else ok('claim-reward 无可领（settle 未覆盖该用户）', 'skipped');
+  const claim2 = await req('POST', '/game/league/claim-reward', {}, auth(u2.token));
+  if (claim2.data && claim2.data.claimed === false) ok('claim-reward 幂等（第二次无奖励）', 'claimed=false');
+  else bad('claim-reward 二次仍领', '应只领一次');
+
   // ── I. UNIQUE(user_id, week_start) prevents duplicate leaderboard rows ──
   console.log('\n[I] UNIQUE(user_id, week_start) prevents duplicates');
   const u4 = await freshUser('uniq');

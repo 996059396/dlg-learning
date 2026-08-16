@@ -989,8 +989,7 @@ let settling = false;
 // Settle a FINISHED week: assign final ranks, apply league tier changes, and
 // write league history — all inside a single transaction so a mid-loop failure
 // can't leave half the league promoted and the other half stuck.
-function settleWeek(targetWeekStart = null, force = false) {
-  // Settle the FINISHED week (the one before "now"). If a date is given, settle that one.
+function settleWeek(targetWeekStart = null, force = false) {  // Settle the FINISHED week (the one before "now"). If a date is given, settle that one.
   const ws = targetWeekStart || getWeekStart(Date.now() - 7 * 86400 * 1000);
   // NEVER settle the active/current week: the in-progress league is still being
   // played, and a premature settle permanently freezes its standings (C2 audit
@@ -1106,6 +1105,32 @@ function settleWeek(targetWeekStart = null, force = false) {
 
   console.log(`[settleWeek] Settled ${settledRows.length} entries for week ${ws}`);
   return { weekStart: ws, settled: settledRows };
+}
+
+// 联赛领奖闭环（crosscheck6 C high）：settleWeek 只写 final_rank/tier_change/settled_at，
+// reward_claimed 从置 1——用户需主动领取段位奖励。按 tier_change 发币，单事务：
+// champion +100 / promoted +60 / stay +30 / demoted +10。返回本周奖励，无可领返回 null。
+const LEAGUE_REWARD = { champion: 100, promoted: 60, stay: 30, demoted: 10 };
+function claimLeagueReward(userId) {
+  const row = db.prepare(`
+    SELECT id, week_start, league, final_rank, tier_change
+    FROM leaderboard WHERE user_id = ? AND settled_at IS NOT NULL AND reward_claimed = 0
+    ORDER BY week_start DESC LIMIT 1
+  `).get(userId);
+  if (!row) return null;
+  const coins = LEAGUE_REWARD[row.tier_change || 'stay'] ?? 30;
+  const tx = db.transaction(() => {
+    // 原子：先置已领再发币，防重试双领（并发双领由 UPDATE ... WHERE reward_claimed=0 兜底）。
+    const upd = db.prepare(`
+      UPDATE leaderboard SET reward_claimed = 1
+      WHERE id = ? AND reward_claimed = 0
+    `).run(row.id);
+    if (upd.changes === 0) return null; // 已被并发领走
+    const gs = db.prepare('SELECT coins FROM game_state WHERE user_id = ?').get(userId);
+    db.prepare('UPDATE game_state SET coins = ? WHERE user_id = ?').run((gs?.coins || 0) + coins, userId);
+    return { weekStart: row.week_start, league: row.league, finalRank: row.final_rank, tierChange: row.tier_change, coins };
+  });
+  return tx();
 }
 
 // Startup catch-up: if the server was down at a Monday boundary, that week's
@@ -1248,6 +1273,7 @@ module.exports = {
   daysAgoShanghai,
   addLessonXP,
   settleWeek,
+  claimLeagueReward,
   catchUpSettlements,
   getLeagueInfo,
   LEAGUE_ORDER,

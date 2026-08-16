@@ -432,6 +432,14 @@ router.get('/league/history', requireAuth, (req, res) => {
   res.json(rows);
 });
 
+// POST /api/game/league/claim-reward — 领取最新已结算未领取的段位奖励（crosscheck6 C high：
+// settleWeek 置 final_rank/tier_change/settled_at，reward_claimed 由这里原子置 1 + 发币）。
+router.post('/league/claim-reward', requireAuth, (req, res) => {
+  const reward = db.claimLeagueReward(req.userId);
+  if (!reward) return res.json({ claimed: false, reward: null, message: '没有可领取的段位奖励' });
+  res.json({ claimed: true, reward });
+});
+
 // POST /api/game/league/_admin/settle — ADMIN ONLY. Prevents unauthorized week
 // force-settlement. Rate-limited per IP (C5): with force:true this rewrites
 // every user's rank/league, so an online-brute-forced weak ADMIN_TOKEN must not
