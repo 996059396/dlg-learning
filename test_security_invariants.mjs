@@ -371,6 +371,38 @@ async function run() {
     if (c2 !== 1) throw new Error(`重放后 credit=${c2}, 应仍为 1（幂等去重）`);
   });
 
+  await test('SM-2 lapses/leech：判错 8 次置 leech，判对一次清（crosscheck6 C high）', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `拉普${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const uid = reg.data.user.id;
+    // 完成一课带错 → 建卡
+    const course = 'electrician_basics', unit = 'u1_meter_basics', lessonId = 'l1_intro';
+    const lesson = (await jA('GET', `/courses/${course}/units/${unit}/lessons/${lessonId}`, null, ea)).data;
+    const ans = lesson.nodes.filter(n => n.type !== 'info').map((n, i) => {
+      let ua = '';
+      if (n.type === 'true_false') ua = n.correct_answer ? '错误' : '正确'; // 故意错
+      else if (n.type === 'multiple_choice') ua = n.options.find(o => !o.is_correct)?.text || '';
+      else if (n.type === 'fill_blank') ua = 'zzz_wrong';
+      return { nodeId: n.id, userAnswer: ua };
+    });
+    await jA('POST', `/courses/${course}/units/${unit}/lessons/${lessonId}/complete`, { answers: ans }, ea);
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const card = d.prepare('SELECT id, correct_answer FROM mistakes WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(uid);
+    if (!card) throw new Error('未建错题卡');
+    const correctAnswer = card.correct_answer || '';
+    // 判错 8 次
+    for (let i = 0; i < 8; i++) {
+      await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: '__wrong__' }, ea);
+    }
+    const r1 = d.prepare('SELECT lapses, leech FROM mistakes WHERE id = ?').get(card.id);
+    if (r1.lapses !== 8 || r1.leech !== 1) throw new Error(`判错 8 次后应 lapses=8 leech=1，得 lapses=${r1.lapses} leech=${r1.leech}`);
+    // 判对一次 → 清零
+    await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: correctAnswer }, ea);
+    const r2 = d.prepare('SELECT lapses, leech FROM mistakes WHERE id = ?').get(card.id);
+    d.close();
+    if (r2.lapses !== 0 || r2.leech !== 0) throw new Error(`判对一次后应 lapses=0 leech=0，得 lapses=${r2.lapses} leech=${r2.leech}`);
+  });
+
   await test('及格卷错题入册：90/100 → passed 且 10 错题入册', async () => {
     const reg = await jA('POST', '/auth/register', { username: `部分${Date.now() % 100000}`, password: 'exam123456' });
     const ea = auth(reg.data.token);

@@ -261,6 +261,10 @@ function initializeDatabase() {
     review_count: 'ALTER TABLE mistakes ADD COLUMN review_count INTEGER DEFAULT 0',
     next_review_date: 'ALTER TABLE mistakes ADD COLUMN next_review_date TEXT',
     mastered: 'ALTER TABLE mistakes ADD COLUMN mastered BOOLEAN DEFAULT 0',
+    // crosscheck6 C high：lapses 连续失败计数 / leech 达到阈值标记（Anki 式，
+    // 二元判分使 easiness 恒 2.5 是死字段——用 lapses 补「慢性错误卡」识别维度）
+    lapses: 'ALTER TABLE mistakes ADD COLUMN lapses INTEGER DEFAULT 0',
+    leech: 'ALTER TABLE mistakes ADD COLUMN leech BOOLEAN DEFAULT 0',
     // C10: 多选池错题卡选项 id 会话级重映射。池文件选项 id 恒 {A,B,C,D} 且正确项
     // 固定——错题卡若不重映射，脚本盲猜 ["A","B"] 即 100% 判对铸币。入册时生成
     // {原始id: 随机ms-xxxx} 存此列，review/卡面都用重映射后的 id 判分。
@@ -594,6 +598,7 @@ function saveProgress(userId, lessonId, data) {
 // ── Mistakes Queries (SM-2 spaced repetition) ──
 
 const SM2_MASTERED_INTERVAL = 21; // interval_days >= 21 ⇒ mastered
+const LEECH_THRESHOLD = 8; // 连续判错达 8 次标记 leech（Anki 式慢性错误卡识别）
 
 // Add (or refresh) a mistake card for (user, lesson, node). Getting the same
 // node wrong again in a later attempt refreshes the card instead of duplicating.
@@ -784,14 +789,20 @@ function reviewMistake(mistakeId, userId, correct, grantCredit = true, extra = {
   const mastered = correct && interval >= SM2_MASTERED_INTERVAL ? 1 : 0;
   const beforeEase = row.easiness ?? 2.5;
   const beforeInterval = row.interval_days ?? 0;
+  // crosscheck6 C high：lapses 连续失败计数（判对清零，判错 +1，达阈值置 leech；
+  // 判对同时清 leech——一次成功即解除挂起标识，Anki 语义）。
+  const newLapses = correct ? 0 : (row.lapses || 0) + 1;
+  const leechFlag = correct ? 0 : (newLapses >= LEECH_THRESHOLD ? 1 : (row.leech || 0));
 
   db.transaction(() => {
     db.prepare(`
       UPDATE mistakes SET
         easiness = ?, interval_days = ?, review_count = ?,
-        next_review_date = ?, reviewed = ?, mastered = ?
+        next_review_date = ?, reviewed = ?, mastered = ?,
+        lapses = ?, leech = ?
       WHERE id = ? AND user_id = ?
-    `).run(easiness, interval, repetition, nextReview, correct ? 1 : 0, mastered, mistakeId, userId);
+    `).run(easiness, interval, repetition, nextReview, correct ? 1 : 0, mastered,
+      newLapses, leechFlag, mistakeId, userId);
 
     // B58 A2: append-only review history (forgetting-curve / retention stats,
     // future FSRS fitting). reviewed_at is a full ISO timestamp so retention can
