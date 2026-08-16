@@ -45,6 +45,24 @@ const EXCLUDE = ['shiqun_', '万用表图片', 'parser/chunks', 'parser/extracte
   }
 })(path.join(WORK, 'tree'));
 
+// 2.5) 加密 app.db 进离机快照（crosscheck6 P high：git archive 只含已跟踪文件，
+// gitignored 的 app.db 用户数据从未离机——设 DLG_DB_BACKUP_PASS 后，把当日数据库
+// 加密成 db/app.db.enc 随快照 force-push，密钥只在环境变量，不落盘）。
+const DB_FILE = path.join(ROOT, 'backend', 'models', 'data', 'app.db');
+const DB_PASS = process.env.DLG_DB_BACKUP_PASS;
+if (DB_PASS) {
+  if (fs.existsSync(DB_FILE)) {
+    fs.mkdirSync(path.join(tree, 'db'), { recursive: true });
+    const enc = path.join(tree, 'db', 'app.db.enc');
+    run('openssl', ['enc', '-aes-256-cbc', '-salt', '-pbkdf2', '-pass', `pass:${DB_PASS}`, '-in', DB_FILE, '-out', enc]);
+    console.log(`· 已加密 app.db → db/app.db.enc (${fs.statSync(enc).size} bytes)`);
+  } else {
+    console.warn('⚠️ DLG_DB_BACKUP_PASS 已设但未找到 app.db，跳过 DB 备份');
+  }
+} else {
+  console.warn('⚠️ 未设 DLG_DB_BACKUP_PASS，app.db 用户数据不进离机备份（设环境变量后随快照加密上传）');
+}
+
 // 3) 本地 commit + push 到私有备份仓
 if (!fs.existsSync(path.join(tree, '.git'))) run('git', ['init', '-q', '-b', 'main'], { cwd: tree });
 run('git', ['add', '-A'], { cwd: tree });
