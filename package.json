@@ -1,0 +1,12 @@
+{
+  "name": "dlg-learning-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DLG 电工学习系统 —— 根工作区：声明浏览器 e2e 依赖（crosscheck5 X H2），让 CI 与本地能 import puppeteer",
+  "scripts": {
+    "test:e2e": "node test_browser.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.43.1"
+  }
+}

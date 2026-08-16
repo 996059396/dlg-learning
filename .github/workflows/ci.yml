@@ -95,3 +95,35 @@ jobs:
         if: runner.os != 'Linux'
         working-directory: desktop
         run: ./node_modules/.bin/electron . --smoke
+
+  # 浏览器级 e2e（crosscheck5 X H2/H3）：X07 安全头 + X02 PWA 离线 + 课程播放器。
+  # 后端 109 断言门禁覆盖「无头 Node 层」，生产差异化能力全在浏览器层——这是唯一
+  # 会拦截 Layout 白屏这类前端回归的自动化（此前零 CI 覆盖放行过 critical）。
+  # ubuntu-only（含浏览器矩阵代表性，Electron/SW 已在另两个 job 覆盖）。
+  e2e-browser:
+    name: e2e-browser (ubuntu-latest)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: 根依赖（puppeteer）
+        run: npm install --no-audit --no-fund
+
+      - name: 浏览器二进制
+        run: npx puppeteer browsers install chrome
+
+      - name: 后端依赖
+        working-directory: backend
+        run: npm install --no-audit --no-fund
+
+      - name: 前端构建
+        working-directory: frontend
+        run: npm install --no-audit --no-fund && npm run build
+
+      - name: test_pwa_e2e（安全头 + PWA 离线，生产单源 3100）
+        run: node test_pwa_e2e.mjs

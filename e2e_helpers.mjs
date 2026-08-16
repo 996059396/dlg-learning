@@ -18,15 +18,36 @@ export const FRONT = 'http://localhost:5173';
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // ── Chrome discovery ─────────────────────────────────────────────────────────
-// BROWSER_PATH env wins; otherwise probe per-platform known locations.
+// BROWSER_PATH env wins; otherwise probe per-platform known locations, then the
+// puppeteer cache dir (CI: `npx puppeteer browsers install chrome`).
+function puppeteerCacheChrome() {
+  const root = process.platform === 'win32'
+    ? path.join(process.env.USERPROFILE || '', '.cache', 'puppeteer', 'chrome')
+    : process.platform === 'darwin'
+    ? path.join(process.env.HOME || '', 'Library', 'Caches', 'puppeteer', 'chrome')
+    : path.join(process.env.HOME || '', '.cache', 'puppeteer', 'chrome');
+  const out = [];
+  try {
+    for (const ver of fs.readdirSync(root)) {
+      const dir = path.join(root, ver);
+      if (!fs.statSync(dir).isDirectory()) continue;
+      for (const sub of fs.readdirSync(dir)) {
+        out.push(path.join(dir, sub, process.platform === 'win32' ? 'chrome.exe' : 'chrome'));
+      }
+    }
+  } catch {}
+  return out;
+}
+
 export function resolveChrome() {
   if (process.env.BROWSER_PATH) {
     const p = process.env.BROWSER_PATH;
     if (!fs.existsSync(p)) throw new Error(`BROWSER_PATH 不存在: ${p}`);
     return p;
   }
-  const candidates =
-    process.platform === 'win32'
+  const candidates = [
+    ...puppeteerCacheChrome(),
+    ...(process.platform === 'win32'
       ? [
           process.env.ProgramFiles + '\\Google\\Chrome\\Application\\chrome.exe',
           process.env['ProgramFiles(x86)'] + '\\Google\\Chrome\\Application\\chrome.exe',
@@ -35,9 +56,10 @@ export function resolveChrome() {
         ]
       : process.platform === 'darwin'
       ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium']
-      : ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser', '/usr/bin/chromium'];
+      : ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser', '/usr/bin/chromium']),
+  ];
   const found = candidates.find(c => c && fs.existsSync(c));
-  if (!found) throw new Error('未找到 Chrome/Chromium，请设置 BROWSER_PATH 环境变量');
+  if (!found) throw new Error('未找到 Chrome/Chromium，请设置 BROWSER_PATH 环境变量或先 npx puppeteer browsers install chrome');
   return found;
 }
 
