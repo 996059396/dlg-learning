@@ -23,3 +23,6 @@ shiqun_*.txt
 Thumbs.db
 .vscode/
 .idea/
+
+# 一次性临时脚本（crosscheck5 建议）
+_tmp_*
