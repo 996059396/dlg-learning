@@ -100,6 +100,7 @@ export const api = {
 
   // Mock exam (P1)
   startExam: (mode = 'real') => request('/exam/start', { method: 'POST', body: JSON.stringify({ mode }) }),
+  reviewActivity: () => request('/metrics/review-activity'),
   submitExam: (sessionId, answers) =>
     request('/exam/submit', { method: 'POST', body: JSON.stringify({ sessionId, answers }) }),
   examHistory: () => request('/exam/history'),

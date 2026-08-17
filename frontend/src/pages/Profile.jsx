@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
@@ -6,6 +6,14 @@ import { api } from '../utils/api';
 export default function Profile() {
   const { user, gameState, logout, showToast } = useGame();
   const navigate = useNavigate();
+
+  // 近 7 天复习活动（compare60 C07：review_log 画复习曲线）
+  const [reviewActivity, setReviewActivity] = useState(null);
+  useEffect(() => {
+    if (user?.id && user.id !== 'demo') {
+      api.reviewActivity().then(d => setReviewActivity(d.days || [])).catch(() => {});
+    }
+  }, [user]);
 
   // Settings (session management): change password / logout all devices.
   const [showSettings, setShowSettings] = useState(false);
@@ -104,6 +112,23 @@ export default function Profile() {
         ))}
       </div>
 
+      {/* 近 7 天复习曲线（compare60 C07：review_log 每日复习次数 + 正确率） */}
+      {reviewActivity && reviewActivity.length > 0 && (
+        <div style={{
+          background: 'white',
+          borderRadius: 'var(--radius-sm)',
+          padding: 16,
+          boxShadow: 'var(--shadow)',
+          marginBottom: 24,
+        }}>
+          <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 2 }}>📈 近 7 天复习</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
+            复习次数越多、正确率越高越好
+          </div>
+          <ReviewChart days={reviewActivity} />
+        </div>
+      )}
+
       {/* Quick actions */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <button
@@ -198,6 +223,71 @@ export default function Profile() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// 近 7 天复习曲线：服务端只返回有复习记录的日子，这里补全无记录日期让坐标轴完整；
+// 柱 = 当日复习次数，柱顶标注 = 当日正确率。日期按上海时区生成，与服务端
+// date(reviewed_at, '+8 hours') 分组口径一致（跨时区也不至于轴错位）。
+function ReviewChart({ days }) {
+  const byDay = {};
+  for (const d of days) byDay[d.day] = d;
+
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  });
+  const labels = [];
+  for (let i = 6; i >= 0; i--) {
+    const t = new Date();
+    t.setDate(t.getDate() - i);
+    labels.push(fmt.format(t));
+  }
+
+  const rows = labels.map(key => byDay[key] || { day: key, reviews: 0, pct_correct: null });
+  const max = Math.max(1, ...rows.map(r => r.reviews));
+  const isToday = day => day === labels[6];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 108 }}>
+      {rows.map(r => (
+        <div key={r.day} style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          height: '100%',
+        }}>
+          <div style={{
+            fontSize: 10,
+            fontWeight: 600,
+            marginBottom: 2,
+            color: r.pct_correct == null ? 'var(--text-secondary)' :
+              r.pct_correct >= 80 ? '#16a34a' : r.pct_correct >= 50 ? '#d97706' : '#dc2626',
+          }}>
+            {r.pct_correct == null ? '' : `${r.pct_correct}%`}
+          </div>
+          <div style={{
+            width: '100%',
+            maxWidth: 22,
+            borderRadius: 4,
+            height: `${Math.max(3, (r.reviews / max) * 56)}px`,
+            background: r.reviews > 0
+              ? 'linear-gradient(180deg, #FF8C42, #FF6B35)'
+              : 'var(--border, #eee)',
+          }} />
+          <div style={{
+            fontSize: 10,
+            marginTop: 4,
+            color: isToday(r.day) ? 'var(--text-primary)' : 'var(--text-secondary)',
+            fontWeight: isToday(r.day) ? 700 : 400,
+          }}>
+            {isToday(r.day) ? '今天' : r.day.slice(5).replace('-', '/')}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -711,6 +711,18 @@ function getUserLessonsStats(userId, limit = 10) {
   `).all(userId, limit);
 }
 
+// 近 N 天复习活动（compare60 C07）：每日复习次数 + 正确率，喂 Profile「近7天复习曲线」。
+function getReviewActivity(userId, days = 7) {
+  return db.prepare(`
+    SELECT date(reviewed_at, '+8 hours') AS day,
+           COUNT(*) AS reviews,
+           ROUND(100.0 * SUM(correct) / COUNT(*), 1) AS pct_correct
+    FROM review_log WHERE user_id = ?
+      AND reviewed_at >= datetime('now', '-' || ? || ' days', '-8 hours')
+    GROUP BY day ORDER BY day ASC
+  `).all(userId, days);
+}
+
 // Due mistakes: not mastered AND next_review_date <= today.
 // B58 A6/F3 queue tiering + priority: the combined queue is DUE REVIEWS
 // (review_count > 0, most-overdue first — "到期最久优先" per A6) followed by NEW
@@ -1288,6 +1300,7 @@ module.exports = {
   getHardestNodes,
   getUserNodeStats,
   getUserLessonsStats,
+  getReviewActivity,
   getUnreviewedMistakes,
   getUnclaimedReviewCredit,
   claimReviewCredit,

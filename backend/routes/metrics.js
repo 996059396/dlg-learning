@@ -24,4 +24,9 @@ router.get('/me', requireAuth, (req, res) => {
   res.json({ ...stats, byLesson });
 });
 
+// 近 7 天复习活动（每日复习次数 + 正确率，供 Profile 复习曲线，compare60 C07）。
+router.get('/review-activity', requireAuth, (req, res) => {
+  res.json({ days: db.getReviewActivity(req.userId, 7) });
+});
+
 module.exports = router;
