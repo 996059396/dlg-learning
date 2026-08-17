@@ -110,6 +110,7 @@ export const api = {
   practiceHeal: (correctCount) =>
     request('/game/practice-heal', { method: 'POST', body: JSON.stringify({ correctCount }) }),
   getMistakes: () => request('/game/mistakes'),
+  mistakeStats: () => request('/game/mistakes/stats'),
   exportMistakes: () => requestBlob('/game/mistakes/export'),
   reviewMistake: (mistakeId, userAnswer, extra = {}) =>
     request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, userAnswer, ...extra }) }),

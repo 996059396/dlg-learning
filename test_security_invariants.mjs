@@ -263,6 +263,44 @@ async function run() {
       throw new Error('全新账号导出应只有表头 4 行');
   });
 
+  await test('GET /game/mistakes/stats → 留存率/young-mature/7天预报，且绝不越权', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `统计${Date.now() % 100000}`, password: 'sec123456' });
+    if (reg.status !== 200) throw new Error(`register ${reg.status}`);
+    const ea = auth(reg.data.token);
+    const uid = reg.data.user?.id;
+    // 完成一课带错 → 1 张新卡（next_review_date=today，今日到期）
+    const lesson = (await jA('GET', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro', null, ea)).data;
+    await jA('POST', '/courses/electrician_basics/units/u1_meter_basics/lessons/l1_intro/complete',
+      { answers: buildAnswers(lesson, 0) }, ea);
+    const pre = await jA('GET', '/game/mistakes/stats', null, ea);
+    if (pre.status !== 200) throw new Error(`stats ${pre.status}`);
+    if (pre.data.totals.totalReviews !== 0) throw new Error(`新卡阶段 totalReviews 应 0，得 ${pre.data.totals.totalReviews}`);
+    if (pre.data.totals.dueNow !== 1) throw new Error(`新卡阶段 dueNow 应 1，得 ${pre.data.totals.dueNow}`);
+    if (pre.data.forecast.length !== 7) throw new Error(`forecast 应 7 天，得 ${pre.data.forecast.length}`);
+    if (pre.data.forecast[0].newCards !== 1) throw new Error(`预报今天新卡应 1，得 ${JSON.stringify(pre.data.forecast[0])}`);
+    // 复习判对一次 → 留存率 100%，young 档记 1 次（interval_before=0）
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const card = d.prepare('SELECT id, correct_answer FROM mistakes WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(uid);
+    d.close();
+    if (!card) throw new Error('错题卡未入册');
+    const rv = await jA('POST', '/game/mistakes/review', { mistakeId: card.id, userAnswer: card.correct_answer || '' }, ea);
+    if (rv.data.correct !== true) throw new Error(`复习应判对：${JSON.stringify(rv.data)}`);
+    const post = await jA('GET', '/game/mistakes/stats', null, ea);
+    if (post.data.totals.totalReviews !== 1) throw new Error(`复习后 totalReviews 应 1，得 ${post.data.totals.totalReviews}`);
+    if (post.data.totals.retentionRate !== 100) throw new Error(`复习后 retentionRate 应 100，得 ${post.data.totals.retentionRate}`);
+    const young = post.data.buckets.find(b => b.bucket === 'young');
+    if (!young || young.total !== 1 || young.retentionRate !== 100)
+      throw new Error(`young 档应 1 次/100%，得 ${JSON.stringify(post.data.buckets)}`);
+    if (post.data.buckets.length !== 2) throw new Error(`buckets 应补齐 young/mature 两档，得 ${post.data.buckets.length}`);
+    // 越权隔离：全新账号统计全零，绝不含他人数据
+    const fresh = await jA('POST', '/auth/register', { username: `统计新${Date.now() % 100000}`, password: 'sec123456' });
+    const f = await jA('GET', '/game/mistakes/stats', null, auth(fresh.data.token));
+    if (f.status !== 200) throw new Error(`fresh stats ${f.status}`);
+    if (f.data.totals.totalReviews !== 0 || f.data.totals.dueNow !== 0 || f.data.totals.totalCards !== 0)
+      throw new Error(`全新账号应全零，得 ${JSON.stringify(f.data.totals)}`);
+    if (f.data.buckets.length !== 2) throw new Error('全新账号 buckets 也应补齐两档');
+  });
+
   // ═══════════ 2. register 独立桶边界（server B：prod 5/15min，不放开） ═══════════
   console.log('\n📋 register 独立桶');
   let dupName;

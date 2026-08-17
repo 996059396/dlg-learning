@@ -21,7 +21,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 
 ## 测试门禁（10 段链，`cd backend && npm test`）
 
-`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 181 断言：
+`npm test` 是 `&&` 串联链，任一环节失败即整体失败。全绿 = 182 断言：
 
 | 段 | 脚本 | 断言 | 覆盖 |
 | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ DLG 电工考证学习系统——一个**开箱即用的电工考证备考平�
 | 3 | `node ../smoke_milestone1.mjs` | 20 | 核心业务流程冒烟 |
 | 4 | `node ../test_leaderboard_v2.mjs` | 13 | 段位/周结算/排行 |
 | 5 | `node ../smoke_settlement.mjs` | 14 | 周结算事务/幂等 |
-| 6 | `node ../test_security_invariants.mjs` | 27 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、防切屏（track 越权/累计阈值/异常扣发金币）、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例、Anki 导出 TSV（越权隔离） |
+| 6 | `node ../test_security_invariants.mjs` | 28 | **安全不变量**：错题卡脱敏缺席、register 独立桶、login-user-global 兜底、模拟考及格路径、防切屏（track 越权/累计阈值/异常扣发金币）、多选 remap + 复习重映射、错题卡 5 类答案键剥离、rate_limit 桶、simulation_danger 负例、Anki 导出 TSV（越权隔离）、复习统计 `/game/mistakes/stats`（越权隔离） |
 | 7 | `node ../test_idempotency.mjs` | 17 | (user, client_request_id) 幂等重放不二次判分/铸币 |
 | 8 | `node ../test_sm2.mjs` | 43 | SM-2 黄金值：q=4 梯子 1→6→EF、q<3 重置/EF 不动、EF 下限 1.3、mastered 阈值 21、rollback 事务原子性、可提取率排序、每日新增预算（20/天顺延）、每日复习上限（30 最紧迫）、leech 优先、mastered 定期复检（90 天/R<0.6） |
 | 9 | `node ../scripts/grade_scan.cjs` | 3748 节点 100% + 3747 错答负例 | 判分自洽 + 宽容化回归 |

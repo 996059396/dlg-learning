@@ -143,6 +143,7 @@ x-admin-token: <ADMIN_TOKEN>
 | POST | `/api/game/practice-heal` | 登录 + 限流 | 用「复习信用」兑红心与金币 |
 | GET | `/api/game/mistakes` | 登录 | 到期错题队列（SM-2 调度，**答案已脱敏**） |
 | GET | `/api/game/mistakes/due-count` | 登录 | 今日到期错题数 |
+| GET | `/api/game/mistakes/stats` | 登录 | 复习侧进度追踪：留存率（overall + young/mature 分档）、卡池总览、未来 7 天到期预报（纯聚合，不返答案键） |
 | POST | `/api/game/mistakes/review` | 登录 + 限流 | 提交回忆结果，服务端重判 + SM-2 排程，**唯一揭示答案的接口** |
 | POST | `/api/game/spend-coins` | 登录 | 商店购买（价格以服务端 `ITEM_CATALOG` 为准） |
 | GET | `/api/game/leaderboard/:league` | 可选登录 | 段位周榜（前 10 + 幽灵填充） |

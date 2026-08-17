@@ -356,6 +356,14 @@ router.get('/mistakes/export', requireAuth, (req, res) => {
   res.send(body);
 });
 
+// GET /api/game/mistakes/stats — 当前用户复习侧进度追踪（留存率 + 7 天到期预报）。
+// 纯聚合端点：overall/young-mature 留存率（review_log）、卡池总览、未来 7 天
+// 到期预报。owner-scoped（requireAuth 用 token 推导 user_id），不返回任何
+// 答案键/他人数据，与错题导出同一隔离边界。
+router.get('/mistakes/stats', requireAuth, (req, res) => {
+  res.json(db.getMistakeStats(req.userId));
+});
+
 // POST /api/game/mistakes/review — record a recall outcome (SM-2 scheduling).
 // Body: { mistakeId, userAnswer }. The SERVER re-grades the recalled answer
 // against the stored node's grading logic — the client's correct boolean is

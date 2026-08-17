@@ -744,6 +744,77 @@ function getReviewActivity(userId, days = 7) {
   `).all(userId, days);
 }
 
+// 复习侧进度追踪（compare60 C07 后续）：留存率（overall + young/mature 分档）、
+// 卡池总览、未来 7 天到期预报。数据源 review_log（append-only 复习史）+ mistakes
+// 当前排程。留存率 = 判对次数 / 复习次数；young/mature 按复习时的 interval_before
+// 分档（Anki 口径：interval < 21 = young，≥ 21 = mature，21 恰是 mastered 阈值）。
+// 未来 7 天预报只统计未掌握卡（mastered=0），new（review_count=0）/ review 拆分。
+// 纯聚合，owner-scoped（userId 来自 token），不含任何答案键，绝不越权。
+function getMistakeStats(userId) {
+  const today = todayShanghai();
+  reactivateDueMastered(userId, today); // 复检卡也计入 dueNow，与 badge 口径一致
+
+  const totalRow = db.prepare(`
+    SELECT COUNT(*) AS total, COALESCE(SUM(correct), 0) AS correct
+    FROM review_log WHERE user_id = ?
+  `).get(userId);
+  const totalReviews = totalRow.total;
+  const correctReviews = totalRow.correct;
+
+  const bucketRows = db.prepare(`
+    SELECT CASE WHEN COALESCE(interval_before, 0) >= ? THEN 'mature' ELSE 'young' END AS bucket,
+           COUNT(*) AS total, COALESCE(SUM(correct), 0) AS correct
+    FROM review_log WHERE user_id = ?
+    GROUP BY bucket
+  `).all(SM2_MASTERED_INTERVAL, userId);
+  // 无复习记录时 GROUP BY 返回空表——补齐两档零值，前端不必特判。
+  const buckets = ['young', 'mature'].map(bucket => {
+    const r = bucketRows.find(x => x.bucket === bucket) || { bucket, total: 0, correct: 0 };
+    return {
+      bucket: r.bucket,
+      total: r.total,
+      correct: r.correct,
+      retentionRate: r.total > 0 ? Math.round(1000 * r.correct / r.total) / 10 : null,
+    };
+  });
+
+  const cardsRow = db.prepare(`
+    SELECT COUNT(*) AS total,
+           COALESCE(SUM(CASE WHEN mastered = 1 THEN 1 ELSE 0 END), 0) AS mastered,
+           COALESCE(SUM(CASE WHEN mastered = 0 AND next_review_date <= ? THEN 1 ELSE 0 END), 0) AS dueNow
+    FROM mistakes WHERE user_id = ?
+  `).get(today, userId); // 注意绑定顺序：SQL 文本中 CASE 的 ? 在前，WHERE user_id 的 ? 在后
+
+  const forecastRows = db.prepare(`
+    SELECT next_review_date AS day,
+           SUM(CASE WHEN review_count = 0 THEN 1 ELSE 0 END) AS newCards,
+           SUM(CASE WHEN review_count > 0 THEN 1 ELSE 0 END) AS reviews
+    FROM mistakes
+    WHERE user_id = ? AND mastered = 0 AND next_review_date >= ? AND next_review_date <= ?
+    GROUP BY next_review_date ORDER BY next_review_date
+  `).all(userId, today, _addDays(today, 6));
+  const byDay = {};
+  for (const r of forecastRows) byDay[r.day] = r;
+  const forecast = [];
+  for (let i = 0; i < 7; i++) {
+    const d = _addDays(today, i);
+    forecast.push(byDay[d] || { day: d, newCards: 0, reviews: 0 });
+  }
+
+  return {
+    totals: {
+      totalReviews,
+      correctReviews,
+      retentionRate: totalReviews > 0 ? Math.round(1000 * correctReviews / totalReviews) / 10 : null,
+      totalCards: cardsRow.total,
+      masteredCards: cardsRow.mastered,
+      dueNow: cardsRow.dueNow,
+    },
+    buckets,
+    forecast,
+  };
+}
+
 // Due mistakes: not mastered AND next_review_date <= today.
 // B58 A6/F3 queue tiering + priority: the combined queue is DUE REVIEWS
 // (review_count > 0, most-overdue first — "到期最久优先" per A6) followed by NEW
@@ -1395,6 +1466,7 @@ module.exports = {
   getUserNodeStats,
   getUserLessonsStats,
   getReviewActivity,
+  getMistakeStats,
   getUnreviewedMistakes,
   getUnclaimedReviewCredit,
   claimReviewCredit,

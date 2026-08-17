@@ -15,6 +15,20 @@ export default function Profile() {
     }
   }, [user]);
 
+  // 学习统计面板（复习侧进度追踪：留存率 + 未来 7 天到期预报）
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const toggleStats = async () => {
+    if (user?.id === 'demo') { showToast('演示账号暂无学习统计', 'error'); return; }
+    const next = !showStats;
+    setShowStats(next);
+    if (next && !stats) {
+      setStatsLoading(true);
+      try { setStats(await api.mistakeStats()); } catch { /* 面板显示失败态 */ } finally { setStatsLoading(false); }
+    }
+  };
+
   // Settings (session management): change password / logout all devices.
   const [showSettings, setShowSettings] = useState(false);
   const [pwOld, setPwOld] = useState('');
@@ -129,6 +143,50 @@ export default function Profile() {
         </div>
       )}
 
+      {/* 学习统计面板（留存率 + 未来 7 天到期预报） */}
+      {showStats && (
+        <div style={{
+          background: 'white',
+          borderRadius: 'var(--radius-sm)',
+          padding: 16,
+          boxShadow: 'var(--shadow)',
+          marginBottom: 24,
+        }}>
+          <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 2 }}>📊 学习统计</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
+            留存率 = 复习判对比例 · young = 间隔&lt;21 天，mature = 间隔≥21 天
+          </div>
+          {statsLoading ? (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>加载中…</div>
+          ) : stats ? (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
+                <StatBox label="累计复习" value={stats.totals.totalReviews} sub={`判对 ${stats.totals.correctReviews} 次`} />
+                <StatBox label="留存率" value={stats.totals.retentionRate == null ? '—' : `${stats.totals.retentionRate}%`} sub="全部复习" />
+                <StatBox label="待复习" value={stats.totals.dueNow} sub={`已掌握 ${stats.totals.masteredCards}/${stats.totals.totalCards}`} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                {stats.buckets.map(b => (
+                  <div key={b.bucket} style={{ background: 'var(--bg)', borderRadius: 'var(--radius-sm)', padding: '10px 12px' }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      {b.bucket === 'young' ? '🟢 新卡（young）' : '🟣 熟卡（mature）'}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: 16 }}>{b.retentionRate == null ? '—' : `${b.retentionRate}%`}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{b.total} 次复习</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
+                未来 7 天到期 <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: 11 }}>橙=复习 蓝=新卡</span>
+              </div>
+              <ForecastChart forecast={stats.forecast} />
+            </>
+          ) : (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>统计加载失败，请稍后重试</div>
+          )}
+        </div>
+      )}
+
       {/* Quick actions */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <button
@@ -159,8 +217,11 @@ export default function Profile() {
         >
           📥 错题导出（Anki 兼容）
         </button>
-        <button className="btn btn-outline btn-block">
-          📊 学习统计
+        <button
+          className="btn btn-outline btn-block"
+          onClick={toggleStats}
+        >
+          📊 学习统计 {showStats ? '▲' : '▼'}
         </button>
         <button
           className="btn btn-outline btn-block"
@@ -245,6 +306,53 @@ export default function Profile() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// 学习统计小卡片：标签 + 主值 + 副注。
+function StatBox({ label, value, sub }) {
+  return (
+    <div style={{ background: 'var(--bg)', borderRadius: 'var(--radius-sm)', padding: '10px 12px', textAlign: 'center' }}>
+      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{label}</div>
+      <div style={{ fontWeight: 800, fontSize: 18, margin: '2px 0' }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{sub}</div>
+    </div>
+  );
+}
+
+// 未来 7 天到期预报：橙柱 = 到期复习，蓝柱 = 新卡；首日为「今天」。
+function ForecastChart({ forecast }) {
+  const max = Math.max(1, ...forecast.map(d => d.newCards + d.reviews));
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 84 }}>
+      {forecast.map(d => (
+        <div key={d.day} style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          height: '100%',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', width: '100%', maxWidth: 22, gap: 1, height: 52 }}>
+            {d.reviews > 0 && (
+              <div style={{ flex: 1, borderRadius: 4, height: `${(d.reviews / max) * 52}px`, background: 'linear-gradient(180deg, #FF8C42, #FF6B35)' }} />
+            )}
+            {d.newCards > 0 && (
+              <div style={{ flex: 1, borderRadius: 4, height: `${(d.newCards / max) * 52}px`, background: '#1CB0F6' }} />
+            )}
+          </div>
+          <div style={{
+            fontSize: 10,
+            marginTop: 4,
+            color: d.day === forecast[0]?.day ? 'var(--text-primary)' : 'var(--text-secondary)',
+            fontWeight: d.day === forecast[0]?.day ? 700 : 400,
+          }}>
+            {d.day === forecast[0]?.day ? '今天' : d.day.slice(5).replace('-', '/')}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -15,7 +15,7 @@ const MANIFEST = {
   'smoke_milestone1.mjs': { pat: /(\d+) passed/, expect: 20 },
   'test_leaderboard_v2.mjs': { pat: /(\d+) PASS/, expect: 13 },
   'smoke_settlement.mjs': { pat: /(\d+) passed/, expect: 14 },
-  'test_security_invariants.mjs': { pat: /(\d+) passed/, expect: 27 },
+  'test_security_invariants.mjs': { pat: /(\d+) passed/, expect: 28 },
   'test_idempotency.mjs': { pat: /（(\d+) 断言/, expect: 17 },
   'test_sm2.mjs': { pat: /：(\d+) 通过/, expect: 43 },
   'grade_scan.cjs': { pat: /graded nodes: (\d+)/, expect: 3748 },
@@ -46,7 +46,7 @@ for (const [file, { pat, expect }] of Object.entries(MANIFEST)) {
 const total = results['test_api.mjs'] + results['smoke_milestone1.mjs'] + results['test_leaderboard_v2.mjs'] +
   results['smoke_settlement.mjs'] + results['test_security_invariants.mjs'] + results['test_idempotency.mjs'] +
   results['test_sm2.mjs'];
-console.log(`总断言：${total}${total === 181 ? ' ✅' : '（漂移，需同步 docs 168→' + total + '）'}`);
-if (total !== 181) failed++;
+console.log(`总断言：${total}${total === 182 ? ' ✅' : '（漂移，需同步 docs 168→' + total + '）'}`);
+if (total !== 182) failed++;
 if (failed) { console.error(`❌ 门禁计数漂移 ${failed} 处——按上面「实际」值同步 8 份文档与 MANIFEST。`); process.exit(1); }
 console.log('✅ 门禁计数自检通过（文档数字 = 实测数字）。');
