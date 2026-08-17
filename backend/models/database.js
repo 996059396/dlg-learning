@@ -730,6 +730,21 @@ function getReviewActivity(userId, days = 7) {
 // own per-fetch cap (QUEUE_REVIEW_CAP / QUEUE_NEW_CAP) so neither floods a
 // fetch, and offset pages correctly over the combined queue (a backlog of
 // overdue reviews can't strand fresh mistakes, nor vice versa).
+// compare60 C03: approximate retrievability — a forgetting-curve proxy
+// (R = 0.9^(overdue_days/interval_days), classic Ebbinghaus exponential; no
+// FSRS dependency). getUnreviewedMistakes uses it to sort the REVIEW tier by
+// predicted forgetting risk (lowest R first) instead of pure due-date FIFO, and
+// routes/game.js returns it per card so the review page can show "预测记得概率".
+// Returns null for cards with no schedule yet (interval 0 / new tier).
+function computeRetrievability(mistake, todayStr) {
+  const iv = mistake.interval_days || 0;
+  if (iv <= 0 || !mistake.next_review_date) return null;
+  const todayMs = Date.parse(todayStr + 'T00:00:00Z');
+  const dueMs = Date.parse(mistake.next_review_date + 'T00:00:00Z');
+  const overdueDays = Math.max(0, Math.floor((todayMs - dueMs) / 86400000));
+  return Math.pow(0.9, overdueDays / iv);
+}
+
 const QUEUE_REVIEW_CAP = 50; // 复习步硬顶
 const QUEUE_NEW_CAP = 20;    // 学习步硬顶
 function getUnreviewedMistakes(userId, limit = 10, offset = 0) {
@@ -740,12 +755,16 @@ function getUnreviewedMistakes(userId, limit = 10, offset = 0) {
   `).get(userId, today).c;
   const reviewOffset = Math.min(offset, reviewsCount);
   const reviewTake = Math.min(limit, reviewsCount - reviewOffset, QUEUE_REVIEW_CAP);
+  // REVIEW tier: fetch all due reviews and sort by predicted forgetting risk
+  // (most-likely-forgotten first) — the per-fetch cap bounds the sort. Cards
+  // without a schedule (interval 0) sort last.
   const reviews = reviewTake > 0 ? db.prepare(`
     SELECT * FROM mistakes
     WHERE user_id = ? AND mastered = 0 AND review_count > 0 AND next_review_date <= ?
     ORDER BY next_review_date ASC, created_at ASC
-    LIMIT ? OFFSET ?
-  `).all(userId, today, reviewTake, reviewOffset) : [];
+  `).all(userId, today)
+    .sort((a, b) => (computeRetrievability(a, today) ?? Infinity) - (computeRetrievability(b, today) ?? Infinity))
+    .slice(reviewOffset, reviewOffset + reviewTake) : [];
   const newOffset = Math.max(0, offset - reviewsCount);
   const newTake = Math.min(limit - reviewTake, QUEUE_NEW_CAP);
   const news = newTake > 0 ? db.prepare(`
@@ -766,6 +785,20 @@ function getDueMistakeCount(userId) {
   return row?.c || 0;
 }
 
+// compare60 C07: Anki 兼容导出 —— 当前用户全部错题（含已掌握），每行附最近一次
+// 复习判定（review_log 最新一条 correct，未复习为 null）。归本人所有，绝不越权。
+function getAllMistakes(userId) {
+  return db.prepare(`
+    SELECT m.*, rl.correct AS last_verdict
+    FROM mistakes m
+    LEFT JOIN review_log rl ON rl.id = (
+      SELECT MAX(id) FROM review_log WHERE mistake_id = m.id AND user_id = m.user_id
+    )
+    WHERE m.user_id = ?
+    ORDER BY m.mastered ASC, COALESCE(m.next_review_date, '9999-12-31') ASC, m.id ASC
+  `).all(userId);
+}
+
 // SM-2 core: advance (easiness, interval, repetition) for a recall quality q (0-5).
 // Returns { easiness, interval, repetition }.
 function _sm2(curEasiness, curInterval, curRepetition, q) {
@@ -783,11 +816,11 @@ function _sm2(curEasiness, curInterval, curRepetition, q) {
   }
   let r = repetition + 1;
   let iv = 1;
-  if (r === 1) iv = 1;
-  else if (r === 2) iv = 6;
-  else iv = Math.round(interval * EF);
   let ef = EF + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
   if (ef < 1.3) ef = 1.3;
+  if (r === 1) iv = 1;
+  else if (r === 2) iv = 6;
+  else iv = Math.round(interval * ef); // canonical SM-2: I(n)=I(n-1)*EF'（新 EF）
   return { easiness: ef, interval: iv, repetition: r };
 }
 
@@ -1295,6 +1328,10 @@ module.exports = {
   getProgress,
   saveProgress,
   addMistake,
+  _sm2,
+  computeRetrievability,
+  SM2_MASTERED_INTERVAL,
+  LEECH_THRESHOLD,
   addNodeResult,
   getNodeStats,
   getHardestNodes,
@@ -1305,6 +1342,7 @@ module.exports = {
   getUnclaimedReviewCredit,
   claimReviewCredit,
   getDueMistakeCount,
+  getAllMistakes,
   getMistake,
   reviewMistake,
   dismissMistake,

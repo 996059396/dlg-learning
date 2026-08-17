@@ -220,6 +220,47 @@ async function run() {
     const m = data.mistakes[0];
     if (!m.question_text && !m.question) throw new Error('卡片缺题目文本');
     if (!m.original_node?.question && !m.original_node) throw new Error('缺 original_node');
+    // compare60 C03/C07：可提取率（近似记得概率）与来源章节回链随卡下发，且来源必须指向真实课时
+    if (typeof m.retrievability !== 'number' && m.retrievability !== null) throw new Error('retrievability 字段缺失或类型错误');
+    if (!m.source || m.source.kind !== 'lesson') throw new Error('缺 source 来源回链');
+    if (m.source.lessonId !== 'l2_battery') throw new Error(`source.lessonId 解析错: ${m.source.lessonId}`);
+    if (!m.source.lessonTitle) throw new Error('缺 source.lessonTitle');
+    if (!m.source.unitTitle || !m.source.courseTitle) throw new Error('缺 source 单元/课程标题');
+  });
+
+  await test('GET /game/mistakes/export → TSV：Anki 头 + 本人错题 + 无越权数据', async () => {
+    const res = await fetch(`${BASE.A}/game/mistakes/export`, {
+      headers: { Authorization: `Bearer ${mmToken}` },
+    });
+    if (res.status !== 200) throw new Error(`export ${res.status}`);
+    const raw = await res.arrayBuffer();
+    const bytes = new Uint8Array(raw);
+    if (bytes[0] !== 0xEF || bytes[1] !== 0xBB || bytes[2] !== 0xBF) throw new Error('缺 UTF-8 BOM');
+    const body = new TextDecoder('utf-8').decode(raw); // TextDecoder 默认剥离 BOM
+    if (!body.includes('#separator:tab')) throw new Error('缺 Anki #separator 头');
+    const lines = body.split('\n');
+    if (lines.length < 5) throw new Error(`TSV 行数不足: ${lines.length}`);
+    if (!lines[3].includes('正确答案')) throw new Error('缺表头列');
+    const headerCols = lines[3].split('\t').length;
+    if (headerCols !== 8) throw new Error(`表头列数 ${headerCols} 应为 8`);
+    for (let i = 4; i < lines.length; i++) {
+      if (lines[i].trim() && lines[i].split('\t').length !== headerCols)
+        throw new Error(`第 ${i} 行列数不一致: ${lines[i]}`);
+    }
+    // 导出必须含本人错题（题干文本来自 GET /mistakes 同源数据）
+    const list = (await jA('GET', '/game/mistakes?limit=30', null, auth(mmToken))).data.mistakes;
+    if (!Array.isArray(list) || list.length < 1) throw new Error('expected mistakes');
+    if (!body.includes(list[0].question_text)) throw new Error('导出缺本人错题题干');
+    // 越权隔离：全新账号导出应为空表（只有表头行，无数据行）
+    const fresh = await jA('POST', '/auth/register', { username: `导出${Date.now() % 100000}`, password: 'exp123456' });
+    if (fresh.status !== 200) throw new Error(`fresh register ${fresh.status}`);
+    const freshRes = await fetch(`${BASE.A}/game/mistakes/export`, {
+      headers: { Authorization: `Bearer ${fresh.data.token}` },
+    });
+    if (freshRes.status !== 200) throw new Error(`fresh export ${freshRes.status}`);
+    const freshBody = new TextDecoder('utf-8').decode(await freshRes.arrayBuffer());
+    if (freshBody.trim().split('\n').length !== 4)
+      throw new Error('全新账号导出应只有表头 4 行');
   });
 
   // ═══════════ 2. register 独立桶边界（server B：prod 5/15min，不放开） ═══════════

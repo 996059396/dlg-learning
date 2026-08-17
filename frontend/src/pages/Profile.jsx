@@ -137,6 +137,28 @@ export default function Profile() {
         >
           🏥 错题医疗包（复习错题，恢复红心）
         </button>
+        <button
+          className="btn btn-outline btn-block"
+          onClick={async () => {
+            if (user?.id === 'demo') { showToast('演示账号不支持导出', 'error'); return; }
+            try {
+              const blob = await api.exportMistakes();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `dlg_mistakes_${String(user?.id || 'me').slice(0, 8)}.tsv`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              showToast('错题已导出为 TSV，可直接导入 Anki', 'success');
+            } catch (err) {
+              showToast(err.message || '导出失败，请稍后再试', 'error');
+            }
+          }}
+        >
+          📥 错题导出（Anki 兼容）
+        </button>
         <button className="btn btn-outline btn-block">
           📊 学习统计
         </button>

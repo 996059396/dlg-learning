@@ -239,15 +239,71 @@ export default function MistakeReview() {
           marginBottom: 12,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'space-between',
           gap: 6,
         }}>
           <span>之前答错了</span>
+          {/* compare60 C03: approximate retrievability —— 服务端按 SM-2 间隔算的
+              遗忘风险预估，让用户对「为什么这题排最前」有感知；新卡/未排期不显示。 */}
+          {typeof current?.retrievability === 'number' ? (
+            <span style={{
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: 'var(--radius-xs)',
+              background: current.retrievability < 0.5 ? 'var(--tint-danger)' : 'var(--tint-warning)',
+              color: current.retrievability < 0.5 ? 'var(--danger)' : 'var(--text-secondary)',
+            }}>
+              预测记得概率 {Math.round(current.retrievability * 100)}%
+            </span>
+          ) : (
+            <span style={{ fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-xs)', background: 'var(--tint-info)', color: 'var(--text-secondary)' }}>
+              新卡 · 首次复习
+            </span>
+          )}
         </div>
 
         {/* Question text */}
         <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
           {current?.question_text || '(题目加载失败)'}
         </div>
+
+        {/* compare60 C07: 来源章节回链 —— 展示题目出处，可一键回看讲义复习。 */}
+        {current?.source?.lessonTitle ? (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            marginBottom: 16,
+            padding: '8px 10px',
+            background: 'var(--tint-info)',
+            borderRadius: 'var(--radius-xs)',
+            fontSize: 12,
+          }}>
+            <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              来源：{current.source.courseTitle ? `${current.source.courseTitle} · ` : ''}{current.source.unitTitle || ''}
+              {current.source.kind === 'lesson' ? ` · ${current.source.lessonTitle}` : ''}
+            </span>
+            {current.source.kind === 'lesson' && (
+              <button
+                onClick={() => navigate(`/course/${current.source.courseId}/unit/${current.source.unitId}/lesson/${current.source.lessonId}`)}
+                style={{
+                  flexShrink: 0,
+                  padding: '4px 10px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  borderRadius: 'var(--radius-xs)',
+                  border: '1px solid var(--blue)',
+                  background: 'transparent',
+                  color: 'var(--blue)',
+                  cursor: 'pointer',
+                }}
+              >
+                回看讲义 →
+              </button>
+            )}
+          </div>
+        ) : null}
 
         {/* Show original wrong answer (collapsed) */}
         <div style={{

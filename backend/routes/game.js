@@ -154,6 +154,41 @@ function loadMistakeNode(mistake) {
   return null;
 }
 
+// compare60 C07: 复习来源章节回链 —— 把每张错题卡解析成「来源章节」展示元数据
+// （课程/单元/课时标题 + 跳转地址），前端一键回看讲义。readJSON 有 (mtime,size)
+// 缓存，同一请求内对同源卡复用，不会 N+1 全量读盘。
+function resolveMistakeSource(mistake) {
+  const parts = (mistake.lesson_id || '').split('/');
+  if (parts.length === 3) {
+    const [courseId, unitId, lessonId] = parts;
+    let courseTitle = null, unitTitle = null;
+    try {
+      const index = readJSON(INDEX_PATH);
+      const course = (index || []).find(c => c.id === courseId);
+      courseTitle = course ? course.title : null;
+    } catch (e) { /* 课程目录缺失时仅缺课程名 */ }
+    try {
+      const unit = readJSON(path.join(COURSES_DIR, courseId, `${unitId}.json`));
+      unitTitle = unit && unit.id ? unit.title : null;
+    } catch (e) { /* 单元读盘失败不阻断 */ }
+    const lesson = loadLesson(courseId, unitId, lessonId);
+    return {
+      kind: 'lesson', courseId, unitId, lessonId,
+      courseTitle, unitTitle, lessonTitle: lesson ? lesson.title : null,
+    };
+  }
+  if (mistake.lesson_id === 'exam/ms_pool') {
+    return {
+      kind: 'ms_pool', courseId: null, unitId: null, lessonId: null,
+      courseTitle: '模拟考', unitTitle: '多选题训练', lessonTitle: '多选题池',
+    };
+  }
+  return {
+    kind: 'unknown', courseId: null, unitId: null, lessonId: null,
+    courseTitle: null, unitTitle: null, lessonTitle: null,
+  };
+}
+
 // GET /api/game/state — current user's game state (userId from token).
 router.get('/state', requireAuth, (req, res) => {
   const state = db.getGameState(req.userId);
@@ -247,12 +282,26 @@ router.get('/mistakes', requireAuth, (req, res) => {
   // loadMistakeNode also resolves multi-select exam pool questions (lesson_id
   // 'exam/ms_pool'). Row-level correct_answer is stripped too — the answer is
   // only revealed by POST /mistakes/review after the user commits.
+  // compare60 C03: approximate retrievability（遗忘风险）随卡下发 —— 前端展示
+  // 「预测记得概率」，也供客户端按风险理解队列顺序。R = 0.9^(overdue/interval)，
+  // 未排期/未到期返回 null（前端显示「新卡」不虚报概率）。
+  // compare60 C07: 来源章节回链 —— 附上课程/单元/课时标题，前端一键回看讲义。
+  const today = db.todayShanghai();
+  const sourceCache = new Map();
   const enrichedMistakes = mistakes.map(mistake => {
     try {
       const node = loadMistakeNode(mistake);
-      return sanitizeMistakeForClient(mistake, node);
+      const safe = sanitizeMistakeForClient(mistake, node);
+      safe.retrievability = db.computeRetrievability(mistake, today);
+      if (!sourceCache.has(mistake.lesson_id)) sourceCache.set(mistake.lesson_id, resolveMistakeSource(mistake));
+      safe.source = sourceCache.get(mistake.lesson_id);
+      return safe;
     } catch(e) {
-      return sanitizeMistakeForClient(mistake, null);
+      const safe = sanitizeMistakeForClient(mistake, null);
+      safe.retrievability = db.computeRetrievability(mistake, today);
+      if (!sourceCache.has(mistake.lesson_id)) sourceCache.set(mistake.lesson_id, resolveMistakeSource(mistake));
+      safe.source = sourceCache.get(mistake.lesson_id);
+      return safe;
     }
   });
 
@@ -262,6 +311,49 @@ router.get('/mistakes', requireAuth, (req, res) => {
 // GET /api/game/mistakes/due-count — how many cards are due today.
 router.get('/mistakes/due-count', requireAuth, (req, res) => {
   res.json({ dueCount: db.getDueMistakeCount(req.userId) });
+});
+
+// compare60 C07: 错题集 Anki 兼容导出 —— 用户自己全部错题（含已掌握）的 TSV 下载。
+// 数据仅限本人（requireAuth + getAllMistakes 按 userId 过滤，绝不越权）。「正确答案」
+// 列取的是复习接口在提交后才揭示的同一份 extractAnswer 输出（入库时快照），对卡片主
+// 人来说这些答案在学习阶段本已可见（lesson GET 鉴权下带答案键，CLAUDE.md 已知取舍），
+// 因此不新增泄漏面；脱敏测试只约束 GET /mistakes 这条复习答题接口，不受影响。
+// Anki 文件头 3 行（#separator/#html/#deck）后字段顺序 = Anki 字段顺序。
+router.get('/mistakes/export', requireAuth, (req, res) => {
+  const rows = db.getAllMistakes(req.userId);
+  const sourceCache = new Map();
+  const lines = [
+    '#separator:tab',
+    '#html:false',
+    '#deck:DLG 错题',
+    '题干\t正确答案\t来源\tRepetitions\tEase\tInterval(天)\t下次复习\t最后判定',
+  ];
+  for (const row of rows) {
+    if (!sourceCache.has(row.lesson_id)) sourceCache.set(row.lesson_id, resolveMistakeSource(row));
+    const src = sourceCache.get(row.lesson_id);
+    const srcText = src.kind === 'lesson'
+      ? [src.courseTitle, src.unitTitle, src.lessonTitle].filter(Boolean).join(' · ')
+      : [src.courseTitle, src.lessonTitle].filter(Boolean).join(' · ');
+    const verdict = row.last_verdict === null ? '未复习' : (row.last_verdict === 1 ? '对' : '错');
+    const fields = [
+      row.question_text || '',
+      row.correct_answer || '',
+      srcText,
+      String(row.review_count ?? 0),
+      row.easiness != null ? Number(row.easiness).toFixed(2) : '2.50',
+      String(row.interval_days ?? 0),
+      row.next_review_date || '',
+      verdict,
+    ];
+    // TSV 转义：字段内的制表符/换行替换为空格，避免破坏列结构。
+    lines.push(fields.map(f => String(f).replace(/[\t\r\n]+/g, ' ')).join('\t'));
+  }
+  // BOM：Excel 正确识别 UTF-8 中文；Content-Disposition 触发下载。
+  const body = '﻿' + lines.join('\n');
+  const safeId = String(req.userId).replace(/[^\w-]/g, '');
+  res.setHeader('Content-Type', 'text/tab-separated-values; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="dlg_mistakes_${safeId.slice(0, 8)}.tsv"`);
+  res.send(body);
 });
 
 // POST /api/game/mistakes/review — record a recall outcome (SM-2 scheduling).

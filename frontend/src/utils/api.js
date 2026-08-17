@@ -49,6 +49,26 @@ async function request(url, options = {}) {
   return res.json();
 }
 
+// 二进制下载（Anki 导出 TSV）：与 request 相同鉴权头，但返回 Blob 供前端触发下载。
+async function requestBlob(url) {
+  const headers = {};
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE}${url}`, { headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Network error' }));
+    const e = new Error(err.error || `HTTP ${res.status}`);
+    e.status = res.status;
+    if (res.status === 401 && !SESSION_401_EXCLUDED.has(url.split('?')[0])) {
+      for (const fn of [...unauthorizedHandlers]) {
+        try { fn(); } catch (handlerErr) { console.error('unauthorized handler failed:', handlerErr); }
+      }
+    }
+    throw e;
+  }
+  return res.blob();
+}
+
 // All user-scoped endpoints derive the user from the bearer token — never from
 // a client-supplied userId (fixes the IDOR / 串号 P0).
 export const api = {
@@ -90,6 +110,7 @@ export const api = {
   practiceHeal: (correctCount) =>
     request('/game/practice-heal', { method: 'POST', body: JSON.stringify({ correctCount }) }),
   getMistakes: () => request('/game/mistakes'),
+  exportMistakes: () => requestBlob('/game/mistakes/export'),
   reviewMistake: (mistakeId, userAnswer, extra = {}) =>
     request('/game/mistakes/review', { method: 'POST', body: JSON.stringify({ mistakeId, userAnswer, ...extra }) }),
   spendCoins: (amount, itemId) =>
