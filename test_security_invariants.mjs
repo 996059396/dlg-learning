@@ -69,6 +69,7 @@ function spawnServer(port, dbPath, extraEnv = {}) {
       // that bucket's boundary (B registers, C login-user); server A raises
       // register so its own registrations pass.
       'DLG_RATE_MAX_auth-ip': '1000',
+      'DLG_RATE_MAX_exam-track': '1000',
       ...extraEnv,
     },
     stdio: 'pipe',
@@ -445,6 +446,68 @@ async function run() {
     if (!sub.data.passed) throw new Error('passed=false at 90');
     const due = await jA('GET', '/game/mistakes/due-count', null, ea);
     if (!(due.data.dueCount >= 10)) throw new Error(`dueCount=${due.data.dueCount}, expect >= 10`);
+  });
+
+  // ═══════════ 4b. 防切屏（compare60 C04/C14：real 模式 visibilitychange 上报） ═══════════
+  console.log('\n📋 防切屏');
+  await test('track 越权：他人会话 → 404，不泄漏存在性', async () => {
+    const a = await jA('POST', '/auth/register', { username: `防切甲${Date.now() % 100000}`, password: 'exam123456' });
+    const b = await jA('POST', '/auth/register', { username: `防切乙${Date.now() % 100000}`, password: 'exam123456' });
+    const startA = await jA('POST', '/exam/start', {}, auth(a.data.token));
+    const r = await jA('POST', '/exam/track', { sessionId: startA.data.sessionId, switches: 1, hiddenMs: 1000 }, auth(b.data.token));
+    if (r.status !== 404) throw new Error(`他人会话 track 应 404, got ${r.status} ${JSON.stringify(r.data)}`);
+  });
+
+  await test('track 累计切屏达 3 次 → anomalous，负值/非整数 → 400', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `切屏${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const start = await jA('POST', '/exam/start', {}, ea);
+    const sid = start.data.sessionId;
+    let r = await jA('POST', '/exam/track', { sessionId: sid, switches: 1, hiddenMs: 5000 }, ea);
+    if (r.status !== 200 || r.data.anomalous !== false || r.data.switches !== 1) throw new Error(`首报: ${JSON.stringify(r.data)}`);
+    r = await jA('POST', '/exam/track', { sessionId: sid, switches: 2, hiddenMs: 26000 }, ea);
+    if (r.status !== 200 || r.data.anomalous !== true || r.data.switches !== 3) throw new Error(`达阈值应 anomalous=true: ${JSON.stringify(r.data)}`);
+    if (r.data.hiddenMs !== 31000) throw new Error(`hiddenMs 应累计 31000, got ${r.data.hiddenMs}`);
+    const bad = await jA('POST', '/exam/track', { sessionId: sid, switches: -1, hiddenMs: 0 }, ea);
+    if (bad.status !== 400) throw new Error(`负值应 400, got ${bad.status}`);
+    const bad2 = await jA('POST', '/exam/track', { sessionId: sid, switches: '2', hiddenMs: 0 }, ea);
+    if (bad2.status !== 400) throw new Error(`非整数应 400, got ${bad2.status}`);
+  });
+
+  await test('track 非法会话：已交卷 → 409', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `已交${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const start = await jA('POST', '/exam/start', {}, ea);
+    const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
+    const qrow = db.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
+    db.close();
+    await jA('POST', '/exam/submit', { sessionId: start.data.sessionId, answers: buildExamAllCorrect(JSON.parse(qrow.questions_json)) }, ea);
+    const r = await jA('POST', '/exam/track', { sessionId: start.data.sessionId, switches: 1, hiddenMs: 0 }, ea);
+    if (r.status !== 409) throw new Error(`已交卷 track 应 409, got ${r.status}`);
+  });
+
+  await test('异常会话全对交卷 → 成绩/XP 有效但首过 30 币扣发', async () => {
+    const reg = await jA('POST', '/auth/register', { username: `异常币${Date.now() % 100000}`, password: 'exam123456' });
+    const ea = auth(reg.data.token);
+    const start = await jA('POST', '/exam/start', {}, ea);
+    const db = new Database(DB_PATHS.A); db.pragma('busy_timeout = 5000');
+    const qrow = db.prepare('SELECT questions_json FROM exam_sessions WHERE id = ?').get(start.data.sessionId);
+    const uid = db.prepare('SELECT user_id FROM exam_sessions WHERE id = ?').get(start.data.sessionId).user_id;
+    db.close();
+    const answers = buildExamAllCorrect(JSON.parse(qrow.questions_json));
+    // 触发异常：3 次切屏 + 累计 35s 离开
+    await jA('POST', '/exam/track', { sessionId: start.data.sessionId, switches: 3, hiddenMs: 35000 }, ea);
+    const sub = await jA('POST', '/exam/submit', { sessionId: start.data.sessionId, answers }, ea);
+    if (sub.data.score !== 100 || !sub.data.passed) throw new Error(`异常卷仍应 100/passed: ${JSON.stringify(sub.data).slice(0, 160)}`);
+    if (sub.data.anomalous !== true) throw new Error(`应 anomalous=true: ${JSON.stringify(sub.data).slice(0, 160)}`);
+    if (sub.data.coinEarned !== 0) throw new Error(`异常卷 coinEarned 应 0, got ${sub.data.coinEarned}`);
+    if (sub.data.xpEarned !== 30) throw new Error(`异常卷 xpEarned 应 30, got ${sub.data.xpEarned}`);
+    const d = new Database(DB_PATHS.A); d.pragma('busy_timeout = 5000');
+    const coins = d.prepare('SELECT coins FROM game_state WHERE user_id = ?').get(uid).coins;
+    const anom = d.prepare('SELECT anomalous FROM exam_sessions WHERE id = ?').get(start.data.sessionId).anomalous;
+    d.close();
+    if (coins !== 500) throw new Error(`异常卷 coins 应保持 500（未发币），got ${coins}`);
+    if (anom !== 1) throw new Error(`会话 anomalous 应落库 1, got ${anom}`);
   });
 
   // ═══════════ 5. 多选 remap：会话随机选项 id 后按新 id 判对 ═══════════

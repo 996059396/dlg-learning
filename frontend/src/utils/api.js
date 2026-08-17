@@ -101,6 +101,9 @@ export const api = {
   // Mock exam (P1)
   startExam: (mode = 'real') => request('/exam/start', { method: 'POST', body: JSON.stringify({ mode }) }),
   reviewActivity: () => request('/metrics/review-activity'),
+  // 全真模式切屏上报（compare60 C04/C14）：deltas = { switches, hiddenMs } 增量。
+  trackExam: (sessionId, deltas) =>
+    request('/exam/track', { method: 'POST', body: JSON.stringify({ sessionId, ...deltas }) }),
   submitExam: (sessionId, answers) =>
     request('/exam/submit', { method: 'POST', body: JSON.stringify({ sessionId, answers }) }),
   examHistory: () => request('/exam/history'),

@@ -8,12 +8,18 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../models/database');
 const { requireAuth } = require('../middleware/auth');
+const { rateLimit } = require('../middleware/rate_limit');
 const { gradeNode, extractAnswer } = require('../lib/grading');
 const { readJSON } = require('../lib/content_cache');
 
 const COURSES_DIR = path.join(__dirname, '..', 'data', 'courses');
 const MS_POOL = path.join(__dirname, '..', 'data', 'exam', 'multi_select.json');
 const EXAM_PASS_SCORE = 80;
+// 防切屏阈值（compare60 C04/C14，全真模式）：切屏 ≥3 次或累计离开 ≥30s 标记异常。
+// 异常不取消成绩（错题照常入册复习），但扣发当日首次通过的 30 金币——切出去查答案→
+// 90+ 拿币的刷币链被经济性封堵。阈值刻意宽松：正常答题间偶尔切出看时间不会被误伤。
+const ANOMALY_SWITCHES = 3;
+const ANOMALY_HIDDEN_MS = 30 * 1000;
 // 双模式（crosscheck5 S M4 决策落地）：
 //  - real 全真：100 题 / 120 分钟 / 仅判断+单选 / 80 分 —— 对齐真实低压电工理论机考
 //    （应急〔2025〕59 号《培训大纲和考核标准》、应急管理部令第 19 号，2026-06-01 施行；
@@ -28,7 +34,8 @@ function resolveMode(req) {
   return EXAM_MODES[m] ? m : 'real';
 }
 
-// Idempotent schema bootstrap (route module load time).
+// Idempotent schema bootstrap (route module load time). 防切屏字段（compare60 C04/C14）
+// 已并入 CREATE；存量库用 PRAGMA table_info 检测后 ALTER 补齐——重启不重复加列。
 db.db.exec(`
   CREATE TABLE IF NOT EXISTS exam_sessions (
     id TEXT PRIMARY KEY,
@@ -41,10 +48,19 @@ db.db.exec(`
     passed INTEGER,
     questions_json TEXT NOT NULL,
     answers_json TEXT,
+    switches INTEGER NOT NULL DEFAULT 0,
+    hidden_ms INTEGER NOT NULL DEFAULT 0,
+    anomalous INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
   );
   CREATE INDEX IF NOT EXISTS idx_exam_sessions_user ON exam_sessions(user_id, started_at);
 `);
+{
+  const cols = new Set(db.db.prepare(`PRAGMA table_info(exam_sessions)`).all().map(c => c.name));
+  for (const [name, def] of [['switches', 'INTEGER NOT NULL DEFAULT 0'], ['hidden_ms', 'INTEGER NOT NULL DEFAULT 0'], ['anomalous', 'INTEGER NOT NULL DEFAULT 0']]) {
+    if (!cols.has(name)) db.db.exec(`ALTER TABLE exam_sessions ADD COLUMN ${name} ${def}`);
+  }
+}
 
 // Build the exam question pool from the 考证 course (electrician_exam) — every
 // graded TF/MC node across s1-s13, tagged with its source lesson so results and
@@ -205,6 +221,9 @@ router.post('/submit', requireAuth, (req, res) => {
   }
   const now = Date.now();
   const expired = now > new Date(session.expires_at).getTime();
+  // 防切屏异常（compare60 C04/C14）：切屏次数/累计离开时长达到阈值即标记。由 /track
+  // 上报累计，交卷时一并判定。异常仍给 XP 与成绩，只扣发「当日首次通过」的 30 金币。
+  const anomalous = session.switches >= ANOMALY_SWITCHES || session.hidden_ms >= ANOMALY_HIDDEN_MS;
 
   const questions = JSON.parse(session.questions_json);
   const answerByIndex = new Map(answers.map(a => [a.index, a]));
@@ -260,7 +279,7 @@ router.post('/submit', requireAuth, (req, res) => {
     // free +2 XP per empty payload).
     xpEarned = passed ? 30 : (correctCount > 0 ? 2 : 0);
     db.addLessonXP(req.userId, xpEarned);
-    if (passed && firstPassToday) {
+    if (passed && firstPassToday && !anomalous) {
       coinEarned = 30;
       const state = db.getGameState(req.userId);
       db.updateGameState(req.userId, { coins: state.coins + 30 });
@@ -302,9 +321,9 @@ router.post('/submit', requireAuth, (req, res) => {
     });
 
     db.db.prepare(
-      `UPDATE exam_sessions SET status = 'completed', score = ?, total = ?, passed = ?, answers_json = ?
+      `UPDATE exam_sessions SET status = 'completed', score = ?, total = ?, passed = ?, answers_json = ?, anomalous = ?
        WHERE id = ?`
-    ).run(score, total, passed ? 1 : 0, JSON.stringify(answers), sessionId);
+    ).run(score, total, passed ? 1 : 0, JSON.stringify(answers), anomalous ? 1 : 0, sessionId);
   });
   tx();
 
@@ -314,11 +333,39 @@ router.post('/submit', requireAuth, (req, res) => {
     total,
     passed,
     expired,
+    anomalous,
+    switches: session.switches,
+    hiddenMs: session.hidden_ms,
     xpEarned,
     coinEarned,
     passScore: EXAM_PASS_SCORE,
     results,
   });
+});
+
+// POST /api/exam/track — 全真模式切屏上报（compare60 C04/C14）。客户端把每次
+// 「切出→切回」累计成增量（switches 次 / hiddenMs 毫秒），周期性 POST 过来；服务端
+// 增量落库并重算 anomalous。增量式：并发丢包只损失该次增量，不会把累计值翻倍。
+// 真正的开卷（客户端干脆不上报）从浏览器端堵不死——这是威慑而非堡垒。
+router.post('/track', requireAuth, rateLimit({ windowMs: 30 * 60 * 1000, max: 120, scope: 'exam-track' }), (req, res) => {
+  const { sessionId, switches, hiddenMs } = req.body || {};
+  if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
+  const isNonNegInt = v => Number.isInteger(v) && v >= 0;
+  const dSwitches = switches == null ? 0 : (isNonNegInt(switches) ? switches : NaN);
+  const dHiddenMs = hiddenMs == null ? 0 : (isNonNegInt(hiddenMs) ? hiddenMs : NaN);
+  if (Number.isNaN(dSwitches) || Number.isNaN(dHiddenMs)) {
+    return res.status(400).json({ error: 'switches/hiddenMs 必须是非负整数' });
+  }
+  const s = db.db.prepare(`SELECT status FROM exam_sessions WHERE id = ? AND user_id = ?`).get(sessionId, req.userId);
+  if (!s) return res.status(404).json({ error: '模拟考会话不存在或无权操作' });
+  if (s.status !== 'active') return res.status(409).json({ error: `会话已${s.status === 'completed' ? '交卷' : '过期'}` });
+  db.db.prepare(`UPDATE exam_sessions SET switches = switches + ?, hidden_ms = hidden_ms + ? WHERE id = ?`)
+    .run(dSwitches, dHiddenMs, sessionId);
+  const row = db.db.prepare(`SELECT switches, hidden_ms, anomalous FROM exam_sessions WHERE id = ?`).get(sessionId);
+  const curSwitches = row.switches, curHiddenMs = row.hidden_ms;
+  const anomalous = curSwitches >= ANOMALY_SWITCHES || curHiddenMs >= ANOMALY_HIDDEN_MS;
+  if (anomalous && !row.anomalous) db.db.prepare(`UPDATE exam_sessions SET anomalous = 1 WHERE id = ?`).run(sessionId);
+  res.json({ sessionId, switches: curSwitches, hiddenMs: curHiddenMs, anomalous });
 });
 
 // GET /api/exam/history — recent sessions (for a results page).

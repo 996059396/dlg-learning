@@ -26,6 +26,11 @@ export default function MockExam() {
   const timerRef = useRef(null);
   const submitRef = useRef(null);
   const [msOptions, setMsOptions] = useState({}); // { [questionIndex]: shuffled options }
+  // 防切屏（compare60 C04/C14，仅全真模式）：visibilitychange 切出→切回累计成增量，
+  // 周期 flush 到 /exam/track；服务端达阈值标记异常（扣发当日首过金币）。
+  const antiCheatRef = useRef({ pendingSwitches: 0, pendingHiddenMs: 0, hiddenSince: null });
+  const [switchCount, setSwitchCount] = useState(0);
+  const [hiddenTotalMs, setHiddenTotalMs] = useState(0);
   // 全真/训练双模式（crosscheck5 S M4）：real=100题/120min/仅判断+单选（默认，对齐真实机考）；
   // training=100题/45min/含多选（训练用途）。
   const [mode, setMode] = useState('real');
@@ -42,6 +47,9 @@ export default function MockExam() {
       setAnswers(new Array(s.total).fill(null));
       setPhase('active');
       setRemaining(Math.max(1, Math.round((new Date(s.expiresAt) - Date.now()) / 1000)));
+      antiCheatRef.current = { pendingSwitches: 0, pendingHiddenMs: 0, hiddenSince: null };
+      setSwitchCount(0);
+      setHiddenTotalMs(0);
       // Shuffle multi-select option DISPLAY order once per session (option ids
       // stay stable so server grading by id is unaffected). The pool's correct
       // answers all sit at A/B, so without this an examiner can blindly check
@@ -72,6 +80,47 @@ export default function MockExam() {
     return () => clearInterval(timerRef.current);
   }, [phase, session]);
 
+  // 全真模式切屏监听：仅 real 需要上报（训练模式是练习性质，不计入异常）。
+  useEffect(() => {
+    if (phase !== 'active' || session?.mode !== 'real') return;
+    const onVis = () => {
+      const ac = antiCheatRef.current;
+      if (document.hidden) {
+        ac.hiddenSince = Date.now();
+      } else if (ac.hiddenSince != null) {
+        const hiddenMs = Date.now() - ac.hiddenSince;
+        ac.pendingHiddenMs += hiddenMs;
+        ac.pendingSwitches += 1;
+        ac.hiddenSince = null;
+        setSwitchCount(prev => prev + 1);
+        setHiddenTotalMs(prev => prev + hiddenMs);
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [phase, session]);
+
+  // 把切屏增量上报服务端（5s 一次；交卷前还会 flush 一次）。失败保留增量下轮重试——
+  // 增量式上报，重复不会把服务端累计翻倍。
+  const flushAntiCheat = async () => {
+    const ac = antiCheatRef.current;
+    if (!ac.pendingSwitches && !ac.pendingHiddenMs) return;
+    const deltas = { switches: ac.pendingSwitches, hiddenMs: ac.pendingHiddenMs };
+    try {
+      await api.trackExam(session.sessionId, deltas);
+      ac.pendingSwitches = 0;
+      ac.pendingHiddenMs = 0;
+    } catch (e) { /* keep deltas for the next flush */ }
+  };
+  const flushRef = useRef(flushAntiCheat);
+  flushRef.current = flushAntiCheat;
+
+  useEffect(() => {
+    if (phase !== 'active' || session?.mode !== 'real') return;
+    const id = setInterval(() => { flushRef.current(); }, 5000);
+    return () => clearInterval(id);
+  }, [phase, session]);
+
   const setAnswer = (idx, value) => {
     setAnswers(prev => { const c = [...prev]; c[idx] = value; return c; });
   };
@@ -95,6 +144,8 @@ export default function MockExam() {
     if (submitting) return;
     setSubmitting(true);
     try {
+      // 交卷前把最后一段切屏增量落库，保证服务端判定用的是最新累计值。
+      await flushRef.current();
       const payload = session.questions
         .filter(q => answers[q.index] != null)
         .map(q => ({ index: q.index, userAnswer: answers[q.index] }));
@@ -188,6 +239,11 @@ export default function MockExam() {
             本次获得 +{result.xpEarned} XP{result.coinEarned ? ` · +${result.coinEarned} 币` : ''}
           </div>
         </div>
+        {result.anomalous && (
+          <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid var(--danger)', color: 'var(--danger)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
+            ⚠️ 本次考试检测到 {result.switches} 次切屏、累计离开约 {Math.round(result.hiddenMs / 1000)} 秒，已标记异常：成绩与 XP 保留，但「当日首次通过」的 30 金币奖励已扣发。
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
           <button onClick={start} style={{ flex: 1, background: 'var(--primary)', color: '#fff', padding: '12px', borderRadius: 'var(--radius)', border: 'none', cursor: 'pointer', fontWeight: 700 }}>再来一次</button>
           <button onClick={() => navigate('/review')} style={{ flex: 1, background: 'var(--bg-secondary)', padding: '12px', borderRadius: 'var(--radius)', border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 700 }}>去复习错题</button>
@@ -239,6 +295,11 @@ export default function MockExam() {
           ))}
         </div>
       </div>
+      {session.mode === 'real' && switchCount > 0 && (
+        <div style={{ background: 'rgba(217,119,6,0.12)', border: '1px solid #d97706', color: '#b45309', borderRadius: 'var(--radius-sm)', padding: '10px 14px', fontSize: 13, fontWeight: 600, marginBottom: 12 }}>
+          ⚠️ 全真模式已记录 {switchCount} 次切屏，累计离开约 {Math.round(hiddenTotalMs / 1000)} 秒。超过 3 次或累计 30 秒将标记异常并扣发当日金币。
+        </div>
+      )}
       {error && <div style={{ color: 'var(--danger)', marginBottom: 12 }}>{error}</div>}
       <div style={{ display: 'grid', gap: 14 }}>
         {session.questions.map((q) => {
