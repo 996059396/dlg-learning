@@ -18,8 +18,9 @@ const req = createRequire(import.meta.url);
 process.env.DLG_DB_PATH = path.join(mkdtempSync(path.join(tmpdir(), 'dlg-sm2-')), 'test.db');
 
 const dbmod = req(path.join(import.meta.dirname, 'backend', 'models', 'database.js'));
-const { db, initializeDatabase, _sm2, computeRetrievability, getUnreviewedMistakes,
-  SM2_MASTERED_INTERVAL, LEECH_THRESHOLD, reviewMistake } = dbmod;
+const { db, initializeDatabase, _sm2, _addDays, addMistake, computeRetrievability,
+  getUnreviewedMistakes, SM2_MASTERED_INTERVAL, LEECH_THRESHOLD,
+  DAILY_REVIEW_CAP, DAILY_NEW_CAP, reviewMistake, todayShanghai } = dbmod;
 initializeDatabase();
 
 let passed = 0, failed = 0;
@@ -122,6 +123,66 @@ console.log('— getUnreviewedMistakes 按遗忘风险重排 —');
   const list = getUnreviewedMistakes(uid, 10, 0);
   eq(list.length, 2, '两张到期卡都进队列');
   eq(list[0].interval_days, 1, 'R 更低（更可能忘）的卡排最前');
+}
+
+console.log('— 每日新增预算（compare60 C03/C07）—');
+{
+  const uid = 'u_budget_' + Math.random().toString(36).slice(2, 8);
+  db.prepare('INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)').run(uid, uid, null);
+  const today = todayShanghai();
+  eq(DAILY_NEW_CAP, 20, 'DAILY_NEW_CAP=20（Anki new_per_day 默认值）');
+  for (let i = 0; i < 20; i++) addMistake(uid, 'u1_meter_basics/l1_what_is_multimeter', `b_${i}`, i, `q${i}`, 'x', 'y');
+  const todayCount = db.prepare(
+    'SELECT COUNT(*) c FROM mistakes WHERE user_id=? AND review_count=0 AND next_review_date=?'
+  ).get(uid, today).c;
+  eq(todayCount, 20, '前 20 张新卡都排今天');
+  addMistake(uid, 'u1_meter_basics/l1_what_is_multimeter', 'b_20', 20, 'q20', 'x', 'y');
+  const n21 = db.prepare("SELECT next_review_date FROM mistakes WHERE user_id=? AND node_id='b_20'").get(uid);
+  eq(n21.next_review_date, _addDays(today, 1), '第 21 张顺延到明天（不挤爆当天）');
+  for (let i = 21; i < 40; i++) addMistake(uid, 'u1_meter_basics/l1_what_is_multimeter', `b_${i}`, i, `q${i}`, 'x', 'y');
+  addMistake(uid, 'u1_meter_basics/l1_what_is_multimeter', 'b_40', 40, 'q40', 'x', 'y');
+  const n41 = db.prepare("SELECT next_review_date FROM mistakes WHERE user_id=? AND node_id='b_40'").get(uid);
+  eq(n41.next_review_date, _addDays(today, 2), '第 41 张（明天槽位满 20）再顺延到后天');
+}
+
+console.log('— 每日复习上限 + leech 优先（compare60 C03/C07）—');
+{
+  const uid = 'u_cap_' + Math.random().toString(36).slice(2, 8);
+  db.prepare('INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)').run(uid, uid, null);
+  const today = todayShanghai();
+  eq(DAILY_REVIEW_CAP, 30, 'DAILY_REVIEW_CAP=30');
+  // 34 张到期复习卡（interval 1..10，逾期 5 天），1 张 leech 卡（interval=20、R≈0.974）
+  for (let i = 0; i < 34; i++) {
+    db.prepare(`INSERT INTO mistakes (user_id, lesson_id, node_index, node_id, question_text, interval_days, review_count, next_review_date)
+      VALUES (?,?,?,?,?,?,?,?)`).run(uid, 'u1_meter_basics/l1_what_is_multimeter', 0, `c_${i}`, `q${i}`, 1 + (i % 10), 1, _addDays(today, -5));
+  }
+  db.prepare(`INSERT INTO mistakes (user_id, lesson_id, node_index, node_id, question_text, interval_days, review_count, next_review_date, leech)
+    VALUES (?,?,?,?,?,?,?,?,?)`).run(uid, 'u1_meter_basics/l1_what_is_multimeter', 0, 'c_leech', 'leechQ', 20, 1, _addDays(today, -5), 1);
+  const list = getUnreviewedMistakes(uid, 100, 0);
+  eq(list.length, 30, '35 张到期只服务前 DAILY_REVIEW_CAP=30 张，其余惰性顺延');
+  eq(list[0].node_id, 'c_leech', 'leech 顽固错题排最前（即使其 R 最高）');
+  const hasDeferred = list.some(x => x.interval_days === 1);
+  eq(hasDeferred, true, '最紧迫（R 最低）的卡留在队内');
+}
+
+console.log('— mastered 定期复检（compare60 C03/C07）—');
+{
+  const uid = 'u_reck_' + Math.random().toString(36).slice(2, 8);
+  db.prepare('INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)').run(uid, uid, null);
+  const today = todayShanghai();
+  // 105 天前最后一次复习的已掌握卡（interval=21，R=0.9^(105/21)=0.9^5≈0.59<0.6）
+  db.prepare(`INSERT INTO mistakes (user_id, lesson_id, node_index, node_id, question_text, interval_days, review_count, next_review_date, mastered, last_review_date)
+    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(uid, 'u1_meter_basics/l1_what_is_multimeter', 0, 'm_stale', '旧卡', 21, 4, _addDays(today, -105), 1, _addDays(today, -105));
+  // 10 天前刚复习过的已掌握卡 → 不该被复检
+  db.prepare(`INSERT INTO mistakes (user_id, lesson_id, node_index, node_id, question_text, interval_days, review_count, next_review_date, mastered, last_review_date)
+    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(uid, 'u1_meter_basics/l1_what_is_multimeter', 0, 'm_fresh', '新卡', 21, 4, _addDays(today, -10), 1, _addDays(today, -10));
+  const list = getUnreviewedMistakes(uid, 100, 0);
+  const stale = db.prepare("SELECT mastered, next_review_date FROM mistakes WHERE user_id=? AND node_id='m_stale'").get(uid);
+  eq(stale.mastered, 0, 'R<0.6 的过期已掌握卡重新激活');
+  eq(stale.next_review_date, today, '复检卡今天就到期重新入队');
+  const fresh = db.prepare("SELECT mastered FROM mistakes WHERE user_id=? AND node_id='m_fresh'").get(uid);
+  eq(fresh.mastered, 1, '最近复习过的已掌握卡保持 mastered');
+  eq(list.some(x => x.node_id === 'm_stale'), true, '复检卡出现在复习队列里');
 }
 
 console.log(`\nSM-2 黄金值单测：${passed} 通过 / ${failed} 失败`);

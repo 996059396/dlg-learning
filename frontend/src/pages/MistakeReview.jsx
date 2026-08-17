@@ -241,8 +241,22 @@ export default function MistakeReview() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 6,
+          flexWrap: 'wrap',
         }}>
           <span>之前答错了</span>
+          {/* compare60 C03: leech 顽固错题标签 —— 连续判错 ≥8 次的慢性错误卡，
+              服务端已把它排到复习队列最前（leech 优先），卡面标出提醒先重学讲义。 */}
+          {current?.leech ? (
+            <span style={{
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: 'var(--radius-xs)',
+              background: 'var(--tint-danger)',
+              color: 'var(--danger)',
+            }}>
+              顽固错题 · 连错 {current?.lapses ?? 8} 次
+            </span>
+          ) : null}
           {/* compare60 C03: approximate retrievability —— 服务端按 SM-2 间隔算的
               遗忘风险预估，让用户对「为什么这题排最前」有感知；新卡/未排期不显示。 */}
           {typeof current?.retrievability === 'number' ? (

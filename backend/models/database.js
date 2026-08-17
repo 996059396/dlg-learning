@@ -275,6 +275,8 @@ function initializeDatabase() {
     // 固定——错题卡若不重映射，脚本盲猜 ["A","B"] 即 100% 判对铸币。入册时生成
     // {原始id: 随机ms-xxxx} 存此列，review/卡面都用重映射后的 id 判分。
     remap_json: 'ALTER TABLE mistakes ADD COLUMN remap_json TEXT',
+    // compare60 C03/C07：mastered 定期复检需要「最后复习日期」判定期限
+    last_review_date: 'ALTER TABLE mistakes ADD COLUMN last_review_date TEXT',
   };
   for (const [col, sql] of Object.entries(mkMigrations)) {
     if (!mkCols.includes(col)) {
@@ -283,6 +285,9 @@ function initializeDatabase() {
   }
   // Backfill: pre-SM2 mistakes are immediately due (Asia/Shanghai date).
   try { db.exec(`UPDATE mistakes SET next_review_date = '${todayShanghai()}' WHERE next_review_date IS NULL`); } catch(e) {}
+  // Backfill: 历史已掌握卡的 last_review_date 以 next_review_date 近似（mastered 时
+  // next_review_date 即最后一次复习的排期日），让存量卡也能参与复检。
+  try { db.exec(`UPDATE mistakes SET last_review_date = next_review_date WHERE mastered = 1 AND last_review_date IS NULL AND next_review_date IS NOT NULL`); } catch(e) {}
 
   // Mistake-list perf (60-agent 性能审查): getUnreviewedMistakes /
   // getDueMistakeCount filter by (user_id, mastered, next_review_date) and
@@ -616,6 +621,11 @@ function saveProgress(userId, lessonId, data) {
 
 const SM2_MASTERED_INTERVAL = 21; // interval_days >= 21 ⇒ mastered
 const LEECH_THRESHOLD = 8; // 连续判错达 8 次标记 leech（Anki 式慢性错误卡识别）
+// compare60 C03/C07：每日队列预算（Anki 默认值移植）
+const DAILY_REVIEW_CAP = 30;  // 每日只服务最紧迫的前 N 张到期复习卡，其余惰性顺延
+const DAILY_NEW_CAP = 20;     // 每日新增错题卡摄入预算（new_per_day）
+const MASTERED_RECHECK_DAYS = 90;  // 已掌握卡超过 N 天无复习触发复检
+const MASTERED_RECHECK_R_MIN = 0.6; // 复检时 R 代理低于此值才重新激活
 
 // Add (or refresh) a mistake card for (user, lesson, node). Getting the same
 // node wrong again in a later attempt refreshes the card instead of duplicating.
@@ -640,12 +650,23 @@ function addMistake(userId, lessonId, nodeId, nodeIndex, questionText, userAnswe
       WHERE id = ?
     `).run(questionText, userAnswer, correctAnswer, remapJson, today, existing.id);
   } else {
+    // compare60 C03/C07：每日新增预算（Anki new_per_day）—— 当天已入册满
+    // DAILY_NEW_CAP 张新卡后，后续新卡 next_review_date 顺延到后续日期，避免
+    // 一次做错几十题让整批同一天到期（这是摄入预算，区别于 QUEUE_NEW_CAP 的
+    // 单次 fetch 上限）。计数取「排期 ≥ 今天」的全部新卡（含昨天顺延到今天、
+    // 今天已入册、以及更早已排进后续槽位的卡），dayOffset=floor(池数/预算) 把
+    // 新卡按 20 张一档逐日摊平——顺延出去的卡计入明天槽位，不会无限堆积同一天。
+    const newPool = db.prepare(
+      'SELECT COUNT(*) c FROM mistakes WHERE user_id = ? AND review_count = 0 AND next_review_date >= ?'
+    ).get(userId, today).c;
+    const deferDays = Math.floor(newPool / DAILY_NEW_CAP);
+    const nextReview = deferDays > 0 ? _addDays(today, deferDays) : today;
     db.prepare(`
       INSERT INTO mistakes
         (user_id, lesson_id, node_id, node_index, question_text, user_answer, correct_answer,
          remap_json, next_review_date, easiness, interval_days, review_count, mastered)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 2.5, 0, 0, 0)
-    `).run(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer, remapJson, today);
+    `).run(userId, lessonId, nodeId, nodeIndex, questionText, userAnswer, correctAnswer, remapJson, nextReview);
   }
 }
 
@@ -727,7 +748,7 @@ function getReviewActivity(userId, days = 7) {
 // B58 A6/F3 queue tiering + priority: the combined queue is DUE REVIEWS
 // (review_count > 0, most-overdue first — "到期最久优先" per A6) followed by NEW
 // learning-step cards (review_count = 0, today's mistakes). Each tier has its
-// own per-fetch cap (QUEUE_REVIEW_CAP / QUEUE_NEW_CAP) so neither floods a
+// own per-fetch cap (DAILY_REVIEW_CAP / QUEUE_NEW_CAP) so neither floods a
 // fetch, and offset pages correctly over the combined queue (a backlog of
 // overdue reviews can't strand fresh mistakes, nor vice versa).
 // compare60 C03: approximate retrievability — a forgetting-curve proxy
@@ -745,25 +766,53 @@ function computeRetrievability(mistake, todayStr) {
   return Math.pow(0.9, overdueDays / iv);
 }
 
-const QUEUE_REVIEW_CAP = 50; // 复习步硬顶
-const QUEUE_NEW_CAP = 20;    // 学习步硬顶
+// compare60 C03/C07：已掌握卡片定期复检 —— mastered 卡永久退队会让长期不用的知识
+// 静默过期。超过 MASTERED_RECHECK_DAYS 天无复习、且 R 代理（0.9^(天数/间隔)）低于
+// 阈值的卡，惰性重新激活进队列（mastered=0, next_review_date=today），作为普通到期
+// 复习重新入队。R 代理按最后一次复习时的 interval 衰减：interval=21 的卡约 102 天
+// （0.9^(102/21)≈0.60）触发，符合「约 90 天」口径。写在读路径上是与 loadMistakeNode
+// 的 remap_json 惰性回填同模式；UPDATE 幂等，二次调用无匹配行，不产生重复。
+function reactivateDueMastered(userId, today) {
+  const cutoff = _addDays(today, -MASTERED_RECHECK_DAYS);
+  const rows = db.prepare(`
+    SELECT * FROM mistakes
+    WHERE user_id = ? AND mastered = 1 AND last_review_date IS NOT NULL AND last_review_date <= ?
+  `).all(userId, cutoff);
+  for (const row of rows) {
+    const daysSince = Math.max(0, (Date.parse(today + 'T00:00:00Z') - Date.parse(row.last_review_date + 'T00:00:00Z')) / 86400000);
+    const iv = Math.max(row.interval_days || 1, 1);
+    const r = Math.pow(0.9, daysSince / iv);
+    if (r < MASTERED_RECHECK_R_MIN) {
+      db.prepare(`
+        UPDATE mistakes SET mastered = 0, reviewed = 0, next_review_date = ?
+        WHERE id = ? AND user_id = ?
+      `).run(today, row.id, userId);
+    }
+  }
+}
+
+const QUEUE_NEW_CAP = 20;    // 学习步单次 fetch 硬顶
 function getUnreviewedMistakes(userId, limit = 10, offset = 0) {
   const today = todayShanghai();
+  reactivateDueMastered(userId, today); // mastered 复检：过期已掌握卡重新入队
   const reviewsCount = db.prepare(`
     SELECT COUNT(*) c FROM mistakes
     WHERE user_id = ? AND mastered = 0 AND review_count > 0 AND next_review_date <= ?
   `).get(userId, today).c;
-  const reviewOffset = Math.min(offset, reviewsCount);
-  const reviewTake = Math.min(limit, reviewsCount - reviewOffset, QUEUE_REVIEW_CAP);
-  // REVIEW tier: fetch all due reviews and sort by predicted forgetting risk
-  // (most-likely-forgotten first) — the per-fetch cap bounds the sort. Cards
-  // without a schedule (interval 0) sort last.
+  // 每日复习负载均衡（compare60 C03）：到期卡只服务最紧迫的前 DAILY_REVIEW_CAP 张
+  // （leech 顽固错题最优先，其次按 R 遗忘风险升序），其余惰性顺延——不改它们的
+  // next_review_date（GET 不该写），只是今天不展示；逾期越久 R 越低，卡自然升到
+  // 最前，是自愈式摊平（同 postpone.py 的「只返回最紧迫前 N 张，其余顺延」）。
+  const eligibleReviews = Math.min(reviewsCount, DAILY_REVIEW_CAP);
+  const reviewOffset = Math.min(offset, eligibleReviews);
+  const reviewTake = Math.min(limit, eligibleReviews - reviewOffset);
   const reviews = reviewTake > 0 ? db.prepare(`
     SELECT * FROM mistakes
     WHERE user_id = ? AND mastered = 0 AND review_count > 0 AND next_review_date <= ?
     ORDER BY next_review_date ASC, created_at ASC
   `).all(userId, today)
-    .sort((a, b) => (computeRetrievability(a, today) ?? Infinity) - (computeRetrievability(b, today) ?? Infinity))
+    .sort((a, b) => (b.leech ? 1 : 0) - (a.leech ? 1 : 0)
+      || ((computeRetrievability(a, today) ?? Infinity) - (computeRetrievability(b, today) ?? Infinity)))
     .slice(reviewOffset, reviewOffset + reviewTake) : [];
   const newOffset = Math.max(0, offset - reviewsCount);
   const newTake = Math.min(limit - reviewTake, QUEUE_NEW_CAP);
@@ -778,6 +827,7 @@ function getUnreviewedMistakes(userId, limit = 10, offset = 0) {
 
 function getDueMistakeCount(userId) {
   const today = todayShanghai();
+  reactivateDueMastered(userId, today); // 让 badge 也计入复检卡
   const row = db.prepare(`
     SELECT COUNT(*) c FROM mistakes
     WHERE user_id = ? AND mastered = 0 AND next_review_date <= ?
@@ -857,16 +907,17 @@ function reviewMistake(mistakeId, userId, correct, grantCredit = true, extra = {
   // 判对同时清 leech——一次成功即解除挂起标识，Anki 语义）。
   const newLapses = correct ? 0 : (row.lapses || 0) + 1;
   const leechFlag = correct ? 0 : (newLapses >= LEECH_THRESHOLD ? 1 : (row.leech || 0));
+  const today = todayShanghai();
 
   db.transaction(() => {
     db.prepare(`
       UPDATE mistakes SET
         easiness = ?, interval_days = ?, review_count = ?,
         next_review_date = ?, reviewed = ?, mastered = ?,
-        lapses = ?, leech = ?
+        lapses = ?, leech = ?, last_review_date = ?
       WHERE id = ? AND user_id = ?
     `).run(easiness, interval, repetition, nextReview, correct ? 1 : 0, mastered,
-      newLapses, leechFlag, mistakeId, userId);
+      newLapses, leechFlag, today, mistakeId, userId);
 
     // B58 A2: append-only review history (forgetting-curve / retention stats,
     // future FSRS fitting). reviewed_at is a full ISO timestamp so retention can
@@ -1329,9 +1380,15 @@ module.exports = {
   saveProgress,
   addMistake,
   _sm2,
+  _addDays,
   computeRetrievability,
   SM2_MASTERED_INTERVAL,
   LEECH_THRESHOLD,
+  DAILY_REVIEW_CAP,
+  DAILY_NEW_CAP,
+  MASTERED_RECHECK_DAYS,
+  MASTERED_RECHECK_R_MIN,
+  reactivateDueMastered,
   addNodeResult,
   getNodeStats,
   getHardestNodes,
